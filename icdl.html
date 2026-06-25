@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ahmed Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg: #0a0f1e;
+  --bg2: #0f1629;
+  --sidebar-bg: #080d1a;
+  --card: #111827;
+  --card2: #1a2235;
+  --border: rgba(99,179,237,0.12);
+  --accent: #3b82f6;
+  --accent2: #6366f1;
+  --accent3: #06b6d4;
+  --gold: #f59e0b;
+  --green: #10b981;
+  --red: #ef4444;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --glow: 0 0 30px rgba(59,130,246,0.3);
+  --radius: 16px;
+  --sidebar-w: 260px;
+}
+.light-mode {
+  --bg: #f0f4ff;
+  --bg2: #e8eeff;
+  --sidebar-bg: #fff;
+  --card: #ffffff;
+  --card2: #f1f5ff;
+  --border: rgba(99,130,237,0.18);
+  --accent: #2563eb;
+  --accent2: #4f46e5;
+  --accent3: #0891b2;
+  --text: #1e293b;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --glow: 0 0 30px rgba(59,130,246,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:'Cairo','Tajawal',sans-serif;background:var(--bg);color:var(--text);transition:background .4s,color .4s;overflow:hidden;}
+body.en{font-family:'Poppins','Cairo',sans-serif;direction:ltr;}
+
+/* ═══ LAYOUT ═══ */
+.app{display:flex;height:100vh;position:relative;overflow:hidden;}
+
+/* animated bg */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;animation:orbFloat 12s ease-in-out infinite;}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,#3b82f6,transparent);top:-100px;right:-100px;animation-delay:0s;}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,#6366f1,transparent);bottom:-80px;left:-80px;animation-delay:4s;}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,#06b6d4,transparent);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:8s;}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-30px) scale(1.05);}}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--sidebar-bg);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:relative;z-index:10;
+  box-shadow:4px 0 40px rgba(0,0,0,.4);
+  transition:width .3s;
+}
+body.en .sidebar{border-left:none;border-right:1px solid var(--border);}
+
+.sidebar-logo{
+  padding:24px 20px 18px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);
+}
+.logo-icon{
+  width:44px;height:44px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;box-shadow:var(--glow);
+  flex-shrink:0;
+}
+.logo-text{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;}
+.logo-sub{font-size:11px;color:var(--text3);}
+
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;}
+.sidebar-nav::-webkit-scrollbar{width:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+.nav-section-label{
+  font-size:10px;font-weight:700;letter-spacing:1.5px;
+  color:var(--text3);padding:12px 8px 6px;
+  text-transform:uppercase;
+}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 14px;border-radius:12px;
+  cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+  font-size:14px;font-weight:600;color:var(--text2);
+  border:1px solid transparent;
+}
+.nav-item:hover{background:var(--card2);color:var(--text);border-color:var(--border);}
+.nav-item.active{
+  background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(99,102,241,.15));
+  color:var(--accent);border-color:rgba(59,130,246,.3);
+  box-shadow:0 0 20px rgba(59,130,246,.1);
+}
+.nav-item.active::before{
+  content:'';position:absolute;right:0;top:20%;bottom:20%;
+  width:3px;background:linear-gradient(var(--accent),var(--accent2));
+  border-radius:99px;
+}
+body.en .nav-item.active::before{right:auto;left:0;}
+.nav-icon{font-size:20px;flex-shrink:0;}
+.nav-badge{
+  margin-right:auto;font-size:10px;font-weight:700;
+  background:var(--accent);color:#fff;
+  padding:2px 8px;border-radius:99px;
+}
+body.en .nav-badge{margin-right:0;margin-left:auto;}
+
+/* ═══ SIDEBAR BOTTOM ═══ */
+.sidebar-bottom{
+  padding:14px 12px;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:4px;
+}
+.account-card{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;
+}
+.account-card:hover{border-color:rgba(59,130,246,.4);box-shadow:var(--glow);}
+.account-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.account-avatar{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.account-name{font-size:13px;font-weight:700;color:var(--text);}
+.account-role{font-size:11px;color:var(--text3);}
+.account-actions{display:flex;gap:6px;}
+.acc-btn{
+  flex:1;padding:7px;border-radius:9px;border:1px solid var(--border);
+  background:var(--card);cursor:pointer;font-size:11px;font-weight:600;
+  color:var(--text2);transition:all .2s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.acc-btn:hover{border-color:var(--accent);color:var(--accent);}
+.acc-btn.active-mode{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+
+.sidebar-link{
+  display:flex;align-items:center;justify-content:center;
+  padding:9px;border-radius:10px;
+  border:1px dashed var(--border);
+  color:var(--text3);font-size:11px;
+  margin-top:6px;cursor:default;
+  user-select:none;pointer-events:none;
+  opacity:.5;
+}
+.sidebar-link span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:180px;}
+
+/* ═══ MAIN CONTENT ═══ */
+.main{flex:1;display:flex;flex-direction:column;position:relative;z-index:5;overflow:hidden;}
+
+.topbar{
+  padding:16px 28px;display:flex;align-items:center;gap:16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(var(--bg2),0.6);backdrop-filter:blur(12px);
+  flex-shrink:0;
+}
+.topbar-title{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.topbar-right{margin-right:auto;display:flex;align-items:center;gap:12px;}
+body.en .topbar-right{margin-right:0;margin-left:auto;}
+.chip{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;
+  border:1px solid var(--border);background:var(--card2);
+  font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;
+  transition:all .2s;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+
+.content-area{flex:1;overflow-y:auto;padding:28px;}
+.content-area::-webkit-scrollbar{width:4px;}
+.content-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+/* ═══ HOME SCREEN ═══ */
+.home-screen{animation:fadeUp .5s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.welcome-banner{
+  background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(99,102,241,.1));
+  border:1px solid rgba(59,130,246,.25);
+  border-radius:20px;padding:28px 32px;margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.welcome-banner::after{
+  content:'✦';position:absolute;font-size:120px;
+  right:-20px;top:-20px;opacity:.04;color:var(--accent);
+}
+.welcome-h{font-size:26px;font-weight:900;margin-bottom:6px;
+  background:linear-gradient(135deg,#fff,var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.welcome-sub{font-size:14px;color:var(--text2);}
+
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  display:flex;align-items:center;gap:14px;
+  transition:all .3s;cursor:default;
+}
+.stat-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-2px);box-shadow:var(--glow);}
+.stat-icon{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  flex-shrink:0;
+}
+.stat-val{font-size:22px;font-weight:900;color:var(--text);}
+.stat-label{font-size:12px;color:var(--text3);}
+
+/* ═══ SECTION SCREEN ═══ */
+.section-screen{animation:fadeUp .4s ease both;}
+
+.section-hero{
+  background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(6,182,212,.08));
+  border:1px solid var(--border);border-radius:20px;
+  padding:28px;margin-bottom:24px;
+  display:flex;align-items:center;gap:20px;
+}
+.section-hero-icon{font-size:52px;filter:drop-shadow(0 0 20px rgba(59,130,246,.5));}
+.section-hero-h{font-size:24px;font-weight:900;margin-bottom:6px;}
+.section-hero-sub{font-size:14px;color:var(--text2);}
+
+.levels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+
+.level-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px;
+  cursor:pointer;transition:all .3s;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;gap:10px;
+}
+.level-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  opacity:0;transition:opacity .3s;
+}
+.level-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4),var(--glow);border-color:var(--accent);}
+.level-card:hover::before{opacity:.06;}
+.level-card>*{position:relative;}
+.level-num{
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);
+}
+.level-icon{font-size:32px;}
+.level-title{font-size:16px;font-weight:700;color:var(--text);}
+.level-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+.level-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:99px;
+  background:rgba(59,130,246,.1);color:var(--accent);
+  border:1px solid rgba(59,130,246,.2);width:fit-content;
+}
+
+/* ═══ LESSON SCREEN ═══ */
+.lesson-screen{animation:fadeUp .4s ease both;}
+
+.lesson-topbar{
+  display:flex;align-items:center;gap:14px;margin-bottom:24px;
+}
+.back-btn{
+  padding:8px 18px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--text2);cursor:pointer;
+  font-size:13px;font-weight:600;font-family:inherit;
+  transition:all .2s;display:flex;align-items:center;gap:6px;
+}
+.back-btn:hover{border-color:var(--accent);color:var(--accent);}
+.lesson-breadcrumb{font-size:13px;color:var(--text3);}
+.lesson-breadcrumb span{color:var(--accent);}
+
+.lesson-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:32px;margin-bottom:20px;
+}
+.lesson-title{font-size:22px;font-weight:900;margin-bottom:6px;}
+.lesson-subtitle{font-size:14px;color:var(--text2);margin-bottom:24px;}
+.lesson-divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+
+.lesson-section{margin-bottom:24px;}
+.ls-heading{
+  font-size:16px;font-weight:700;color:var(--accent3);
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.ls-heading::before{content:'';width:4px;height:18px;background:linear-gradient(var(--accent),var(--accent2));border-radius:99px;flex-shrink:0;}
+.ls-text{font-size:14px;color:var(--text2);line-height:1.9;}
+.ls-points{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+.ls-point{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;
+  font-size:13px;color:var(--text2);line-height:1.7;
+}
+.point-bullet{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;
+}
+.code-block{
+  background:#0d1117;border:1px solid var(--border);
+  border-radius:12px;padding:18px 20px;margin-top:10px;
+  font-family:'Courier New',monospace;font-size:13px;
+  color:#c9d1d9;line-height:1.8;overflow-x:auto;
+  position:relative;
+}
+.code-lang{
+  position:absolute;top:10px;left:12px;
+  font-size:10px;font-weight:700;
+  color:var(--accent3);letter-spacing:1px;
+  font-family:'Cairo',sans-serif;
+}
+body.en .code-lang{left:auto;right:12px;}
+
+.start-exam-btn{
+  width:100%;padding:18px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:all .3s;box-shadow:0 8px 30px rgba(59,130,246,.4);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:8px;
+}
+.start-exam-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(59,130,246,.5);}
+
+/* ═══ EXAM SCREEN ═══ */
+.exam-screen{animation:fadeUp .4s ease both;}
+.exam-header{
+  background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(59,130,246,.1));
+  border:1px solid rgba(99,102,241,.25);
+  border-radius:20px;padding:24px 28px;margin-bottom:24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.exam-title{font-size:20px;font-weight:900;}
+.exam-progress-info{font-size:13px;color:var(--text2);}
+.progress-bar-wrap{height:6px;background:var(--card2);border-radius:99px;margin-top:10px;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s ease;}
+
+.question-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px;margin-bottom:16px;
+}
+.q-num{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--text3);margin-bottom:10px;}
+.q-text{font-size:16px;font-weight:700;margin-bottom:20px;line-height:1.7;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{
+  padding:14px 18px;border-radius:12px;
+  border:1px solid var(--border);background:var(--card2);
+  cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;
+  color:var(--text2);display:flex;align-items:center;gap:12px;
+}
+.option:hover{border-color:var(--accent);color:var(--text);background:rgba(59,130,246,.08);}
+.option.selected{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,.12);}
+.option.correct{border-color:var(--green);color:var(--green);background:rgba(16,185,129,.12);}
+.option.wrong{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.12);}
+.opt-letter{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;
+}
+.exam-nav{display:flex;gap:12px;margin-top:8px;}
+.exam-btn{
+  padding:14px 28px;border-radius:12px;border:none;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;display:flex;align-items:center;gap:8px;
+}
+.exam-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 20px rgba(59,130,246,.3);}
+.exam-btn.primary:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(59,130,246,.4);}
+.exam-btn.secondary{background:var(--card2);color:var(--text2);border:1px solid var(--border);}
+.exam-btn.secondary:hover{border-color:var(--accent);color:var(--accent);}
+.exam-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* ═══ CERTIFICATE ═══ */
+.cert-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;animation:fadeUp .4s ease both;
+}
+.cert-container{
+  background:linear-gradient(135deg,#0f1629,#1a2235);
+  border:2px solid rgba(245,158,11,.4);
+  border-radius:24px;max-width:700px;width:100%;
+  padding:40px;position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(245,158,11,.2);
+}
+.cert-corner{position:absolute;font-size:60px;opacity:.1;color:var(--gold);}
+.cert-corner.tl{top:10px;right:10px;}
+.cert-corner.br{bottom:10px;left:10px;}
+.cert-logo{text-align:center;font-size:36px;margin-bottom:10px;}
+.cert-top{text-align:center;font-size:11px;letter-spacing:3px;color:var(--gold);font-weight:700;margin-bottom:20px;}
+.cert-h{text-align:center;font-size:32px;font-weight:900;color:var(--gold);margin-bottom:4px;}
+.cert-sub{text-align:center;font-size:14px;color:var(--text2);margin-bottom:28px;}
+.cert-presented{text-align:center;font-size:12px;color:var(--text3);margin-bottom:6px;}
+.cert-name{text-align:center;font-size:28px;font-weight:900;color:#fff;border-bottom:2px solid var(--gold);display:inline-block;padding:0 20px 4px;margin-bottom:20px;}
+.cert-name-wrap{text-align:center;margin-bottom:6px;}
+.cert-detail{text-align:center;font-size:13px;color:var(--text2);margin-bottom:4px;}
+.cert-section-img{text-align:center;font-size:60px;margin:16px 0;}
+.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid rgba(245,158,11,.2);}
+.cert-sig{text-align:center;}
+.cert-sig-name{font-size:15px;font-weight:700;color:var(--text);}
+.cert-sig-role{font-size:11px;color:var(--text3);}
+.cert-score-badge{
+  background:linear-gradient(135deg,var(--gold),#d97706);
+  color:#000;border-radius:50%;
+  width:70px;height:70px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:20px;font-weight:900;flex-shrink:0;
+}
+.cert-score-badge small{font-size:9px;font-weight:600;}
+.cert-actions{display:flex;gap:10px;justify-content:center;margin-top:20px;}
+.cert-btn{
+  padding:12px 24px;border-radius:10px;border:none;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;
+}
+.cert-btn.gold{background:linear-gradient(135deg,var(--gold),#d97706);color:#000;}
+.cert-btn.outline{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.cert-btn:hover{transform:translateY(-1px);}
+
+/* ═══ RESULT FAIL ═══ */
+.fail-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;animation:fadeUp .4s ease both;
+}
+.fail-card{
+  background:var(--card);border:2px solid rgba(239,68,68,.3);
+  border-radius:24px;max-width:440px;width:100%;
+  padding:40px;text-align:center;
+  box-shadow:0 0 40px rgba(239,68,68,.2);
+}
+.fail-icon{font-size:60px;margin-bottom:14px;}
+.fail-h{font-size:22px;font-weight:900;color:var(--red);margin-bottom:8px;}
+.fail-sub{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.7;}
+.fail-score{font-size:40px;font-weight:900;color:var(--red);margin-bottom:6px;}
+
+/* ═══ UTILS ═══ */
+.hidden{display:none!important;}
+.fade-in{animation:fadeUp .4s ease both;}
+
+/* ═══ INTERACTIVE PLACEHOLDER ═══ */
+.interactive-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.int-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  transition:all .3s;cursor:pointer;
+  display:flex;flex-direction:column;gap:10px;
+}
+.int-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--glow);}
+.int-card-icon{font-size:36px;}
+.int-card-title{font-size:16px;font-weight:700;}
+.int-card-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+.int-badge{
+  display:inline-flex;padding:4px 12px;border-radius:99px;
+  font-size:11px;font-weight:700;
+  background:rgba(16,185,129,.1);color:var(--green);
+  border:1px solid rgba(16,185,129,.2);width:fit-content;
+}
+
+/* settings modal */
+.settings-modal{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.settings-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;max-width:400px;width:100%;
+  padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.settings-title{font-size:18px;font-weight:900;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.setting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);
+}
+.setting-row:last-child{border:none;}
+.setting-label{font-size:14px;font-weight:600;color:var(--text);}
+.setting-desc{font-size:11px;color:var(--text3);margin-top:2px;}
+.toggle-group{display:flex;gap:6px;}
+.toggle-btn{
+  padding:7px 14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card2);color:var(--text2);
+  cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;
+  transition:all .2s;
+}
+.toggle-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+.settings-close{
+  width:100%;margin-top:16px;padding:12px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;
+}
+.settings-close:hover{opacity:.9;}
+
+.name-input{
+  width:100%;padding:10px 14px;border-radius:10px;
+  border:1px solid var(--border);background:var(--card2);
+  color:var(--text);font-size:14px;font-family:inherit;
+  outline:none;transition:border-color .2s;margin-top:8px;
+}
+.name-input:focus{border-color:var(--accent);}
+
+/* ═══ LANG SELECT OVERLAY ═══ */
+.lang-overlay{
+  position:fixed;inset:0;z-index:999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  animation:fadeUp .5s ease both;
+}
+.lang-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:28px;max-width:460px;width:100%;
+  padding:48px 40px;text-align:center;
+  box-shadow:0 40px 80px rgba(0,0,0,.5),var(--glow);
+  position:relative;overflow:hidden;
+}
+.lang-card::before{
+  content:'🌐';font-size:200px;position:absolute;
+  top:-40px;left:50%;transform:translateX(-50%);
+  opacity:.04;pointer-events:none;
+}
+.lang-logo{font-size:52px;margin-bottom:14px;}
+.lang-title-ar{font-size:26px;font-weight:900;color:var(--text);margin-bottom:4px;}
+.lang-title-en{font-size:20px;font-weight:700;color:var(--text2);margin-bottom:32px;}
+.lang-subtitle{font-size:14px;color:var(--text3);margin-bottom:32px;line-height:1.7;}
+.lang-choices{display:flex;gap:14px;justify-content:center;}
+.lang-choice{
+  flex:1;max-width:160px;
+  padding:20px 14px;border-radius:18px;
+  border:2px solid var(--border);background:var(--card2);
+  cursor:pointer;transition:all .3s;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.lang-choice:hover{
+  border-color:var(--accent);
+  background:rgba(59,130,246,.1);
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(59,130,246,.2);
+}
+.lang-choice-flag{font-size:36px;}
+.lang-choice-name{font-size:16px;font-weight:700;color:var(--text);}
+.lang-choice-sub{font-size:12px;color:var(--text3);}
+.lang-note{font-size:11px;color:var(--text3);margin-top:24px;opacity:.7;}
+/* locked lang buttons */
+.lang-locked{
+  opacity:.45;cursor:not-allowed!important;
+  pointer-events:none;
+  position:relative;
+}
+.lang-locked::after{
+  content:'🔒';font-size:10px;
+  position:absolute;top:4px;right:4px;
+}
+
+/* ═══ EXAM LOCKED NAV ═══ */
+.nav-item.exam-locked{
+  opacity:.35;cursor:not-allowed!important;
+  pointer-events:none;
+}
+.exam-warning-toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+  color:#fff;padding:14px 24px;border-radius:12px;
+  font-size:14px;font-weight:700;z-index:500;
+  box-shadow:0 8px 30px rgba(220,38,38,.5);
+  animation:toastIn .3s ease both;
+  display:flex;align-items:center;gap:10px;
+  white-space:nowrap;
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<div class="app">
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎓</div>
+      <div>
+        <div class="logo-text" id="logoText">منصة التعلم الذكي</div>
+        <div class="logo-sub" id="logoSub">بوابتك نحو الاحتراف</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav" id="sidebarNav">
+      <div class="nav-section-label" id="navLabel">البرامج</div>
+
+      <div class="nav-item active" onclick="showSection('home')" id="nav-home">
+        <span class="nav-icon">🏠</span>
+        <span id="navHome">الرئيسية</span>
+      </div>
+      <div class="nav-item" onclick="showSection('excel')" id="nav-excel">
+        <span class="nav-icon">📊</span>
+        <span id="navExcel">Excel</span>
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" onclick="showSection('word')" id="nav-word">
+        <span class="nav-icon">📝</span>
+        <span id="navWord">Word</span>
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" onclick="showSection('ppt')" id="nav-ppt">
+        <span class="nav-icon">📑</span>
+        <span id="navPpt">PowerPoint</span>
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" onclick="showSection('interactive')" id="nav-interactive">
+        <span class="nav-icon">⚡</span>
+        <span id="navInteractive">التفاعلي</span>
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="account-card" onclick="openSettings()">
+        <div class="account-info">
+          <div class="account-avatar" id="avatarInitial">م</div>
+          <div>
+            <div class="account-name" id="accountName">المستخدم</div>
+            <div class="account-role" id="accountRole">طالب متقدم</div>
+          </div>
+        </div>
+        <div class="account-actions">
+          <button class="acc-btn" id="langBtn" onclick="toggleLang(event)">🌐 <span id="langLabel">عربي</span></button>
+          <button class="acc-btn active-mode" id="modeBtn" onclick="toggleMode(event)">
+            <span id="modeIcon">🌙</span><span id="modeLabel"> ليلي</span>
+          </button>
+        </div>
+      </div>
+      <div class="sidebar-link">
+        <span id="sidebarLinkText">🔗 www.platform-learn.io/dashboard</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">🏠 الرئيسية</div>
+      <div class="topbar-right">
+        <div class="chip" onclick="openSettings()">⚙️ <span id="topLangChip">الإعدادات</span></div>
+      </div>
+    </div>
+
+    <div class="content-area" id="contentArea">
+      <!-- Content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="settings-modal hidden" id="settingsModal">
+  <div class="settings-card">
+    <div class="settings-title">⚙️ <span id="settingsTitle">إدارة الحساب</span></div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-label" id="setNameLabel">الاسم</div>
+        <input class="name-input" id="nameInput" type="text" placeholder="أدخل اسمك" value="المستخدم">
+      </div>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-label" id="setLangLabel">اللغة</div>
+        <div class="setting-desc" id="setLangDesc">اختر لغة المنصة</div>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="langArBtn" onclick="setLang('ar')">عربي</button>
+        <button class="toggle-btn" id="langEnBtn" onclick="setLang('en')">English</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-label" id="setModeLabel">الوضع</div>
+        <div class="setting-desc" id="setModeDesc">ليلي أو نهاري</div>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="modeDarkBtn" onclick="setMode('dark')">🌙</button>
+        <button class="toggle-btn" id="modeLightBtn" onclick="setMode('light')">☀️</button>
+      </div>
+    </div>
+    <button class="settings-close" onclick="saveSettings()" id="settingsSaveBtn">💾 حفظ</button>
+  </div>
+</div>
+
+<!-- Certificate Overlay -->
+<div class="cert-overlay hidden" id="certOverlay"></div>
+
+<!-- Fail Overlay -->
+<div class="fail-overlay hidden" id="failOverlay"></div>
+
+<!-- Lang Select Overlay (first time only) -->
+<div class="lang-overlay" id="langSelectOverlay">
+  <div class="lang-card">
+    <div class="lang-logo">🎓</div>
+    <div class="lang-title-ar">Ahmed Platform</div>
+    <div class="lang-title-en">اختر لغتك · Choose Your Language</div>
+    <div id="langOverlayUser" style="display:none;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:-8px;"></div>
+    <div class="lang-subtitle">
+      يُرجى اختيار لغة المنصة.<br>
+      <span style="font-size:12px">Please select the platform language.</span><br>
+      <span style="font-size:11px;color:var(--red)">⚠️ لا يمكن تغييرها لاحقاً · Cannot be changed later</span>
+    </div>
+    <div class="lang-choices">
+      <div class="lang-choice" onclick="chooseLang('ar')">
+        <div class="lang-choice-flag">🇸🇦</div>
+        <div class="lang-choice-name">العربية</div>
+        <div class="lang-choice-sub">Arabic</div>
+      </div>
+      <div class="lang-choice" onclick="chooseLang('en')">
+        <div class="lang-choice-flag">🇺🇸</div>
+        <div class="lang-choice-name">English</div>
+        <div class="lang-choice-sub">الإنجليزية</div>
+      </div>
+    </div>
+    <div class="lang-note">🔒 هذا الاختيار نهائي ولا يمكن تعديله · This choice is final and cannot be modified</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let state = {
+  lang: 'ar',
+  mode: 'dark',
+  userName: 'المستخدم',
+  currentSection: 'home',
+  currentLevel: null,
+  examAnswers: {},
+  examQ: 0,
+  examDone: false,
+  langLocked: false,
+  examActive: false,
+  shuffledExam: [],
+  importedColor: null
+};
+
+// ══════════════════════════════════════════
+//  TRANSLATIONS & CONTENT
+// ══════════════════════════════════════════
+const T = {
+  ar: {
+    logoText:'Ahmed Platform', logoSub:'بوابتك نحو الاحتراف',
+    navLabel:'البرامج', navHome:'الرئيسية', navInteractive:'التفاعلي',
+    topSettings:'الإعدادات',
+    settingsTitle:'إدارة الحساب', setName:'الاسم', setLang:'اللغة',
+    setLangDesc:'اختر لغة المنصة', setMode:'الوضع', setModeDesc:'ليلي أو نهاري',
+    settingsSave:'💾 حفظ', langLabel:'عربي', modeLabel:' ليلي', modeLabelL:' نهاري',
+    levelLabel:['المستوى الأول','المستوى الثاني','المستوى الثالث'],
+    levelTag:['مبتدئ','متوسط','متقدم'],
+    backBtn:'→ رجوع', startExam:'🎯 ابدأ الاختبار الآن',
+    examTitle:'اختبار تقييمي', question:'سؤال', of:'من',
+    next:'التالي →', prev:'← السابق', submit:'تسليم الاختبار ✅',
+    certTitle:'شهادة إتمام', certPresented:'تُقدَّم بفخر لـ',
+    certDetail:(s,l,sc)=>`أتم بنجاح ${s} - ${l} بدرجة ${sc}/100`,
+    supervisor:'صبحي القلفاط', supRole:'المشرف العام',
+    certClose:'إغلاق', certSave:'💾 تحميل',
+    failTitle:'لم تتجاوز الاختبار', failSub:(s)=>`حصلت على ${s}/100. تحتاج إلى 60 على الأقل للنجاح.`,
+    failRetry:'إعادة المحاولة 🔄', failBack:'العودة للدرس',
+    interactiveTitle:'القسم التفاعلي', interactiveSub:'تمارين وأدوات تفاعلية',
+    homeWelcome:'أهلاً بك في Ahmed Platform!',
+    homeWelcomeSub:'اختر قسمك وابدأ رحلتك نحو الاحتراف',
+    sidebarLink:'🔗 www.platform-learn.io/dashboard',
+    accountRole:'طالب متقدم',
+  },
+  en: {
+    logoText:'Ahmed Platform', logoSub:'Your Gateway to Excellence',
+    navLabel:'PROGRAMS', navHome:'Home', navInteractive:'Interactive',
+    topSettings:'Settings',
+    settingsTitle:'Account Settings', setName:'Name', setLang:'Language',
+    setLangDesc:'Choose platform language', setMode:'Mode', setModeDesc:'Dark or Light',
+    settingsSave:'💾 Save', langLabel:'English', modeLabel:' Dark', modeLabelL:' Light',
+    levelLabel:['Level One','Level Two','Level Three'],
+    levelTag:['Beginner','Intermediate','Advanced'],
+    backBtn:'← Back', startExam:'🎯 Start Exam Now',
+    examTitle:'Assessment Exam', question:'Question', of:'of',
+    next:'Next →', prev:'← Prev', submit:'Submit Exam ✅',
+    certTitle:'Certificate of Completion', certPresented:'Proudly Presented to',
+    certDetail:(s,l,sc)=>`Successfully completed ${s} - ${l} with a score of ${sc}/100`,
+    supervisor:'Sobhi Al-Qalfat', supRole:'General Supervisor',
+    certClose:'Close', certSave:'💾 Download',
+    failTitle:'Exam Not Passed', failSub:(s)=>`You scored ${s}/100. You need at least 60 to pass.`,
+    failRetry:'Retry 🔄', failBack:'Back to Lesson',
+    interactiveTitle:'Interactive Zone', interactiveSub:'Exercises & Interactive Tools',
+    homeWelcome:'Welcome to Ahmed Platform!',
+    homeWelcomeSub:'Choose your section and start your journey to mastery',
+    sidebarLink:'🔗 www.platform-learn.io/dashboard',
+    accountRole:'Advanced Student',
+  }
+};
+
+const SECTIONS = {
+  excel: {
+    ar:{ name:'Excel', icon:'📊', desc:'تعلم برنامج Excel من الصفر حتى الاحتراف - جداول بيانات ذكية',
+      levels:[
+        { title:'أساسيات Excel', desc:'تعرف على واجهة البرنامج والوظائف الأساسية',
+          content:{
+            intro:'Microsoft Excel هو برنامج جداول البيانات الأكثر استخداماً في العالم. يُستخدم لتنظيم البيانات، إجراء الحسابات، وإنشاء تقارير احترافية.',
+            sections:[
+              { heading:'ما هو Excel ولماذا نتعلمه؟',
+                text:'Excel هو أداة قوية تُمكّنك من تنظيم الأرقام والبيانات في صفوف وأعمدة، وتحليلها بشكل فعّال.',
+                points:['إنشاء جداول منظمة وسهلة القراءة','إجراء عمليات حسابية معقدة تلقائياً','إنشاء مخططات بيانية احترافية','تحليل كميات ضخمة من البيانات بسرعة','مشاركة البيانات مع الفريق بسهولة']
+              },
+              { heading:'التنقل في الواجهة',
+                text:'واجهة Excel مقسمة إلى: شريط الأدوات (Ribbon)، شريط الصيغة (Formula Bar)، وورقة العمل (Worksheet).',
+                points:['الخلية (Cell): وحدة البيانات الأساسية مثل A1 أو B5','الصف (Row): يُرقَّم من 1 إلى 1,048,576','العمود (Column): يُرمَز له بحرف من A إلى XFD','الورقة (Sheet): يمكن إضافة أوراق متعددة لنفس الملف']
+              },
+              { heading:'الصيغ الأساسية',
+                text:'الصيغ هي قلب Excel - تبدأ دائماً بعلامة =',
+                code:'=SUM(A1:A10)       // جمع نطاق من الخلايا\n=AVERAGE(B1:B5)    // حساب المتوسط\n=MAX(C1:C20)       // أعلى قيمة\n=MIN(C1:C20)       // أدنى قيمة\n=COUNT(D1:D10)     // عدد الخلايا التي تحوي أرقام'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما الرمز الذي تبدأ به كل معادلة في Excel؟',opts:['@','#','=','$'],ans:2},
+            {q:'ما اسم وحدة البيانات الأساسية في Excel؟',opts:['صف','ورقة','عمود','خلية'],ans:3},
+            {q:'ما الدالة المستخدمة لجمع نطاق من الأرقام؟',opts:['TOTAL','SUM','ADD','PLUS'],ans:1},
+            {q:'ما الحد الأقصى لعدد الصفوف في Excel؟',opts:['65536','100000','1048576','500000'],ans:2},
+            {q:'أي من التالي يحسب المتوسط الحسابي؟',opts:['=AVG()','=MEAN()','=AVERAGE()','=MID()'],ans:2},
+          ]
+        },
+        { title:'الدوال المتقدمة', desc:'VLOOKUP وIF والمعادلات الشرطية',
+          content:{
+            intro:'الدوال المتقدمة في Excel تفتح عالماً من الإمكانيات لمعالجة البيانات تلقائياً واتخاذ القرارات.',
+            sections:[
+              { heading:'دالة IF الشرطية',
+                text:'دالة IF تُمكّنك من تنفيذ عمليات مختلفة بناءً على شرط محدد - إذا كان الشرط صحيحاً تُنفَّذ قيمة، وإذا كان خاطئاً تُنفَّذ قيمة أخرى.',
+                points:['الصيغة: =IF(الشرط, قيمة_إذا_صح, قيمة_إذا_خطأ)','يمكن تداخل عدة دوال IF لمعالجة حالات متعددة','تُستخدم مع المقارنات: >, <, =, >=, <=']
+              },
+              { heading:'دالة VLOOKUP',
+                text:'VLOOKUP تبحث عن قيمة في عمود وتُعيد قيمة من عمود آخر في نفس الصف - مثالية للبحث في قواعد البيانات.',
+                code:'=IF(A1>90, "ممتاز", IF(A1>75, "جيد جداً", IF(A1>60, "جيد", "راسب")))\n\n=VLOOKUP(القيمة_المطلوبة, نطاق_البحث, رقم_العمود, 0)\n// مثال: =VLOOKUP(D2, A:B, 2, 0)\n// يبحث عن قيمة D2 في العمود A ويُعيد العمود B'
+              },
+              { heading:'دوال النص والتاريخ',
+                text:'Excel غني بدوال معالجة النصوص والتواريخ التي تجعل عملك أسرع وأدق.',
+                points:['=CONCATENATE(A1," ",B1) - دمج النصوص','=LEFT(A1,3) - أخذ أول 3 أحرف','=TODAY() - التاريخ الحالي','=DATEDIF(A1,B1,"D") - الفرق بالأيام']
+              }
+            ]
+          },
+          exam:[
+            {q:'ما صيغة دالة IF الصحيحة؟',opts:['=IF(شرط,صح)','=IF(شرط,صح,خطأ)','=IF{شرط,صح,خطأ}','=IFELSE(شرط,صح,خطأ)'],ans:1},
+            {q:'VLOOKUP تبحث في أي اتجاه؟',opts:['أفقياً','قطرياً','عشوائياً','عمودياً'],ans:3},
+            {q:'ما الدالة التي تُعيد تاريخ اليوم؟',opts:['=DATE()','=NOW()','=TODAY()','=CURRENT()'],ans:2},
+            {q:'كم عمود يُحدَّد في VLOOKUP لاستخراج النتيجة؟',opts:['العمود الأول','العمود الثاني','رقم يحدده المستخدم','آخر عمود'],ans:2},
+            {q:'ما الدالة المستخدمة لدمج نصين؟',opts:['=MERGE()','=JOIN()','=CONCAT()','=CONCATENATE()'],ans:3},
+          ]
+        },
+        { title:'تحليل البيانات والرسوم', desc:'Pivot Tables والمخططات الاحترافية',
+          content:{
+            intro:'تحليل البيانات المتقدم في Excel يُمكّنك من استخراج رؤى قيّمة من كميات ضخمة من البيانات في ثوانٍ.',
+            sections:[
+              { heading:'Pivot Table - الجداول المحورية',
+                text:'الجداول المحورية أداة ثورية تُلخِّص آلاف الصفوف في تقرير موجز تفاعلي يمكنك تعديله بالسحب والإفلات.',
+                points:['تجميع البيانات حسب الفئات المختلفة','حساب المجاميع والمتوسطات تلقائياً','تصفية البيانات بنقرة واحدة','إنشاؤها: Insert > Pivot Table']
+              },
+              { heading:'إنشاء المخططات البيانية',
+                text:'المخططات تُحوّل الأرقام الجافة إلى صور واضحة يسهل فهمها وتقديمها.',
+                points:['المخطط العمودي (Column): للمقارنة بين الفئات','المخطط الخطي (Line): لإظهار التغيرات عبر الزمن','المخطط الدائري (Pie): لإظهار النسب المئوية','المخطط الشريطي (Bar): للمقارنة الأفقية']
+              },
+              { heading:'التنسيق الشرطي',
+                text:'يُلوِّن الخلايا تلقائياً بناءً على قيمها مما يُسهِّل قراءة البيانات.',
+                code:'// خطوات التنسيق الشرطي:\n1. حدد نطاق الخلايا\n2. Home > Conditional Formatting\n3. اختر القاعدة (أكبر من، أصغر من، يحتوي على...)\n4. حدد لون التنسيق\n5. اضغط OK'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما الأداة المستخدمة لتلخيص كميات كبيرة من البيانات في Excel؟',opts:['Smart Table','Data Table','Pivot Table','Summary Table'],ans:2},
+            {q:'من أين تُنشئ Pivot Table؟',opts:['Home','Data','Insert','View'],ans:2},
+            {q:'أي مخطط يُستخدم لإظهار النسب المئوية؟',opts:['Line','Column','Bar','Pie'],ans:3},
+            {q:'ما وظيفة التنسيق الشرطي؟',opts:['تنسيق النصوص','تلوين الخلايا بناءً على قيمها','تكبير الخط','دمج الخلايا'],ans:1},
+            {q:'أي مخطط يُظهر التغيرات عبر الزمن؟',opts:['Pie','Bar','Line','Scatter'],ans:2},
+          ]
+        }
+      ]
+    },
+    en:{ name:'Excel', icon:'📊', desc:'Learn Excel from zero to pro - smart spreadsheets',
+      levels:[
+        { title:'Excel Basics', desc:'Interface, cells, and fundamental formulas',
+          content:{
+            intro:'Microsoft Excel is the world\'s most used spreadsheet software. It organizes data, performs calculations, and creates professional reports.',
+            sections:[
+              { heading:'What is Excel and Why Learn It?',
+                text:'Excel is a powerful tool that enables you to organize numbers and data in rows and columns and analyze them effectively.',
+                points:['Create organized, easy-to-read tables','Perform complex calculations automatically','Create professional charts and graphs','Analyze large amounts of data quickly','Share data with your team easily']
+              },
+              { heading:'Navigating the Interface',
+                text:'Excel\'s interface includes: the Ribbon toolbar, the Formula Bar, and the Worksheet area.',
+                points:['Cell: The basic data unit like A1 or B5','Row: Numbered from 1 to 1,048,576','Column: Labeled with letters from A to XFD','Sheet: Multiple sheets can be added to one file']
+              },
+              { heading:'Basic Formulas',
+                text:'Formulas are the heart of Excel - they always start with =',
+                code:'=SUM(A1:A10)       // Sum a range of cells\n=AVERAGE(B1:B5)    // Calculate average\n=MAX(C1:C20)       // Highest value\n=MIN(C1:C20)       // Lowest value\n=COUNT(D1:D10)     // Count cells with numbers'
+              }
+            ]
+          },
+          exam:[
+            {q:'What symbol starts every Excel formula?',opts:['@','#','=','$'],ans:2},
+            {q:'What is the basic data unit in Excel called?',opts:['Row','Sheet','Column','Cell'],ans:3},
+            {q:'Which function sums a range of numbers?',opts:['TOTAL','SUM','ADD','PLUS'],ans:1},
+            {q:'What is the maximum number of rows in Excel?',opts:['65536','100000','1048576','500000'],ans:2},
+            {q:'Which function calculates the arithmetic average?',opts:['=AVG()','=MEAN()','=AVERAGE()','=MID()'],ans:2},
+          ]
+        },
+        { title:'Advanced Functions', desc:'VLOOKUP, IF, and conditional formulas',
+          content:{
+            intro:'Advanced Excel functions open a world of possibilities for automated data processing and decision making.',
+            sections:[
+              { heading:'The IF Conditional Function',
+                text:'The IF function lets you execute different operations based on a condition - if the condition is true one value is returned, otherwise another.',
+                points:['Syntax: =IF(condition, value_if_true, value_if_false)','Multiple IF functions can be nested for complex cases','Used with comparisons: >, <, =, >=, <=']
+              },
+              { heading:'VLOOKUP Function',
+                text:'VLOOKUP searches for a value in a column and returns a value from another column in the same row - perfect for database lookups.',
+                code:'=IF(A1>90, "Excellent", IF(A1>75, "Very Good", IF(A1>60, "Good", "Fail")))\n\n=VLOOKUP(lookup_value, table_array, col_index, 0)\n// Example: =VLOOKUP(D2, A:B, 2, 0)\n// Looks up D2 value in column A and returns column B'
+              },
+              { heading:'Text and Date Functions',
+                text:'Excel has rich text and date processing functions that make your work faster and more accurate.',
+                points:['=CONCATENATE(A1," ",B1) - Merge text strings','=LEFT(A1,3) - Get first 3 characters','=TODAY() - Current date','=DATEDIF(A1,B1,"D") - Difference in days']
+              }
+            ]
+          },
+          exam:[
+            {q:'What is the correct IF function syntax?',opts:['=IF(cond,true)','=IF(cond,true,false)','=IF{cond,true,false}','=IFELSE(cond,true,false)'],ans:1},
+            {q:'In which direction does VLOOKUP search?',opts:['Horizontally','Diagonally','Randomly','Vertically'],ans:3},
+            {q:'Which function returns today\'s date?',opts:['=DATE()','=NOW()','=TODAY()','=CURRENT()'],ans:2},
+            {q:'What specifies which column to return in VLOOKUP?',opts:['Always first','Always second','A user-defined number','Last column'],ans:2},
+            {q:'Which function merges two text strings?',opts:['=MERGE()','=JOIN()','=CONCAT()','=CONCATENATE()'],ans:3},
+          ]
+        },
+        { title:'Data Analysis & Charts', desc:'Pivot Tables and professional visualizations',
+          content:{
+            intro:'Advanced data analysis in Excel lets you extract valuable insights from huge amounts of data in seconds.',
+            sections:[
+              { heading:'Pivot Tables',
+                text:'Pivot Tables are a revolutionary tool that summarizes thousands of rows into a concise interactive report you can modify with drag and drop.',
+                points:['Group data by different categories','Calculate totals and averages automatically','Filter data with one click','Create via: Insert > Pivot Table']
+              },
+              { heading:'Creating Charts',
+                text:'Charts transform raw numbers into clear visuals that are easy to understand and present.',
+                points:['Column Chart: Comparing categories','Line Chart: Showing changes over time','Pie Chart: Showing percentages','Bar Chart: Horizontal comparison']
+              },
+              { heading:'Conditional Formatting',
+                text:'Automatically colors cells based on their values, making data reading much easier.',
+                code:'// Steps for Conditional Formatting:\n1. Select a cell range\n2. Home > Conditional Formatting\n3. Choose rule (Greater than, Less than, Contains...)\n4. Set the formatting color\n5. Click OK'
+              }
+            ]
+          },
+          exam:[
+            {q:'What tool is used to summarize large data in Excel?',opts:['Smart Table','Data Table','Pivot Table','Summary Table'],ans:2},
+            {q:'Where do you create a Pivot Table from?',opts:['Home','Data','Insert','View'],ans:2},
+            {q:'Which chart shows percentages?',opts:['Line','Column','Bar','Pie'],ans:3},
+            {q:'What does Conditional Formatting do?',opts:['Format text','Color cells based on values','Enlarge fonts','Merge cells'],ans:1},
+            {q:'Which chart shows changes over time?',opts:['Pie','Bar','Line','Scatter'],ans:2},
+          ]
+        }
+      ]
+    }
+  },
+  word: {
+    ar:{ name:'Word', icon:'📝', desc:'تعلم Microsoft Word وإنتاج وثائق احترافية',
+      levels:[
+        { title:'أساسيات Word', desc:'التنسيق الأساسي وإعداد الصفحة',
+          content:{
+            intro:'Microsoft Word هو معالج النصوص الأشهر في العالم، يُستخدم لإنشاء مستندات، تقارير، رسائل، وكتب احترافية.',
+            sections:[
+              { heading:'التنسيق الأساسي للنصوص',
+                text:'التنسيق الجيد يُحوِّل النص العادي إلى وثيقة احترافية جذابة وسهلة القراءة.',
+                points:['الخط (Font): اختر خطاً واضحاً مثل Arial أو Times New Roman','الحجم (Size): 12 للنص العادي، 14-16 للعناوين','الغامق (Bold): Ctrl+B لتمييز النقاط المهمة','المائل (Italic): Ctrl+I للاقتباسات والمصطلحات الأجنبية','التسطير (Underline): Ctrl+U للروابط والعناوين']
+              },
+              { heading:'إعداد الصفحة',
+                text:'إعداد الصفحة بشكل صحيح يضمن طباعة احترافية وعرضاً مثالياً للمحتوى.',
+                points:['الهوامش: الإعداد المثالي 2.5سم من كل جانب','الاتجاه: عمودي للتقارير، أفقي للجداول والعروض','الحجم: A4 الأكثر استخداماً في العالم العربي','رأس وتذييل الصفحة: لإضافة الشعار والأرقام']
+              },
+              { heading:'اختصارات لوحة المفاتيح',
+                code:'Ctrl + S    // حفظ الملف\nCtrl + Z    // تراجع\nCtrl + Y    // إعادة\nCtrl + C    // نسخ\nCtrl + V    // لصق\nCtrl + A    // تحديد الكل\nCtrl + F    // بحث\nCtrl + P    // طباعة'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما اختصار لوحة المفاتيح للنص الغامق؟',opts:['Ctrl+I','Ctrl+U','Ctrl+B','Ctrl+G'],ans:2},
+            {q:'ما الحجم الافتراضي للخط في المستندات؟',opts:['10','11','12','14'],ans:2},
+            {q:'ما مقاس الورقة الأكثر استخداماً؟',opts:['A3','A4','A5','Letter'],ans:1},
+            {q:'ما اختصار الحفظ السريع؟',opts:['Ctrl+P','Ctrl+S','Ctrl+X','Ctrl+W'],ans:1},
+            {q:'أي اختصار يُستخدم للبحث في المستند؟',opts:['Ctrl+H','Ctrl+B','Ctrl+F','Ctrl+G'],ans:2},
+          ]
+        },
+        { title:'العناوين والأنماط', desc:'Styles وجدول المحتويات التلقائي',
+          content:{
+            intro:'استخدام أنماط Word (Styles) يمنحك تحكماً احترافياً كاملاً في تنسيق مستنداتك ويوفر وقتاً ثميناً.',
+            sections:[
+              { heading:'أنماط النص (Styles)',
+                text:'الأنماط هي مجموعات تنسيق جاهزة تُطبَّق بنقرة واحدة، مما يضمن تناسق المستند بأكمله.',
+                points:['Heading 1: للعناوين الرئيسية','Heading 2: للعناوين الفرعية','Normal: للنص العادي','Title: لعنوان المستند الرئيسي','يمكن تخصيص أي نمط لتناسب احتياجاتك']
+              },
+              { heading:'جدول المحتويات التلقائي',
+                text:'بعد استخدام أنماط العناوين، يمكن إنشاء جدول محتويات تلقائي يُحدَّث بنقرة واحدة.',
+                points:['References > Table of Contents','يُحدِّث نفسه عند تغيير المحتوى','يتضمن أرقام الصفحات تلقائياً','انقر عليه مع Ctrl للانتقال المباشر']
+              },
+              { heading:'القوائم والأرقام',
+                code:'• قائمة نقطية: Home > Bullets\n1. قائمة مرقمة: Home > Numbering\n   أ. قائمة متعددة المستويات\n      - مستوى فرعي\n\n// نصيحة: Tab للمستوى التالي، Shift+Tab للرجوع'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما النمط المستخدم للعنوان الرئيسي في Word؟',opts:['Normal','Heading 2','Heading 1','Title'],ans:2},
+            {q:'من أين تُنشئ جدول المحتويات التلقائي؟',opts:['Insert','Home','References','View'],ans:2},
+            {q:'كيف تنتقل لمستوى أعمق في قائمة مرقمة؟',opts:['Enter','Space','Shift+Tab','Tab'],ans:3},
+            {q:'ما فائدة استخدام الأنماط (Styles)؟',opts:['تكبير الصور','تنسيق متسق وسريع','تغيير الخلفية','إضافة صور'],ans:1},
+            {q:'أي نمط يُستخدم للعناوين الفرعية؟',opts:['Heading 1','Normal','Heading 2','Body'],ans:2},
+          ]
+        },
+        { title:'الجداول والتصميم المتقدم', desc:'جداول احترافية وإعداد تقارير رسمية',
+          content:{
+            intro:'إتقان الجداول والعناصر المتقدمة في Word يُمكّنك من إنتاج تقارير ووثائق رسمية تنافس في جودتها أعمال المحترفين.',
+            sections:[
+              { heading:'إنشاء وتنسيق الجداول',
+                text:'الجداول في Word تُنظِّم البيانات بشكل واضح وتضيف قيمة بصرية للمستند.',
+                points:['Insert > Table لإنشاء جدول','اختر عدد الصفوف والأعمدة المطلوبة','Table Design لاختيار تصميم جاهز','يمكن تغيير عرض الأعمدة بالسحب','دمج الخلايا: Merge Cells من Table Layout']
+              },
+              { heading:'إدراج الصور والأشكال',
+                text:'الصور والأشكال تُثري المستند وتجعله أكثر جاذبية.',
+                points:['Insert > Pictures لإدراج صورة من الجهاز','Insert > Online Pictures للصور من الإنترنت','Picture Format لضبط الحجم واللون والتأثيرات','الشكل (Shape): Insert > Shapes لأشكال هندسية']
+              },
+              { heading:'خيارات الطباعة والتصدير',
+                code:'// خيارات الحفظ والتصدير:\nFile > Save As > Word Document (.docx)\nFile > Save As > PDF (.pdf)\nFile > Print > اختر الطابعة\n\n// نصائح الطباعة:\n- راجع معاينة الطباعة دائماً\n- تحقق من الهوامش قبل الطباعة\n- استخدم Print One Sided/Both Sides'
+              }
+            ]
+          },
+          exam:[
+            {q:'من أين تُدرج جدولاً في Word؟',opts:['Home','View','Insert','Design'],ans:2},
+            {q:'كيف تدمج خلايا في جدول Word؟',opts:['Cell Merge','Merge Cells','Join Cells','Combine'],ans:1},
+            {q:'كيف تحفظ مستند Word كـ PDF؟',opts:['Print','Export','Save As','Convert'],ans:2},
+            {q:'أين تجد خيارات تنسيق الصور؟',opts:['Home','Picture Format','Insert','View'],ans:1},
+            {q:'كيف تُدرج صورة من جهازك؟',opts:['Insert > Pictures','Home > Image','View > Insert','File > Photo'],ans:0},
+          ]
+        }
+      ]
+    },
+    en:{ name:'Word', icon:'📝', desc:'Master Microsoft Word and produce professional documents',
+      levels:[
+        { title:'Word Basics', desc:'Basic formatting and page setup',
+          content:{
+            intro:'Microsoft Word is the world\'s most famous word processor, used to create documents, reports, letters, and professional books.',
+            sections:[
+              { heading:'Basic Text Formatting',
+                text:'Good formatting transforms plain text into an attractive, easy-to-read professional document.',
+                points:['Font: Choose a clear font like Arial or Times New Roman','Size: 12 for body text, 14-16 for headings','Bold: Ctrl+B to highlight important points','Italic: Ctrl+I for quotes and foreign terms','Underline: Ctrl+U for links and headings']
+              },
+              { heading:'Page Setup',
+                text:'Proper page setup ensures professional printing and optimal content display.',
+                points:['Margins: Ideal setting is 2.5cm on each side','Orientation: Portrait for reports, Landscape for tables','Size: A4 is most commonly used worldwide','Header & Footer: Add logo and page numbers']
+              },
+              { heading:'Keyboard Shortcuts',
+                code:'Ctrl + S    // Save file\nCtrl + Z    // Undo\nCtrl + Y    // Redo\nCtrl + C    // Copy\nCtrl + V    // Paste\nCtrl + A    // Select All\nCtrl + F    // Find\nCtrl + P    // Print'
+              }
+            ]
+          },
+          exam:[
+            {q:'What keyboard shortcut makes text bold?',opts:['Ctrl+I','Ctrl+U','Ctrl+B','Ctrl+G'],ans:2},
+            {q:'What is the default font size for documents?',opts:['10','11','12','14'],ans:2},
+            {q:'What is the most commonly used paper size?',opts:['A3','A4','A5','Letter'],ans:1},
+            {q:'What is the quick save shortcut?',opts:['Ctrl+P','Ctrl+S','Ctrl+X','Ctrl+W'],ans:1},
+            {q:'Which shortcut is used to search in a document?',opts:['Ctrl+H','Ctrl+B','Ctrl+F','Ctrl+G'],ans:2},
+          ]
+        },
+        { title:'Headings & Styles', desc:'Styles and automatic Table of Contents',
+          content:{
+            intro:'Using Word Styles gives you complete professional control over document formatting and saves valuable time.',
+            sections:[
+              { heading:'Text Styles',
+                text:'Styles are ready-made formatting groups applied with one click, ensuring consistency throughout the document.',
+                points:['Heading 1: For main headings','Heading 2: For subheadings','Normal: For body text','Title: For the main document title','Any style can be customized to suit your needs']
+              },
+              { heading:'Automatic Table of Contents',
+                text:'After applying heading styles, an automatic table of contents can be created that updates with one click.',
+                points:['References > Table of Contents','Updates itself when content changes','Includes page numbers automatically','Ctrl+Click to navigate directly']
+              },
+              { heading:'Lists and Numbering',
+                code:'• Bulleted list: Home > Bullets\n1. Numbered list: Home > Numbering\n   a. Multi-level list\n      - Sub-level\n\n// Tip: Tab to go deeper, Shift+Tab to go back'
+              }
+            ]
+          },
+          exam:[
+            {q:'What style is used for the main heading in Word?',opts:['Normal','Heading 2','Heading 1','Title'],ans:2},
+            {q:'Where do you create an automatic Table of Contents?',opts:['Insert','Home','References','View'],ans:2},
+            {q:'How do you go to a deeper level in a numbered list?',opts:['Enter','Space','Shift+Tab','Tab'],ans:3},
+            {q:'What is the benefit of using Styles?',opts:['Resize images','Consistent and fast formatting','Change background','Add pictures'],ans:1},
+            {q:'Which style is used for subheadings?',opts:['Heading 1','Normal','Heading 2','Body'],ans:2},
+          ]
+        },
+        { title:'Tables & Advanced Design', desc:'Professional tables and formal reports',
+          content:{
+            intro:'Mastering tables and advanced Word features enables you to produce reports and formal documents that rival professional quality.',
+            sections:[
+              { heading:'Creating and Formatting Tables',
+                text:'Tables in Word organize data clearly and add visual value to the document.',
+                points:['Insert > Table to create a table','Choose the required number of rows and columns','Table Design to choose a ready-made design','Drag column borders to change width','Merge cells: Merge Cells from Table Layout']
+              },
+              { heading:'Inserting Images and Shapes',
+                text:'Images and shapes enrich the document and make it more attractive.',
+                points:['Insert > Pictures to insert image from device','Insert > Online Pictures for internet images','Picture Format to adjust size, color, and effects','Shapes: Insert > Shapes for geometric shapes']
+              },
+              { heading:'Print and Export Options',
+                code:'// Save and Export Options:\nFile > Save As > Word Document (.docx)\nFile > Save As > PDF (.pdf)\nFile > Print > Choose printer\n\n// Printing Tips:\n- Always preview before printing\n- Check margins before printing\n- Use Print One Sided/Both Sides'
+              }
+            ]
+          },
+          exam:[
+            {q:'Where do you insert a table in Word?',opts:['Home','View','Insert','Design'],ans:2},
+            {q:'How do you merge cells in a Word table?',opts:['Cell Merge','Merge Cells','Join Cells','Combine'],ans:1},
+            {q:'How do you save a Word document as PDF?',opts:['Print','Export','Save As','Convert'],ans:2},
+            {q:'Where do you find image formatting options?',opts:['Home','Picture Format','Insert','View'],ans:1},
+            {q:'How do you insert an image from your device?',opts:['Insert > Pictures','Home > Image','View > Insert','File > Photo'],ans:0},
+          ]
+        }
+      ]
+    }
+  },
+  ppt: {
+    ar:{ name:'PowerPoint', icon:'📑', desc:'احترف تصميم العروض التقديمية المبهرة',
+      levels:[
+        { title:'أساسيات PowerPoint', desc:'الشرائح والتخطيطات والنصوص',
+          content:{
+            intro:'Microsoft PowerPoint هو الأداة الأولى عالمياً لإنشاء العروض التقديمية الاحترافية في الأعمال والتعليم.',
+            sections:[
+              { heading:'هيكل العرض التقديمي',
+                text:'كل عرض تقديمي ناجح يبدأ بهيكل واضح يأخذ المشاهد في رحلة منطقية من البداية للنهاية.',
+                points:['الشريحة الأولى (Title Slide): اسم العرض والمقدم','جدول المحتويات: خارطة طريق للمشاهد','الشرائح الرئيسية: المحتوى الأساسي','شريحة الخاتمة: ملخص وشكر','الشريحة المثالية: 5-7 نقاط كحد أقصى']
+              },
+              { heading:'اختيار التصميم المثالي',
+                text:'Design > Themes يمنحك قوالب احترافية جاهزة يمكنك تخصيصها بألوانك.',
+                points:['اختر ثيماً يناسب موضوع عرضك','تأكد من تباين الألوان للقراءة السهلة','استخدم ثيماً واحداً في كامل العرض','View > Slide Master للتعديل الشامل']
+              },
+              { heading:'اختصارات PowerPoint الأساسية',
+                code:'F5              // تشغيل العرض من البداية\nShift+F5        // تشغيل من الشريحة الحالية\nCtrl+M          // إضافة شريحة جديدة\nCtrl+D          // نسخ شريحة\nCtrl+Z          // تراجع\nEsc             // إيقاف العرض\nCtrl+Shift+G    // تجميع العناصر'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما أفضل عدد نقاط في الشريحة الواحدة؟',opts:['1-2','3-4','5-7','10+'],ans:2},
+            {q:'ما اختصار تشغيل العرض من البداية؟',opts:['Ctrl+P','F5','Shift+F5','Ctrl+F5'],ans:1},
+            {q:'من أين تختار قالب تصميم العرض؟',opts:['Insert','Home','View','Design'],ans:3},
+            {q:'ما Slide Master؟',opts:['لإضافة صور','لتعديل التصميم الشامل','لحفظ العرض','لتشغيل العرض'],ans:1},
+            {q:'ما اختصار إضافة شريحة جديدة؟',opts:['Ctrl+N','Ctrl+S','Ctrl+M','Ctrl+A'],ans:2},
+          ]
+        },
+        { title:'الرسوم المتحركة والانتقالات', desc:'تحريك العناصر وإنشاء عروض ديناميكية',
+          content:{
+            intro:'الحركة والانتقالات الذكية تُحوِّل عرضك من مجرد شرائح ثابتة إلى تجربة بصرية مذهلة تُمسك بانتباه الجمهور.',
+            sections:[
+              { heading:'انتقالات الشرائح (Transitions)',
+                text:'الانتقالات هي تأثيرات الحركة بين شريحة وأخرى.',
+                points:['Subtle: للعروض الرسمية والمؤتمرات','Exciting: للعروض التعليمية والترفيهية','تجنب المبالغة - الأقل أحياناً أجمل','الانتقال المفضل: Morph أو Fade']
+              },
+              { heading:'الحركات (Animations)',
+                text:'حرِّك عناصر الشريحة الواحدة بتسلسل منطقي يوجه نظر المشاهد.',
+                points:['Entrance: كيف يظهر العنصر','Exit: كيف يختفي العنصر','Emphasis: لتمييز عنصر موجود','Motion Path: تحريك على مسار مخصص','Animation Pane: للتحكم في التسلسل']
+              },
+              { heading:'ترتيب الحركات',
+                code:'// في Animation Pane:\n1. حدد العنصر\n2. Animations > Add Animation\n3. اختر نوع الحركة\n4. عدِّل: Start, Duration, Delay\n   - On Click: بالنقر\n   - With Previous: مع السابق\n   - After Previous: بعد السابق'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما أنسب انتقال للعروض الرسمية؟',opts:['Exciting','Random','Subtle','Dynamic'],ans:2},
+            {q:'ما نوع الحركة الذي يتحكم في كيفية ظهور العنصر؟',opts:['Exit','Motion Path','Emphasis','Entrance'],ans:3},
+            {q:'ما Animation Pane؟',opts:['لإضافة صور','لتشغيل العرض','للتحكم في تسلسل الحركات','لاختيار القالب'],ans:2},
+            {q:'ما الفرق بين Transition وAnimation؟',opts:['لا فرق','Transition بين الشرائح وAnimation للعناصر','Animation بين الشرائح وTransition للعناصر','كلاهما للشرائح فقط'],ans:1},
+            {q:'ما خيار الحركة "After Previous"؟',opts:['تبدأ بالنقر','تبدأ مع السابق','تبدأ بعد انتهاء السابق','لا تبدأ أبداً'],ans:2},
+          ]
+        },
+        { title:'التصميم الاحترافي', desc:'مبادئ التصميم الجذاب وتقديم العروض',
+          content:{
+            intro:'إتقان مبادئ التصميم البصري يُفرِّق بين العروض العادية والعروض الاستثنائية التي تُغيِّر قناعات الجمهور.',
+            sections:[
+              { heading:'مبادئ التصميم البصري',
+                text:'المبادئ الأساسية للتصميم الجيد: التباين، التناسق، الجودة، والتوازن.',
+                points:['قاعدة الأثلاث: قسِّم الشريحة 3×3 وضع العناصر على التقاطعات','التباين: استخدم ألواناً متباينة للنص والخلفية','المساحة البيضاء: لا تملأ كل الشريحة بالنص','حجم الخط: 28-32 للنص، 40+ للعناوين']
+              },
+              { heading:'الرسوم البيانية في PowerPoint',
+                text:'البيانات المرئية أسهل في الفهم والتذكر من الأرقام المجردة.',
+                points:['Insert > Chart لإدراج مخطط بياني','SmartArt لإنشاء رسوم توضيحية جاهزة','استخدم الألوان لتمييز البيانات المختلفة','أضف عنواناً واضحاً لكل مخطط']
+              },
+              { heading:'تصدير العرض ومشاركته',
+                code:'// طرق تصدير العرض:\nFile > Export > Create PDF/XPS\nFile > Export > Create a Video\nFile > Save As > PowerPoint Show (.ppsx)\n\n// نصائح التقديم:\n- تدرَّب مرات عديدة قبل التقديم الفعلي\n- احتفظ بنسخة PDF احتياطية\n- اختبر العرض على الجهاز المستخدم'
+              }
+            ]
+          },
+          exam:[
+            {q:'ما حجم الخط الموصى به للعناوين في PowerPoint؟',opts:['24','32','40+','20'],ans:2},
+            {q:'ما SmartArt؟',opts:['رسوم بيانية للبيانات','رسوم توضيحية جاهزة','صور من الإنترنت','فيديوهات'],ans:1},
+            {q:'ما قاعدة الأثلاث؟',opts:['تقسيم الشريحة 2×2','تقسيمها 3×3 ووضع العناصر على التقاطعات','ملء ثلثي الشريحة بنص','استخدام 3 ألوان فقط'],ans:1},
+            {q:'كيف تصدِّر العرض كفيديو؟',opts:['Insert > Video','View > Export','File > Export > Create a Video','Format > Video'],ans:2},
+            {q:'ما الامتداد الذي يُشغِّل العرض مباشرة؟',opts:['.pptx','.ppsx','.pdf','.pot'],ans:1},
+          ]
+        }
+      ]
+    },
+    en:{ name:'PowerPoint', icon:'📑', desc:'Master stunning presentation design',
+      levels:[
+        { title:'PowerPoint Basics', desc:'Slides, layouts, and text',
+          content:{
+            intro:'Microsoft PowerPoint is the world\'s number one tool for creating professional presentations in business and education.',
+            sections:[
+              { heading:'Presentation Structure',
+                text:'Every successful presentation starts with a clear structure that takes the audience on a logical journey from start to finish.',
+                points:['Title Slide: Presentation name and presenter','Table of Contents: A roadmap for the audience','Main Slides: Core content','Closing Slide: Summary and thanks','Ideal slide: Maximum 5-7 bullet points']
+              },
+              { heading:'Choosing the Right Design',
+                text:'Design > Themes gives you professional ready-made templates you can customize with your colors.',
+                points:['Choose a theme that suits your topic','Ensure color contrast for easy reading','Use one theme throughout the presentation','View > Slide Master for global editing']
+              },
+              { heading:'Basic PowerPoint Shortcuts',
+                code:'F5              // Run presentation from start\nShift+F5        // Run from current slide\nCtrl+M          // Add new slide\nCtrl+D          // Duplicate slide\nCtrl+Z          // Undo\nEsc             // Stop presentation\nCtrl+Shift+G    // Group elements'
+              }
+            ]
+          },
+          exam:[
+            {q:'What is the best number of bullet points per slide?',opts:['1-2','3-4','5-7','10+'],ans:2},
+            {q:'What shortcut runs the presentation from start?',opts:['Ctrl+P','F5','Shift+F5','Ctrl+F5'],ans:1},
+            {q:'Where do you choose a design template?',opts:['Insert','Home','View','Design'],ans:3},
+            {q:'What is Slide Master?',opts:['To add images','To edit the overall design','To save the presentation','To run the presentation'],ans:1},
+            {q:'What shortcut adds a new slide?',opts:['Ctrl+N','Ctrl+S','Ctrl+M','Ctrl+A'],ans:2},
+          ]
+        },
+        { title:'Animations & Transitions', desc:'Animating elements and creating dynamic presentations',
+          content:{
+            intro:'Smart movement and transitions transform your presentation from static slides into a stunning visual experience that captures audience attention.',
+            sections:[
+              { heading:'Slide Transitions',
+                text:'Transitions are movement effects between slides.',
+                points:['Subtle: For formal presentations and conferences','Exciting: For educational and entertainment presentations','Avoid overdoing it - less is often more','Preferred transitions: Morph or Fade']
+              },
+              { heading:'Animations',
+                text:'Animate slide elements in logical sequence that guides the viewer\'s eye.',
+                points:['Entrance: How an element appears','Exit: How an element disappears','Emphasis: Highlight an existing element','Motion Path: Move along a custom path','Animation Pane: Control the sequence']
+              },
+              { heading:'Ordering Animations',
+                code:'// In Animation Pane:\n1. Select element\n2. Animations > Add Animation\n3. Choose animation type\n4. Adjust: Start, Duration, Delay\n   - On Click: on mouse click\n   - With Previous: with previous animation\n   - After Previous: after previous finishes'
+              }
+            ]
+          },
+          exam:[
+            {q:'What transition suits formal presentations best?',opts:['Exciting','Random','Subtle','Dynamic'],ans:2},
+            {q:'Which animation type controls how an element appears?',opts:['Exit','Motion Path','Emphasis','Entrance'],ans:3},
+            {q:'What is Animation Pane?',opts:['To add images','To run presentation','To control animation sequence','To select template'],ans:2},
+            {q:'What is the difference between Transition and Animation?',opts:['No difference','Transition between slides, Animation for elements','Animation between slides, Transition for elements','Both for slides only'],ans:1},
+            {q:'What does "After Previous" mean?',opts:['Starts on click','Starts with previous','Starts after previous finishes','Never starts'],ans:2},
+          ]
+        },
+        { title:'Professional Design', desc:'Attractive design principles and presenting',
+          content:{
+            intro:'Mastering visual design principles separates ordinary presentations from exceptional ones that change audience perceptions.',
+            sections:[
+              { heading:'Visual Design Principles',
+                text:'Core principles of good design: Contrast, Consistency, Quality, and Balance.',
+                points:['Rule of Thirds: Divide slide 3×3 and place elements at intersections','Contrast: Use contrasting colors for text and background','White Space: Don\'t fill every slide with text','Font Size: 28-32 for body text, 40+ for headings']
+              },
+              { heading:'Charts in PowerPoint',
+                text:'Visual data is easier to understand and remember than abstract numbers.',
+                points:['Insert > Chart to add a chart','SmartArt to create ready-made diagrams','Use colors to differentiate data categories','Add a clear title to every chart']
+              },
+              { heading:'Exporting and Sharing',
+                code:'// Exporting Options:\nFile > Export > Create PDF/XPS\nFile > Export > Create a Video\nFile > Save As > PowerPoint Show (.ppsx)\n\n// Presentation Tips:\n- Practice many times before the actual presentation\n- Keep a PDF backup copy\n- Test presentation on the actual device'
+              }
+            ]
+          },
+          exam:[
+            {q:'What font size is recommended for headings in PowerPoint?',opts:['24','32','40+','20'],ans:2},
+            {q:'What is SmartArt?',opts:['Data charts','Ready-made diagrams','Online images','Videos'],ans:1},
+            {q:'What is the Rule of Thirds?',opts:['Divide slide 2×2','Divide 3×3 and place elements at intersections','Fill two thirds with text','Use only 3 colors'],ans:1},
+            {q:'How do you export as video?',opts:['Insert > Video','View > Export','File > Export > Create a Video','Format > Video'],ans:2},
+            {q:'Which extension auto-runs the presentation?',opts:['.pptx','.ppsx','.pdf','.pot'],ans:1},
+          ]
+        }
+      ]
+    }
+  }
+};
+
+const SECTION_ICONS = { excel:'📊', word:'📝', ppt:'📑', interactive:'⚡', home:'🏠' };
+const SECTION_NAMES_AR = { excel:'Excel', word:'Word', ppt:'PowerPoint', interactive:'التفاعلي', home:'الرئيسية' };
+const SECTION_NAMES_EN = { excel:'Excel', word:'Word', ppt:'PowerPoint', interactive:'Interactive', home:'Home' };
+
+function t(){ return T[state.lang]; }
+function secData(){ return SECTIONS[state.currentSection]?.[state.lang]; }
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+function updateUI(){
+  const lang = state.lang;
+  const tx = t();
+  document.getElementById('logoText').textContent = tx.logoText;
+  document.getElementById('logoSub').textContent = tx.logoSub;
+  document.getElementById('navLabel').textContent = tx.navLabel;
+  document.getElementById('navHome').textContent = tx.navHome;
+  document.getElementById('navInteractive').textContent = tx.navInteractive;
+  document.getElementById('langLabel').textContent = tx.langLabel;
+  document.getElementById('modeLabel').textContent = document.body.classList.contains('light-mode') ? tx.modeLabelL : tx.modeLabel;
+  document.getElementById('topLangChip').textContent = tx.topSettings;
+  document.getElementById('settingsTitle').textContent = tx.settingsTitle;
+  document.getElementById('setNameLabel').textContent = tx.setName;
+  document.getElementById('setLangLabel').textContent = tx.setLang;
+  document.getElementById('setLangDesc').textContent = tx.setLangDesc;
+  document.getElementById('setModeLabel').textContent = tx.setMode;
+  document.getElementById('setModeDesc').textContent = tx.setModeDesc;
+  document.getElementById('settingsSaveBtn').textContent = tx.settingsSave;
+  document.getElementById('sidebarLinkText').textContent = tx.sidebarLink;
+  document.getElementById('accountName').textContent = state.userName;
+  document.getElementById('accountRole').textContent = tx.accountRole;
+  document.getElementById('avatarInitial').textContent = state.userName.charAt(0) || 'م';
+
+  // lang buttons in settings
+  document.getElementById('langArBtn').className = 'toggle-btn' + (lang==='ar'?' active':'');
+  document.getElementById('langEnBtn').className = 'toggle-btn' + (lang==='en'?' active':'');
+  const isDark = !document.body.classList.contains('light-mode');
+  document.getElementById('modeDarkBtn').className = 'toggle-btn' + (isDark?' active':'');
+  document.getElementById('modeLightBtn').className = 'toggle-btn' + (!isDark?' active':'');
+  document.getElementById('modeIcon').textContent = isDark?'🌙':'☀️';
+
+  document.body.dir = lang==='ar'?'rtl':'ltr';
+  document.body.className = lang==='en'?'en':'';
+  if(!isDark) document.body.classList.add('light-mode');
+
+  // topbar
+  const sName = state.currentSection==='home' ? (lang==='ar'?'الرئيسية':'Home') :
+                state.currentSection==='interactive'?(lang==='ar'?'التفاعلي':'Interactive') :
+                SECTIONS[state.currentSection]?.[lang]?.name || '';
+  document.getElementById('topbarTitle').textContent = SECTION_ICONS[state.currentSection] + ' ' + sName;
+
+  renderContent();
+}
+
+function setActiveNav(s){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const el = document.getElementById('nav-'+s);
+  if(el) el.classList.add('active');
+}
+
+function showExamWarning(){
+  if(document.getElementById('examWarnToast')) return;
+  const lang = state.lang;
+  const msg = lang==='ar'
+    ? '🔒 لا يمكن مغادرة الاختبار قبل التسليم!'
+    : '🔒 You cannot leave the exam before submitting!';
+  const toast = document.createElement('div');
+  toast.id = 'examWarnToast';
+  toast.className = 'exam-warning-toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.opacity='0'; toast.style.transition='opacity .4s'; setTimeout(()=>toast.remove(),400); }, 2500);
+}
+
+function lockNavForExam(){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.add('exam-locked'));
+}
+function unlockNavAfterExam(){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('exam-locked'));
+}
+
+function showSection(s){
+  if(state.examActive){ showExamWarning(); return; }
+  state.currentSection = s;
+  state.currentLevel = null;
+  setActiveNav(s);
+  updateUI();
+}
+
+function renderContent(){
+  const area = document.getElementById('contentArea');
+  if(state.currentSection === 'home'){
+    renderHome(area); return;
+  }
+  if(state.currentSection === 'interactive'){
+    renderInteractive(area); return;
+  }
+  if(state.currentLevel !== null){
+    renderLesson(area); return;
+  }
+  renderSection(area);
+}
+
+function renderHome(area){
+  const tx = t();
+  const lang = state.lang;
+  area.innerHTML = `
+  <div class="home-screen">
+    <div class="welcome-banner">
+      <div class="welcome-h">${tx.homeWelcome}</div>
+      <div class="welcome-sub">${tx.homeWelcomeSub}</div>
+    </div>
+    <div class="grid3">
+      ${[
+        {icon:'📊',label:'Excel',val:'3',color:'rgba(16,185,129,.15)',border:'rgba(16,185,129,.3)',s:'excel'},
+        {icon:'📝',label:'Word',val:'3',color:'rgba(59,130,246,.15)',border:'rgba(59,130,246,.3)',s:'word'},
+        {icon:'📑',label:'PowerPoint',val:'3',color:'rgba(245,158,11,.15)',border:'rgba(245,158,11,.3)',s:'ppt'},
+      ].map(item=>`
+        <div class="stat-card" style="cursor:pointer;border-color:${item.border};background:${item.color}" onclick="showSection('${item.s}')">
+          <div class="stat-icon" style="background:${item.color};border:1px solid ${item.border};font-size:28px;">${item.icon}</div>
+          <div>
+            <div class="stat-val">${item.label}</div>
+            <div class="stat-label">${item.val} ${lang==='ar'?'مستويات':'Levels'}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="grid2">
+      ${[
+        {icon:'⚡',title:lang==='ar'?'القسم التفاعلي':'Interactive Zone',desc:lang==='ar'?'تمارين وأدوات تفاعلية':'Exercises and interactive tools',tag:lang==='ar'?'تجريبي':'Beta',s:'interactive'},
+        {icon:'🏆',title:lang==='ar'?'شهاداتي':'My Certificates',desc:lang==='ar'?'اعرض شهاداتك المكتسبة':'View your earned certificates',tag:lang==='ar'?'قريباً':'Soon',s:'home'},
+      ].map(i=>`
+        <div class="int-card" onclick="showSection('${i.s}')">
+          <div class="int-card-icon">${i.icon}</div>
+          <div class="int-card-title">${i.title}</div>
+          <div class="int-card-desc">${i.desc}</div>
+          <div class="int-badge">${i.tag}</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function renderSection(area){
+  const sd = secData();
+  if(!sd){ area.innerHTML=''; return; }
+  const tx = t();
+  const levelColors=['rgba(16,185,129,.15)','rgba(59,130,246,.15)','rgba(245,158,11,.15)'];
+  const levelBorders=['rgba(16,185,129,.3)','rgba(59,130,246,.3)','rgba(245,158,11,.3)'];
+  area.innerHTML = `
+  <div class="section-screen">
+    <div class="section-hero">
+      <div class="section-hero-icon">${sd.icon}</div>
+      <div>
+        <div class="section-hero-h">${sd.name}</div>
+        <div class="section-hero-sub">${sd.desc}</div>
+      </div>
+    </div>
+    <div class="levels-grid">
+      ${sd.levels.map((lv,i)=>`
+        <div class="level-card" onclick="openLevel(${i})" style="border-color:${levelBorders[i]};background:${levelColors[i]}">
+          <div class="level-num">${tx.levelLabel[i]}</div>
+          <div class="level-icon">${['🌱','🌿','🌳'][i]}</div>
+          <div class="level-title">${lv.title}</div>
+          <div class="level-desc">${lv.desc}</div>
+          <div class="level-tag">${tx.levelTag[i]}</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function openLevel(i){
+  state.currentLevel = i;
+  state.examAnswers = {};
+  state.examQ = 0;
+  state.examDone = false;
+  renderContent();
+}
+
+function renderLesson(area){
+  const sd = secData();
+  const lv = sd.levels[state.currentLevel];
+  const ct = lv.content;
+  const tx = t();
+  const lang = state.lang;
+
+  let sectionsHTML = ct.sections.map(sec=>`
+    <div class="lesson-section">
+      <div class="ls-heading">${sec.heading}</div>
+      ${sec.text?`<div class="ls-text">${sec.text}</div>`:''}
+      ${sec.points?`<div class="ls-points">${sec.points.map((p,i)=>`
+        <div class="ls-point"><div class="point-bullet">${i+1}</div><div>${p}</div></div>
+      `).join('')}</div>`:''}
+      ${sec.code?`<div class="code-block"><div class="code-lang">&lt;/&gt;</div><pre style="direction:ltr;text-align:left">${sec.code}</pre></div>`:''}
+    </div>
+  `).join('');
+
+  area.innerHTML = `
+  <div class="lesson-screen">
+    <div class="lesson-topbar">
+      <button class="back-btn" onclick="goBackToSection()">
+        ${tx.backBtn}
+      </button>
+      <div class="lesson-breadcrumb">${sd.name} / <span>${tx.levelLabel[state.currentLevel]}</span></div>
+    </div>
+    <div class="lesson-card" id="lessonCard">
+      <div class="lesson-title">${lv.title}</div>
+      <div class="lesson-subtitle">${lv.desc}</div>
+      <div class="lesson-divider"></div>
+      <div class="lesson-section">
+        <div class="ls-heading">${lang==='ar'?'مقدمة':'Introduction'}</div>
+        <div class="ls-text">${ct.intro}</div>
+      </div>
+      ${sectionsHTML}
+    </div>
+    <button class="start-exam-btn" onclick="startExam()">${tx.startExam}</button>
+  </div>`;
+}
+
+function goBackToSection(){
+  if(state.examActive){ showExamWarning(); return; }
+  state.currentLevel = null;
+  renderContent();
+}
+
+// ══════════════════════════════════════════
+//  EXAM
+// ══════════════════════════════════════════
+function shuffleArray(arr){
+  const a = arr.map((item,i)=>({...item, _origIdx:i}));
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startExam(){
+  state.examQ = 0;
+  state.examAnswers = {};
+  state.examDone = false;
+  state.examActive = true;
+  // Shuffle questions and store shuffled copy for this session
+  const sd = secData();
+  const lv = sd.levels[state.currentLevel];
+  state.shuffledExam = shuffleArray(lv.exam);
+  lockNavForExam();
+  window.onbeforeunload = ()=> state.lang==='ar'
+    ? 'الاختبار جارٍ! إذا غادرت ستفقد إجاباتك.'
+    : 'Exam in progress! If you leave, your answers will be lost.';
+  renderExam();
+}
+
+function renderExam(){
+  const exam = state.shuffledExam;
+  const q = exam[state.examQ];
+  const tx = t();
+  const total = exam.length;
+  const area = document.getElementById('contentArea');
+  const pct = ((state.examQ)/total)*100;
+
+  const letters = ['A','B','C','D'];
+  const selected = state.examAnswers[state.examQ];
+
+  area.innerHTML = `
+  <div class="exam-screen">
+    <div class="exam-header">
+      <div>
+        <div class="exam-title">📝 ${tx.examTitle}</div>
+        <div class="exam-progress-info">${tx.question} ${state.examQ+1} ${tx.of} ${total}</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="question-card">
+      <div class="q-num">${tx.question.toUpperCase()} ${state.examQ+1}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((opt,i)=>`
+          <div class="option ${selected===i?'selected':''}" onclick="selectAnswer(${i})">
+            <div class="opt-letter">${letters[i]}</div>
+            ${opt}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="exam-nav">
+      ${state.examQ > 0 ? `<button class="exam-btn secondary" onclick="examNav(-1)">${tx.prev}</button>` : ''}
+      ${state.examQ < total-1
+        ? `<button class="exam-btn primary" onclick="examNav(1)" ${selected===undefined?'disabled':''} >${tx.next}</button>`
+        : `<button class="exam-btn primary" onclick="submitExam()" ${selected===undefined?'disabled':''}>${tx.submit}</button>`
+      }
+    </div>
+  </div>`;
+}
+
+function selectAnswer(i){
+  state.examAnswers[state.examQ] = i;
+  renderExam();
+}
+
+function examNav(dir){
+  state.examQ += dir;
+  renderExam();
+}
+
+function submitExam(){
+  state.examActive = false;
+  unlockNavAfterExam();
+  window.onbeforeunload = null;
+  const sd = secData();
+  const lv = sd.levels[state.currentLevel];
+  const exam = state.shuffledExam;
+  let correct=0;
+  exam.forEach((q,i)=>{ if(state.examAnswers[i]===q.ans) correct++; });
+  const score = Math.round((correct/exam.length)*100);
+  const tx = t();
+
+  if(score >= 60){
+    showCertificate(score, sd, lv);
+  } else {
+    showFail(score);
+  }
+}
+
+// ══════════════════════════════════════════
+//  CERTIFICATE
+// ══════════════════════════════════════════
+function showCertificate(score, sd, lv){
+  const tx = t();
+  const levelLabel = tx.levelLabel[state.currentLevel];
+  const overlay = document.getElementById('certOverlay');
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = `
+  <div class="cert-container" id="certCard">
+    <div class="cert-corner tl">✦</div>
+    <div class="cert-corner br">✦</div>
+    <div class="cert-logo">${sd.icon}</div>
+    <div class="cert-top">${tx.certTitle.toUpperCase()}</div>
+    <div class="cert-h">🏆 ${tx.certTitle}</div>
+    <div class="cert-sub">Ahmed Platform</div>
+    <hr style="border:none;border-top:1px solid rgba(245,158,11,.3);margin:16px 0">
+    <div class="cert-presented">${tx.certPresented}</div>
+    <div class="cert-name-wrap"><span class="cert-name">${state.userName}</span></div>
+    <div class="cert-section-img">${sd.icon}</div>
+    <div class="cert-detail" style="font-size:15px;color:var(--text);font-weight:700;margin:8px 0">${tx.certDetail(sd.name, levelLabel, score)}</div>
+    <div class="cert-footer">
+      <div class="cert-sig">
+        <div style="font-size:24px;margin-bottom:6px">✍️</div>
+        <div style="border-top:2px solid var(--gold);padding-top:6px">
+          <div class="cert-sig-name">${tx.supervisor}</div>
+          <div class="cert-sig-role">${tx.supRole}</div>
+        </div>
+      </div>
+      <div class="cert-score-badge">
+        ${score}
+        <small>/100</small>
+      </div>
+      <div class="cert-sig">
+        <div style="font-size:24px;margin-bottom:6px">📅</div>
+        <div style="border-top:2px solid var(--gold);padding-top:6px">
+          <div class="cert-sig-name" style="font-size:13px">${new Date().toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US')}</div>
+          <div class="cert-sig-role">${state.lang==='ar'?'تاريخ الإصدار':'Issue Date'}</div>
+        </div>
+      </div>
+    </div>
+    <div class="cert-actions">
+      <button class="cert-btn outline" onclick="closeCert()">${tx.certClose}</button>
+      <button class="cert-btn gold" id="downloadCertBtn" onclick="downloadCertificate()">${tx.certSave}</button>
+    </div>
+  </div>`;
+}
+
+function closeCert(){
+  document.getElementById('certOverlay').classList.add('hidden');
+  state.examActive = false;
+  unlockNavAfterExam();
+  window.onbeforeunload = null;
+  state.currentLevel = null;
+  renderContent();
+}
+
+function downloadCertificate(){
+  const btn = document.getElementById('downloadCertBtn');
+  const certActions = btn ? btn.closest('.cert-actions') : null;
+  // Temporarily hide buttons for clean screenshot
+  if(certActions) certActions.style.visibility = 'hidden';
+
+  const card = document.getElementById('certCard');
+  html2canvas(card, {
+    scale: 3,
+    useCORS: true,
+    backgroundColor: '#0f1629',
+    logging: false
+  }).then(canvas => {
+    if(certActions) certActions.style.visibility = 'visible';
+    const link = document.createElement('a');
+    link.download = `Ahmed-Platform-Certificate-${state.userName}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(()=>{
+    if(certActions) certActions.style.visibility = 'visible';
+  });
+}
+
+function showFail(score){
+  const tx = t();
+  const overlay = document.getElementById('failOverlay');
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = `
+  <div class="fail-card">
+    <div class="fail-icon">😔</div>
+    <div class="fail-score">${score}/100</div>
+    <div class="fail-h">${tx.failTitle}</div>
+    <div class="fail-sub">${tx.failSub(score)}</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="exam-btn primary" onclick="closeFail();startExam()">${tx.failRetry}</button>
+      <button class="exam-btn secondary" onclick="closeFail()">${tx.failBack}</button>
+    </div>
+  </div>`;
+}
+
+function closeFail(){
+  document.getElementById('failOverlay').classList.add('hidden');
+  state.examActive = false;
+  unlockNavAfterExam();
+  window.onbeforeunload = null;
+}
+
+// ══════════════════════════════════════════
+//  INTERACTIVE
+// ══════════════════════════════════════════
+function renderInteractive(area){
+  const lang = state.lang;
+  const tools = lang==='ar' ? [
+    {icon:'📊',title:'sheet(excel)',desc:'افعل مع معلمك تعديل او انشاء', action:'grade'},
+    {icon:'📋',title:'docs(word)',desc:'نظِّم مهام التعلم اليومية بطريقة تفاعلية', action:'word'},
+    {icon:'🧮',title:'slide(powerpoint)',desc:'تقنية بومودورو لزيادة التركيز والإنتاجية', action:'power'},
+    {icon:'⏱️',title:'اختبار سريع',desc:'اختبر معلوماتك بأسئلة تفاعلية متنوعة'},
+  ] : [
+    {icon:'📊',title:'excel',desc:'Edit and create', action:'grade'},
+    {icon:'📋',title:'word',desc:'Organize daily learning tasks interactively', action:'word'},
+    {icon:'🧮',title:'powerpoint',desc:'Pomodoro technique to boost focus and productivity', action:'power'},
+    {icon:'⏱️',title:'Quick Quiz',desc:'Test your knowledge with diverse interactive questions'},
+  ];
+  area.innerHTML = `
+  <div class="section-screen">
+    <div class="section-hero">
+      <div class="section-hero-icon">⚡</div>
+      <div>
+        <div class="section-hero-h">${lang==='ar'?'القسم التفاعلي':'Interactive Zone'}</div>
+        <div class="section-hero-sub">${lang==='ar'?'أدوات وتمارين تفاعلية لتعزيز تعلمك':'Interactive tools and exercises to boost your learning'}</div>
+      </div>
+    </div>
+    <div class="interactive-grid">
+      ${tools.map(tool=>`
+        <div class="int-card" ${tool.action==='grade'?'onclick="openGradeCalc()"':tool.action==='word'?'onclick="openTaskList()"':tool.action==='power'?'onclick="openStudypower()"':''}>
+          <div class="int-card-icon">${tool.icon}</div>
+          <div class="int-card-title">${tool.title}</div>
+          <div class="int-card-desc">${tool.desc}</div>
+          <div class="int-badge">${lang==='ar'?'متاح':'Available'}</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════
+function openSettings(){
+  if(state.examActive){ showExamWarning(); return; }
+  document.getElementById('nameInput').value = state.userName;
+  document.getElementById('settingsModal').classList.remove('hidden');
+}
+
+function saveSettings(){
+  const name = document.getElementById('nameInput').value.trim();
+  if(name) state.userName = name;
+  document.getElementById('settingsModal').classList.add('hidden');
+  updateUI();
+}
+
+function setLang(l){
+  // Language is locked after first choice — do nothing
+  return;
+}
+
+function chooseLang(l){
+  state.lang = l;
+  state.langLocked = true;
+  document.getElementById('langSelectOverlay').classList.add('hidden');
+  // Lock lang buttons in settings
+  document.getElementById('langArBtn').classList.add('lang-locked');
+  document.getElementById('langEnBtn').classList.add('lang-locked');
+  // Lock sidebar lang button
+  const langBtn = document.getElementById('langBtn');
+  if(langBtn){ langBtn.classList.add('lang-locked'); langBtn.style.pointerEvents='none'; langBtn.style.opacity='.4'; }
+  // تطبيق اللون المستورد بعد اختيار اللغة
+  if(state.importedColor) applyImportedColor(state.importedColor);
+  updateUI();
+}
+
+function setMode(m){
+  state.mode = m;
+  if(m==='light') document.body.classList.add('light-mode');
+  else document.body.classList.remove('light-mode');
+  document.getElementById('modeDarkBtn').className = 'toggle-btn'+(m==='dark'?' active':'');
+  document.getElementById('modeLightBtn').className = 'toggle-btn'+(m==='light'?' active':'');
+  // إعادة توليد الألوان الكاملة بعد تغيير الوضع
+  if(state.importedColor) applyImportedColor(state.importedColor);
+}
+
+function toggleLang(e){
+  // Locked — do nothing
+  e.stopPropagation();
+}
+
+function toggleMode(e){
+  e.stopPropagation();
+  if(state.examActive){ showExamWarning(); return; }
+  if(document.body.classList.contains('light-mode')){
+    document.body.classList.remove('light-mode');
+    state.mode='dark';
+  } else {
+    document.body.classList.add('light-mode');
+    state.mode='light';
+  }
+  // إعادة تطبيق اللون المستورد بعد تغيير الوضع
+  if(state.importedColor) applyImportedColor(state.importedColor);
+  updateUI();
+}
+function openStudypower(){
+  const area = document.getElementById('contentArea');
+  area.innerHTML = `
+  <div class="section-screen">
+    <div class="lesson-topbar">
+      <button class="back-btn" onclick="showSection('interactive')">
+        ${state.lang==='ar'?'→ رجوع':'← Back'}
+      </button>
+    </div>
+    <iframe src="https://docs.google.com/presentation/d/1j1re9RVxYR_9Jd2Hk1NrEvrwJMYPsHSWATyXPw8mI0k/edit?usp=sharing"style="width:100%;height:calc(100vh - 160px);border:none;border-radius:16px;background:transparent;"></iframe>
+  </div>`;
+}
+function openTaskList(){
+  const area = document.getElementById('contentArea');
+  area.innerHTML = `
+  <div class="section-screen">
+    <div class="lesson-topbar">
+      <button class="back-btn" onclick="showSection('interactive')">
+        ${state.lang==='ar'?'→ رجوع':'← Back'}
+      </button>
+    </div>
+    <iframe src="https://docs.google.com/document/d/16OS7Kwi5OQGlD2iPqt7eQtRH_ZqzruSDmLLfHu2SVYU/edit?usp=sharing" style="width:100%;height:calc(100vh - 160px);border:none;border-radius:16px;background:transparent;"></iframe>
+  </div>`;
+}
+function openGradeCalc(){
+  const area = document.getElementById('contentArea');
+  area.innerHTML = `
+  <div class="section-screen">
+    <div class="lesson-topbar">
+      <button class="back-btn" onclick="showSection('interactive')">
+        ${state.lang==='ar'?'→ رجوع':'← Back'}
+      </button>
+    </div>
+    <iframe src="https://docs.google.com/spreadsheets/d/1huEk29hRwaiS7_6srTNS7NFOqF8srSVtjoKX3I2n8uw/edit?usp=sharing" style="width:100%;height:calc(100vh - 160px);border:none;border-radius:16px;background:transparent;"></iframe>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+
+// ── استيراد الاسم واللون من موقع Ahmed Afify ──
+(function importFromExternalSite(){
+  // 1. استيراد الاسم
+  // الموقع الخارجي يحفظ الاسم في sessionStorage بالمفتاح 'platform_user'
+  const externalUser = sessionStorage.getItem('platform_user');
+  if(externalUser && externalUser.trim() !== ''){
+    state.userName = externalUser.trim();
+  }
+
+  // 2. استيراد اللون المحفوظ من الموقع الخارجي
+  // الموقع الخارجي يحفظ اللون في localStorage بالمفتاح 'platform_saved_color'
+  const externalColor = localStorage.getItem('platform_saved_color');
+  if(externalColor && /^#[0-9a-fA-F]{6}$/.test(externalColor)){
+    state.importedColor = externalColor;
+  }
+
+  // 3. استيراد الوضع (ليلي/نهاري) من الموقع الخارجي
+  // الموقع الخارجي يحفظ الوضع في localStorage بالمفتاح 'platform_theme'
+  const externalTheme = localStorage.getItem('platform_theme');
+  if(externalTheme === 'day'){
+    state.mode = 'light';
+  }
+})();
+
+function applyImportedColor(hex){
+  if(!hex) return;
+
+  // ── helpers ──
+  function hexToRgb(h){
+    return { r:parseInt(h.slice(1,3),16), g:parseInt(h.slice(3,5),16), b:parseInt(h.slice(5,7),16) };
+  }
+  function toHex(r,g,b){
+    return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+  }
+  function mix(hex1, hex2, t){
+    const a=hexToRgb(hex1), b=hexToRgb(hex2);
+    return toHex(a.r+(b.r-a.r)*t, a.g+(b.g-a.g)*t, a.b+(b.b-a.b)*t);
+  }
+  // حساب luminance (السطوع)
+  function luminance({r,g,b}){
+    return (0.299*r + 0.587*g + 0.114*b) / 255;
+  }
+  // تحويل Hue إلى لون مكمّل (complement)
+  function complementHex(h){
+    const {r,g,b}=hexToRgb(h);
+    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+    let hue,s,l;
+    l=(max+min)/2;
+    if(max===min){hue=s=0;}else{
+      const d=max-min; s=l>0.5?d/(2-max/255-min/255):d/(max/255+min/255);
+      switch(max){case r:hue=((g-b)/d+(g<b?6:0))/6;break;case g:hue=((b-r)/d+2)/6;break;default:hue=((r-g)/d+4)/6;}
+    }
+    hue=(hue+0.5)%1; // complement
+    const h6=hue*6, i=Math.floor(h6), f=h6-i;
+    const p=l*(1-s),q=l*(1-f*s),tv=l*(1-(1-f)*s);
+    let nr,ng,nb;
+    switch(i%6){case 0:nr=l;ng=tv;nb=p;break;case 1:nr=q;ng=l;nb=p;break;case 2:nr=p;ng=l;nb=tv;break;case 3:nr=p;ng=q;nb=l;break;case 4:nr=tv;ng=p;nb=l;break;default:nr=l;ng=p;nb=q;}
+    return toHex(nr*255,ng*255,nb*255);
+  }
+
+  const {r,g,b} = hexToRgb(hex);
+  const lum = luminance({r,g,b});
+  const isDark = state.mode !== 'light';
+
+  // ── accent variants ──
+  const accent  = hex;
+  const accent2 = mix(hex, complementHex(hex), 0.35);  // مزيج بين الأساسي والمكمّل
+  const accent3 = mix(hex, '#ffffff', 0.2);             // فاتح قليلاً
+
+  // ── خلفيات مشتقة من اللون الأساسي ──
+  // الوضع الليلي: خلفية داكنة جداً بصبغة اللون
+  // الوضع النهاري: خلفية فاتحة جداً بصبغة اللون
+  let bg, bg2, sidebarBg, card, card2;
+
+  if(isDark){
+    // الوضع الليلي — نخفف اللون بشكل كبير لتوليد خلفية داكنة
+    bg        = toHex(r*0.04+5,  g*0.04+5,  b*0.04+8);
+    bg2       = toHex(r*0.06+8,  g*0.06+8,  b*0.06+12);
+    sidebarBg = toHex(r*0.03+3,  g*0.03+3,  b*0.03+6);
+    card      = toHex(r*0.08+12, g*0.08+12, b*0.08+18);
+    card2     = toHex(r*0.11+18, g*0.11+18, b*0.11+28);
+  } else {
+    // الوضع النهاري — خلفية فاتحة بصبغة اللون
+    bg        = toHex(240+r*0.05, 244+g*0.02, 255-b*0.03);
+    bg2       = toHex(232+r*0.05, 238+g*0.02, 255-b*0.03);
+    sidebarBg = '#ffffff';
+    card      = '#ffffff';
+    card2     = toHex(241+r*0.04, 245+g*0.02, 255-b*0.02);
+  }
+
+  const borderAlpha = isDark ? '0.18' : '0.22';
+  const glowAlpha   = isDark ? '0.3'  : '0.15';
+  const border = `rgba(${r},${g},${b},${borderAlpha})`;
+  const glow   = `0 0 30px rgba(${r},${g},${b},${glowAlpha})`;
+
+  // نص — نحدد بناءً على الوضع فقط (مش اللون)
+  const text  = isDark ? '#e2e8f0' : '#1e293b';
+  const text2 = isDark ? '#94a3b8' : '#475569';
+  const text3 = isDark ? '#64748b' : '#94a3b8';
+
+  // ── تطبيق كل المتغيرات ──
+  const root = document.documentElement;
+  root.style.setProperty('--bg',         bg);
+  root.style.setProperty('--bg2',        bg2);
+  root.style.setProperty('--sidebar-bg', sidebarBg);
+  root.style.setProperty('--card',       card);
+  root.style.setProperty('--card2',      card2);
+  root.style.setProperty('--border',     border);
+  root.style.setProperty('--accent',     accent);
+  root.style.setProperty('--accent2',    accent2);
+  root.style.setProperty('--accent3',    accent3);
+  root.style.setProperty('--glow',       glow);
+  root.style.setProperty('--text',       text);
+  root.style.setProperty('--text2',      text2);
+  root.style.setProperty('--text3',      text3);
+}
+
+setActiveNav('home');
+
+// تطبيق اللون المستورد فوراً قبل ظهور الشاشة
+if(state.importedColor) applyImportedColor(state.importedColor);
+
+// تطبيق الوضع المستورد
+if(state.mode === 'light') document.body.classList.add('light-mode');
+
+// إظهار اسم المستخدم المستورد في شاشة اختيار اللغة
+if(state.userName !== 'المستخدم'){
+  const userEl = document.getElementById('langOverlayUser');
+  if(userEl){
+    userEl.textContent = '👋 مرحباً ' + state.userName + ' · Welcome ' + state.userName;
+    userEl.style.display = 'block';
+  }
+}
+
+// Don't updateUI until language is chosen via the overlay
+</script>
+</body>
+</html>

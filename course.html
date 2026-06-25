@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AH Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cairo:wght@300;400;600;700;900&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+  :root {
+    --pink: #ff2d78;
+    --pink-light: #ff6fa8;
+    --pink-dark: #c4005a;
+    --black: #0a0a0f;
+    --white: #f5f0f8;
+    --gray: #1a1a2e;
+    --glass: rgba(255,45,120,0.08);
+    --glass-border: rgba(255,45,120,0.25);
+    --text: #f5f0f8;
+    --bg: #0a0a0f;
+    --card-bg: rgba(15,10,25,0.85);
+    --sidebar-bg: rgba(10,5,20,0.95);
+  }
+  body.light-mode {
+    --pink: #d4006a;
+    --pink-light: #ff2d78;
+    --pink-dark: #8c0040;
+    --black: #f5f0f8;
+    --white: #0a0a0f;
+    --gray: #e8d0f0;
+    --glass: rgba(212,0,106,0.06);
+    --glass-border: rgba(212,0,106,0.2);
+    --text: #0a0a0f;
+    --bg: #faf5ff;
+    --card-bg: rgba(255,245,255,0.9);
+    --sidebar-bg: rgba(240,225,255,0.97);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; font-family:'Cairo',sans-serif; }
+  body { background: var(--bg); color: var(--text); transition: background 0.6s, color 0.6s; }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  #bg-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+
+  /* ===== THEME TOGGLE ===== */
+  #theme-toggle {
+    position: fixed; top: 18px; left: 18px; z-index: 9999;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 50px; padding: 8px 18px; cursor: pointer;
+    font-size: 18px; backdrop-filter: blur(10px);
+    transition: all 0.3s; color: var(--text);
+    display: none;
+  }
+  #theme-toggle:hover { background: var(--pink); color: #fff; }
+
+  /* ===== SCREENS ===== */
+  .screen { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; }
+  .screen.hidden { display: none; }
+
+  /* ===== INTRO SCREEN ===== */
+  #intro-screen {
+    background: transparent;
+    flex-direction: column; gap: 0;
+  }
+  #welcome-text {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(3rem, 10vw, 8rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, #ff2d78 40%, #fff 60%, #ff6fa8 80%, #fff 100%);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: welcomeReveal 0.8s cubic-bezier(.17,.67,.35,1.2) forwards,
+               gradientShift 3s ease infinite 0.8s;
+    opacity: 0;
+    transform: scale(0.3) rotateY(90deg);
+    text-shadow: none;
+    letter-spacing: 0.05em;
+  }
+  @keyframes welcomeReveal {
+    0% { opacity:0; transform:scale(0.3) rotateY(90deg); }
+    60% { opacity:1; transform:scale(1.08) rotateY(-5deg); }
+    100% { opacity:1; transform:scale(1) rotateY(0deg); }
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  #particles-burst {
+    position: absolute; inset: 0; pointer-events: none;
+    overflow: hidden;
+  }
+  .burst-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: burstOut 1.5s ease-out forwards;
+  }
+  @keyframes burstOut {
+    0% { transform: translate(-50%,-50%) scale(0); opacity:1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1); opacity:0; }
+  }
+  #intro-ring {
+    position: absolute;
+    width: 300px; height: 300px;
+    border: 2px solid var(--pink);
+    border-radius: 50%;
+    animation: ringExpand 2s ease-out forwards;
+    opacity: 0;
+  }
+  @keyframes ringExpand {
+    0% { transform: scale(0); opacity: 0.8; }
+    100% { transform: scale(5); opacity: 0; }
+  }
+  .scanline {
+    position: absolute;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pink), transparent);
+    animation: scanDown 1.2s ease-in-out;
+    top: 0;
+  }
+  @keyframes scanDown {
+    0% { top: -2px; opacity:1; }
+    100% { top: 100%; opacity: 0.3; }
+  }
+
+  /* ===== NAME INPUT SCREEN ===== */
+  #name-screen {
+    flex-direction: column; gap: 30px;
+    background: transparent;
+  }
+  .name-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 50px 60px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    animation: slideUp 0.6s ease forwards;
+    box-shadow: 0 0 60px rgba(255,45,120,0.15);
+  }
+  @keyframes slideUp {
+    from { transform: translateY(60px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+  .name-card h2 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 1.8rem;
+    color: var(--pink);
+    margin-bottom: 10px;
+  }
+  .name-card p { color: var(--text); opacity: 0.7; margin-bottom: 30px; font-size: 1rem; }
+  .name-input-wrap { position: relative; }
+  .name-input {
+    width: 320px;
+    padding: 16px 24px;
+    background: var(--glass);
+    border: 1.5px solid var(--glass-border);
+    border-radius: 50px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.1rem;
+    outline: none;
+    transition: all 0.3s;
+    text-align: center;
+  }
+  .name-input:focus { border-color: var(--pink); box-shadow: 0 0 20px rgba(255,45,120,0.3); }
+  .name-btn {
+    margin-top: 20px;
+    padding: 14px 50px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+    border: none; border-radius: 50px;
+    color: #fff; font-family: 'Cairo', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.3s;
+    letter-spacing: 0.05em;
+  }
+  .name-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(255,45,120,0.5); }
+
+  /* ===== LANGUAGE ICONS SCREEN ===== */
+  #lang-select-screen {
+    flex-direction: column; gap: 20px;
+    background: transparent;
+  }
+  .lang-select-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--pink);
+    text-align: center;
+    animation: fadeInDown 0.5s ease forwards;
+  }
+  @keyframes fadeInDown {
+    from { transform: translateY(-30px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+  .lang-icons-grid {
+    display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;
+    animation: fadeInUp 0.6s ease 0.2s forwards; opacity: 0;
+  }
+  @keyframes fadeInUp {
+    from { transform: translateY(40px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+  .lang-icon-card {
+    width: 160px; height: 180px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 15px; cursor: pointer;
+    backdrop-filter: blur(15px);
+    transition: all 0.3s cubic-bezier(.17,.67,.35,1.3);
+    position: relative; overflow: hidden;
+  }
+  .lang-icon-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,45,120,0.1));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .lang-icon-card:hover {
+    transform: translateY(-12px) scale(1.05);
+    border-color: var(--pink);
+    box-shadow: 0 20px 50px rgba(255,45,120,0.3);
+  }
+  .lang-icon-card:hover::before { opacity: 1; }
+  .lang-icon-card svg { width: 70px; height: 70px; }
+  .lang-icon-card span {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.9rem; font-weight: 700;
+    color: var(--text); letter-spacing: 0.1em;
+  }
+
+  /* ===== PERMISSION MODAL ===== */
+  #permission-modal {
+    position: fixed; inset: 0; z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  }
+  #permission-modal.hidden { display: none; }
+  .permission-box {
+    background: var(--card-bg);
+    border: 1.5px solid var(--pink);
+    border-radius: 20px;
+    padding: 50px 60px;
+    text-align: center;
+    max-width: 450px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.2rem;
+    color: var(--text);
+    box-shadow: 0 0 80px rgba(255,45,120,0.4);
+    position: relative;
+    animation: modalPop 0.4s cubic-bezier(.17,.67,.35,1.3) forwards;
+  }
+  @keyframes modalPop {
+    from { transform: scale(0.5); opacity:0; }
+    to { transform: scale(1); opacity:1; }
+  }
+  .permission-box .modal-icon {
+    font-size: 3rem; margin-bottom: 15px;
+  }
+  .permission-box p { line-height: 1.7; }
+
+  /* glass shatter overlay */
+  #shatter-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    pointer-events: none; overflow: hidden;
+    display: none;
+  }
+  .shard {
+    position: absolute;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255,45,120,0.4);
+    transform-origin: center;
+    animation: shardFly 0.8s ease-out forwards;
+  }
+  @keyframes shardFly {
+    0% { opacity:1; transform: translate(0,0) rotate(0deg) scale(1); }
+    100% { opacity:0; transform: translate(var(--sx), var(--sy)) rotate(var(--sr)) scale(0.2); }
+  }
+
+  /* ===== CERT BLOCKED OVERLAY ===== */
+  #cert-blocked-screen {
+    position: fixed; inset: 0; z-index: 9000;
+    background: #000;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px;
+    display: none;
+  }
+  #cert-blocked-screen .blocked-icon { font-size: 5rem; }
+  #cert-blocked-screen h2 {
+    font-family: 'Cinzel Decorative', cursive;
+    color: #ff2d78; font-size: 1.8rem; text-align: center;
+  }
+  #cert-blocked-screen p {
+    color: rgba(255,255,255,0.6); font-size: 1rem; text-align: center;
+    max-width: 400px; line-height: 1.8;
+  }
+
+  /* ===== COURSE SCREEN ===== */
+  #course-screen { align-items: stretch; justify-content: flex-start; }
+  .course-layout {
+    width: 100%; height: 100vh;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: 1fr;
+    direction: rtl;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--sidebar-bg);
+    border-left: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    display: flex; flex-direction: column;
+    padding: 20px 0;
+    overflow-y: auto;
+    position: relative; z-index: 5;
+  }
+  .sidebar-header {
+    padding: 15px 20px 25px;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 15px;
+  }
+  .sidebar-lang-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.85rem;
+    color: var(--pink);
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+  .lang-switcher {
+    display: flex; gap: 8px;
+  }
+  .lang-btn {
+    flex: 1; padding: 8px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px; cursor: pointer;
+    color: var(--text); font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem; transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--pink); color: #fff; border-color: var(--pink); }
+  .lang-btn:hover:not(.active) { border-color: var(--pink); }
+
+  /* Code input at top */
+  .code-input-wrap {
+    display: flex; gap: 8px; padding: 0 20px; margin-bottom: 10px;
+  }
+  .code-input {
+    flex: 1; padding: 9px 14px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: monospace; font-size: 0.85rem;
+    outline: none; transition: all 0.2s;
+    direction: ltr;
+  }
+  .code-input:focus { border-color: var(--pink); }
+  .code-submit-btn {
+    padding: 9px 14px;
+    background: var(--pink);
+    border: none; border-radius: 10px;
+    color: #fff; cursor: pointer; font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .code-submit-btn:hover { background: var(--pink-dark); }
+
+  .sidebar-sections { padding: 0 12px; flex: 1; }
+  .section-item {
+    padding: 14px 16px;
+    border-radius: 14px;
+    cursor: pointer; margin-bottom: 6px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid transparent;
+    position: relative;
+  }
+  .section-item:hover { background: var(--glass); border-color: var(--glass-border); }
+  .section-item.active { background: linear-gradient(135deg, rgba(255,45,120,0.2), rgba(196,0,90,0.1)); border-color: var(--pink); }
+  .section-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .section-item.completed { border-color: rgba(0,255,120,0.3); background: rgba(0,255,120,0.05); }
+  .section-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .section-info { flex: 1; }
+  .section-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+  .section-pts { font-size: 0.75rem; color: var(--pink); margin-top: 2px; }
+  .section-lock { font-size: 0.9rem; }
+
+  /* Main content */
+  .main-content {
+    position: relative; overflow-y: auto;
+    display: flex; flex-direction: column;
+    padding: 30px;
+    direction: rtl;
+  }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 25px;
+  }
+  .user-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 50px; padding: 8px 18px;
+    backdrop-filter: blur(10px);
+  }
+  .user-badge span { font-weight: 700; color: var(--pink); }
+  .points-badge {
+    background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+    border-radius: 50px; padding: 8px 18px;
+    font-weight: 700; font-size: 0.9rem; color: #fff;
+  }
+
+  /* Content area */
+  #content-area {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 30px;
+    backdrop-filter: blur(15px);
+    min-height: 400px;
+  }
+  .content-placeholder {
+    height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 15px; opacity: 0.4;
+  }
+  .content-placeholder .big-icon { font-size: 4rem; }
+  .content-placeholder p { font-size: 1.1rem; }
+
+  /* Video section */
+  .video-wrap {
+    width: 100%;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .video-wrap video {
+    width: 100%; height: 100%; object-fit: contain;
+  }
+  .video-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.5);
+    color: #fff; font-size: 1rem;
+    border-radius: 16px;
+  }
+  .video-blocked-msg {
+    background: rgba(255,45,120,0.15);
+    border: 1px solid var(--pink);
+    border-radius: 10px;
+    padding: 12px 20px;
+    color: var(--pink);
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .continue-btn {
+    padding: 14px 50px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+    border: none; border-radius: 50px;
+    color: #fff; font-family: 'Cairo',sans-serif;
+    font-size: 1.1rem; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; display: block; margin: 20px auto 0;
+    animation: pulsePink 2s ease infinite;
+  }
+  @keyframes pulsePink {
+    0%,100% { box-shadow: 0 0 20px rgba(255,45,120,0.4); }
+    50% { box-shadow: 0 0 40px rgba(255,45,120,0.8); }
+  }
+  .continue-btn:hover { transform: scale(1.05); }
+
+  /* Info section */
+  .info-section h3 {
+    font-family: 'Cinzel Decorative', cursive;
+    color: var(--pink); font-size: 1.2rem; margin-bottom: 15px;
+  }
+  .info-section p, .info-section li {
+    line-height: 1.9; font-size: 1rem; margin-bottom: 8px;
+  }
+  .info-section ul { padding-right: 20px; }
+
+  /* Quiz section */
+  .quiz-section { margin-top: 25px; }
+  .quiz-section h3 {
+    font-family: 'Cinzel Decorative', cursive;
+    color: var(--pink); font-size: 1.1rem; margin-bottom: 20px;
+  }
+  .question-block { margin-bottom: 25px; }
+  .question-block p { font-weight: 600; margin-bottom: 12px; }
+  .option-btn {
+    display: block; width: 100%;
+    padding: 12px 20px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 12px; color: var(--text);
+    font-family: 'Cairo',sans-serif; font-size: 0.95rem;
+    cursor: pointer; text-align: right;
+    margin-bottom: 8px; transition: all 0.2s;
+  }
+  .option-btn:hover { border-color: var(--pink); background: rgba(255,45,120,0.1); }
+  .option-btn.correct { background: rgba(0,255,120,0.15); border-color: #00e676; color: #00e676; }
+  .option-btn.wrong { background: rgba(255,50,50,0.15); border-color: #ff3333; color: #ff5555; }
+  .quiz-submit {
+    padding: 12px 40px;
+    background: var(--pink); border: none; border-radius: 50px;
+    color: #fff; font-family: 'Cairo',sans-serif;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; margin-top: 10px;
+  }
+  .quiz-submit:hover { background: var(--pink-dark); }
+
+  /* Code reveal */
+  .code-reveal {
+    background: rgba(0,0,0,0.6); border: 1px solid var(--pink);
+    border-radius: 14px; padding: 25px; text-align: center;
+    margin-top: 20px; animation: slideUp 0.5s ease forwards;
+  }
+  .code-reveal p { margin-bottom: 12px; opacity: 0.8; }
+  .unlock-code {
+    font-family: monospace; font-size: 1.5rem;
+    font-weight: 900; color: var(--pink);
+    letter-spacing: 0.2em; background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px; padding: 12px 30px;
+    display: inline-block;
+  }
+
+  /* Test iframe */
+  .test-frame-wrap {
+    width: 100%; height: 500px; border-radius: 16px;
+    overflow: hidden; border: 1px solid var(--glass-border);
+  }
+  .test-frame-wrap iframe { width: 100%; height: 100%; border: none; background: #fff; }
+
+  /* Certificate */
+  .cert-section { text-align: center; padding: 20px; }
+  .cert-section h2 {
+    font-family: 'Cinzel Decorative', cursive;
+    color: var(--pink); font-size: 1.5rem; margin-bottom: 20px;
+  }
+  #cert-canvas { border-radius: 16px; box-shadow: 0 0 60px rgba(255,45,120,0.4); max-width: 100%; }
+  .download-cert-btn {
+    margin-top: 20px; padding: 14px 50px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+    border: none; border-radius: 50px;
+    color: #fff; font-family: 'Cairo',sans-serif;
+    font-size: 1.1rem; font-weight: 700; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .download-cert-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,45,120,0.5); }
+
+  /* ===== CERT EXAM PROMPT ===== */
+  .cert-exam-prompt {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; padding: 40px; text-align: center;
+    min-height: 350px;
+  }
+  .cert-exam-prompt .prompt-icon { font-size: 4rem; }
+  .cert-exam-prompt h3 {
+    font-family: 'Cinzel Decorative', cursive;
+    color: var(--pink); font-size: 1.3rem;
+  }
+  .cert-exam-prompt p { opacity: 0.7; font-size: 1rem; line-height: 1.8; max-width: 380px; }
+  .go-exam-btn {
+    padding: 13px 45px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+    border: none; border-radius: 50px;
+    color: #fff; font-family: 'Cairo',sans-serif;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .go-exam-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255,45,120,0.5); }
+
+  /* ===== CERT TIMER BAR ===== */
+  #cert-timer-bar {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 8000;
+    height: 5px;
+    background: rgba(255,45,120,0.2);
+  }
+  #cert-timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff2d78, #ff6fa8);
+    width: 100%;
+    transition: width 1s linear;
+  }
+  #cert-timer-badge {
+    display: none;
+    position: fixed; top: 10px; right: 50%; transform: translateX(50%);
+    z-index: 8001;
+    background: rgba(255,45,120,0.15);
+    border: 1px solid var(--pink);
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 0.85rem;
+    color: var(--pink);
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Notification */
+  .notif {
+    position: fixed; bottom: 30px; right: 30px;
+    z-index: 9999; background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px; padding: 15px 25px;
+    font-size: 0.95rem; backdrop-filter: blur(15px);
+    animation: notifIn 0.4s ease forwards;
+    max-width: 300px;
+  }
+  @keyframes notifIn {
+    from { transform: translateY(30px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+  .notif.success { border-color: #00e676; color: #00e676; }
+  .notif.error { border-color: var(--pink); color: var(--pink); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 3px; }
+
+  /* Section title */
+  .section-title-bar {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 1.1rem; color: var(--pink);
+    margin-bottom: 20px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  @media (max-width: 768px) {
+    .course-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .sidebar { max-height: 300px; border-left: none; border-bottom: 1px solid var(--glass-border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE -->
+<button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+<!-- BG CANVAS -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- SHATTER OVERLAY -->
+<div id="shatter-overlay"></div>
+
+<!-- CERT TIMER BAR -->
+<div id="cert-timer-bar"><div id="cert-timer-fill"></div></div>
+<div id="cert-timer-badge">⏱ <span id="cert-timer-text">30:00</span></div>
+
+<!-- CERT BLOCKED SCREEN (مدى الحياة) -->
+<div id="cert-blocked-screen">
+  <div class="blocked-icon">🔒</div>
+  <h2>قسم الشهادات محظور</h2>
+  <p>لقد انتهى وقت الجلسة المسموح به.<br>تم إغلاق هذا القسم على هذا الجهاز بشكل دائم.</p>
+</div>
+
+<!-- PERMISSION MODAL -->
+<div id="permission-modal" class="hidden">
+  <div class="permission-box">
+    <div class="modal-icon">🔒</div>
+    <p>هذا الكورس لا يمكنك رؤية تقدمك فيه<br>إلا بإذن من المدير</p>
+  </div>
+</div>
+
+<!-- INTRO SCREEN -->
+<div id="intro-screen" class="screen">
+  <div id="particles-burst"></div>
+  <div id="intro-ring"></div>
+  <div class="scanline"></div>
+  <div id="welcome-text">WELCOME</div>
+</div>
+
+<!-- NAME INPUT SCREEN -->
+<div id="name-screen" class="screen hidden">
+  <div class="name-card">
+    <h2>AH Platform</h2>
+    <p>أهلاً بك! أدخل اسمك للمتابعة</p>
+    <div class="name-input-wrap">
+      <input class="name-input" id="name-input" type="text" placeholder="اسمك الكريم..." maxlength="40">
+    </div>
+    <button class="name-btn" onclick="submitName()">ابدأ الرحلة ✨</button>
+  </div>
+</div>
+
+<!-- LANGUAGE SELECT SCREEN -->
+<div id="lang-select-screen" class="screen hidden">
+  <div class="lang-select-title" id="select-title">اختر لغة البرمجة التي تريد تعلمها</div>
+  <div class="lang-icons-grid">
+    <div class="lang-icon-card" onclick="selectLang('HTML')">
+      <svg viewBox="0 0 128 128"><path fill="#E44D26" d="M19.037 113.876L9.032 1.661h109.936l-10.016 112.198-45.019 12.48z"/><path fill="#F16529" d="M64 116.8l36.378-10.086 8.559-95.878H64z"/><path fill="#EBEBEB" d="M64 52.455H45.788L44.53 38.361H64V24.599H29.489l.33 3.692 3.382 37.927H64zm0 35.743l-.061.017-15.327-4.14-.979-10.975H33.816l1.928 21.609 28.193 7.826.063-.017z"/><path fill="#fff" d="M63.952 52.455v13.763h16.947l-1.597 17.849-15.35 4.143v14.319l28.215-7.82.207-2.325 3.234-36.233.335-3.696h-3.708zm0-27.856v13.762h33.244l.276-3.092.628-6.978.329-3.692z"/></svg>
+      <span>HTML</span>
+    </div>
+    <div class="lang-icon-card" onclick="selectLang('CSS')">
+      <svg viewBox="0 0 128 128"><path fill="#1572B6" d="M18.814 114.123L8.76 1.352h110.48l-10.064 112.754-45.243 12.543-45.119-12.526z"/><path fill="#33A9DC" d="M64.001 117.062l36.559-10.136 8.601-96.354h-45.16z"/><path fill="#fff" d="M64.001 51.429h18.302l1.264-14.163H64.001V23.435h34.682l-.332 3.711-3.4 38.114H64.001zM64.083 87.349l-.061.018-15.403-4.152-.985-11.031H33.752l1.937 21.717 28.331 7.863.063-.018z"/><path fill="#EBEBEB" d="M63.952 51.429v13.831H47.791l-1.258-14.107-14.206.107 1.96 21.996h29.665v13.655l-15.395-4.157-.985-11.021H33.635l1.937 21.717 28.33 7.86v-13.836l.061.018 15.334-4.268 1.257-14.062H63.952zm0-27.994v13.831h33.379l.278-3.107.633-7.038.33-3.686z"/></svg>
+      <span>CSS</span>
+    </div>
+    <div class="lang-icon-card" onclick="selectLang('JavaScript')">
+      <svg viewBox="0 0 128 128"><path fill="#F0DB4F" d="M1.408 1.408h125.184v125.185H1.408z"/><path fill="#323330" d="M116.347 96.736c-.917-5.711-4.641-10.508-15.672-14.981-3.832-1.761-8.104-3.022-9.377-5.926-.452-1.69-.512-2.642-.226-3.665.821-3.32 4.784-4.355 7.925-3.403 2.023.678 3.938 2.237 5.093 4.724 5.402-3.498 5.391-3.475 9.163-5.879-1.381-2.141-2.118-3.129-3.022-4.045-3.249-3.629-7.676-5.498-14.756-5.355l-3.688.477c-3.534.893-6.902 2.748-8.877 5.235-5.926 6.724-4.236 18.492 2.975 23.335 7.104 5.332 17.54 6.545 18.873 11.531 1.297 6.104-4.486 8.08-10.234 7.378-4.236-.881-6.592-3.034-9.139-6.949-4.688 2.713-4.688 2.713-9.508 5.485 1.143 2.499 2.344 3.63 4.26 5.795 9.068 9.198 31.76 8.746 35.83-5.176.165-.478 1.261-3.666.38-8.568zM69.462 58.943H57.753l-.048 30.272c0 6.438.333 12.34-.714 14.149-1.713 3.558-6.152 3.117-8.175 2.427-2.059-1.012-3.106-2.451-4.319-4.485-.333-.584-.583-1.036-.667-1.071l-9.52 5.83c1.583 3.249 3.915 6.069 6.902 7.901 4.462 2.678 10.459 3.499 16.731 2.059 4.082-1.189 7.604-3.652 9.448-7.401 2.666-4.915 2.094-10.864 2.07-17.444.06-10.735.001-21.468.001-32.237z"/></svg>
+      <span>JavaScript</span>
+    </div>
+    <div class="lang-icon-card" onclick="selectLang('Python')">
+      <svg viewBox="0 0 128 128"><linearGradient id="py1" x1="70.252" y1="1237.476" x2="170.659" y2="1151.089" gradientTransform="matrix(.563 0 0 .568 -29.215 -701.425)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#5A9FD4"/><stop offset="1" stop-color="#306998"/></linearGradient><linearGradient id="py2" x1="209.474" y1="1098.811" x2="173.62" y2="1149.537" gradientTransform="matrix(.563 0 0 .568 -29.215 -701.425)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#FFE873"/></linearGradient><path fill="url(#py1)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411h24.693v3.137H29.977c-7.176 0-13.46 4.313-15.426 12.521-2.268 9.405-2.368 15.275 0 25.096 1.755 7.311 5.947 12.519 13.124 12.519h8.491V67.234c0-8.151 7.051-15.34 15.426-15.34h24.665c6.866 0 12.346-5.654 12.346-12.548V15.833c0-6.693-5.646-11.72-12.346-12.837-4.244-.706-8.645-1.027-12.866-1.008zm-13.354 7.569c2.55 0 4.634 2.117 4.634 4.721 0 2.593-2.083 4.69-4.634 4.69-2.56 0-4.633-2.097-4.633-4.69-.001-2.604 2.073-4.721 4.633-4.721z"/><path fill="url(#py2)" d="M91.682 28.38v10.966c0 8.5-7.208 15.655-15.426 15.655H51.591c-6.756 0-12.346 5.783-12.346 12.549v23.515c0 6.691 5.818 10.628 12.346 12.547 7.816 2.297 15.312 2.713 24.665 0 6.216-1.801 12.346-5.423 12.346-12.547v-9.412H63.938v-3.138h37.012c7.176 0 9.852-5.005 12.348-12.519 2.578-7.735 2.467-15.174 0-25.096-1.774-7.145-5.161-12.521-12.348-12.521h-9.268zM77.809 87.927c2.561 0 4.634 2.097 4.634 4.692 0 2.602-2.074 4.719-4.634 4.719-2.55 0-4.633-2.117-4.633-4.719 0-2.595 2.083-4.692 4.633-4.692z"/></svg>
+      <span>Python</span>
+    </div>
+  </div>
+</div>
+
+<!-- COURSE SCREEN -->
+<div id="course-screen" class="screen hidden">
+  <div class="course-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-lang-title" id="course-lang-title">HTML</div>
+        <div class="lang-switcher">
+          <button class="lang-btn active" id="ar-btn" onclick="switchUILang('ar')">العربية</button>
+          <button class="lang-btn" id="en-btn" onclick="switchUILang('en')">English</button>
+        </div>
+      </div>
+      <div class="code-input-wrap" title="أدخل كود لفتح مرحلة">
+        <input class="code-input" id="unlock-code-input" placeholder="كود الفتح..." dir="ltr">
+        <button class="code-submit-btn" onclick="submitUnlockCode()">✓</button>
+      </div>
+      <div class="sidebar-sections" id="sidebar-sections"></div>
+    </div>
+    <!-- MAIN -->
+    <div class="main-content">
+      <div class="top-bar">
+        <div class="user-badge">
+          <span>👤</span>
+          <span id="display-name">المستخدم</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="points-badge">⭐ <span id="points-display">0</span> نقطة</div>
+          <button id="theme-toggle-2" onclick="toggleTheme()" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:50px;padding:8px 16px;cursor:pointer;font-size:1rem;color:var(--text);transition:all 0.3s;">🌙</button>
+        </div>
+      </div>
+      <div id="content-area">
+        <div class="content-placeholder">
+          <div class="big-icon">📚</div>
+          <p id="select-section-text">اختر قسماً من القائمة للبدء</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== GLOBALS =====
+let userName = '';
+let selectedLang = '';
+let uiLang = 'ar';
+let currentSection = null;
+let points = 0;
+let isLightMode = false;
+let completedSections = {};
+let videoWatched = {};
+let quizPassed = {};
+let earnedCodes = {};
+let userCodes = {};
+
+// ===== CERTIFICATE TIMER GLOBALS =====
+const CERT_SESSION_DURATION = 30 * 60; // 30 دقيقة بالثواني
+let certTimerInterval = null;
+let certSecondsLeft = CERT_SESSION_DURATION;
+let certSessionActive = false;
+
+// مفتاح الحظر الدائم في localStorage
+const CERT_BLOCKED_KEY = 'ah_cert_permanently_blocked';
+
+// ===== التحقق من الحظر الدائم عند بدء التشغيل =====
+function checkPermBlocked() {
+  if (localStorage.getItem(CERT_BLOCKED_KEY) === '1') {
+    // أظهر شاشة الحظر فوراً وأخفي كل شيء آخر
+    document.getElementById('cert-blocked-screen').style.display = 'flex';
+    document.getElementById('intro-screen').classList.add('hidden');
+    document.getElementById('name-screen').classList.add('hidden');
+    document.getElementById('lang-select-screen').classList.add('hidden');
+    document.getElementById('course-screen').classList.add('hidden');
+    return true;
+  }
+  return false;
+}
+
+// ===== بدء عداد الشهادة (30 دقيقة) =====
+function startCertTimer() {
+  if (certSessionActive) return; // لا تعيد البدء لو شغّال
+  certSessionActive = true;
+  certSecondsLeft = CERT_SESSION_DURATION;
+
+  // أظهر شريط العداد والبادج
+  document.getElementById('cert-timer-bar').style.display = 'block';
+  document.getElementById('cert-timer-badge').style.display = 'block';
+  updateCertTimerUI();
+
+  certTimerInterval = setInterval(() => {
+    certSecondsLeft--;
+    updateCertTimerUI();
+    if (certSecondsLeft <= 0) {
+      permanentlyBlockCert();
+    }
+  }, 1000);
+}
+
+function updateCertTimerUI() {
+  const mins = Math.floor(certSecondsLeft / 60);
+  const secs = certSecondsLeft % 60;
+  const text = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+  const el = document.getElementById('cert-timer-text');
+  if (el) el.textContent = text;
+
+  // تحديث شريط التقدم (يتقلص من 100% → 0%)
+  const pct = (certSecondsLeft / CERT_SESSION_DURATION) * 100;
+  const fill = document.getElementById('cert-timer-fill');
+  if (fill) fill.style.width = pct + '%';
+
+  // لون يتحول للأحمر في آخر 5 دقائق
+  if (certSecondsLeft <= 300) {
+    if (fill) fill.style.background = 'linear-gradient(90deg, #ff0000, #ff6666)';
+    const badge = document.getElementById('cert-timer-badge');
+    if (badge) badge.style.borderColor = '#ff0000';
+  }
+}
+
+function stopCertTimer() {
+  if (certTimerInterval) {
+    clearInterval(certTimerInterval);
+    certTimerInterval = null;
+  }
+  certSessionActive = false;
+  document.getElementById('cert-timer-bar').style.display = 'none';
+  document.getElementById('cert-timer-badge').style.display = 'none';
+}
+
+function permanentlyBlockCert() {
+  // أوقف العداد
+  if (certTimerInterval) clearInterval(certTimerInterval);
+  certTimerInterval = null;
+  certSessionActive = false;
+
+  // سجّل الحظر الدائم في localStorage
+  localStorage.setItem(CERT_BLOCKED_KEY, '1');
+
+  // أخفي كل شيء وأظهر شاشة الحظر
+  document.getElementById('cert-timer-bar').style.display = 'none';
+  document.getElementById('cert-timer-badge').style.display = 'none';
+  document.getElementById('course-screen').classList.add('hidden');
+  document.getElementById('cert-blocked-screen').style.display = 'flex';
+}
+
+// ===== توليد أكواد مخصصة للمستخدم =====
+function hashName(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h) ^ str.charCodeAt(i);
+    h = h & 0xffffffff;
+  }
+  return Math.abs(h);
+}
+
+function numToCode(n, len) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let result = '';
+  for (let i = 0; i < len; i++) {
+    result += chars[n % chars.length];
+    n = Math.floor(n / chars.length);
+  }
+  return result;
+}
+
+function generateUserCodes(name) {
+  const nameLower = name.trim().toLowerCase();
+  const langs = ['HTML','CSS','JavaScript','Python'];
+  const prefixes = { HTML:'HTM', CSS:'CSS', JavaScript:'JSC', Python:'PYT' };
+  const pts = [50, 100, 200, 500, 0];
+  const labels_ar = ['المرحلة الأولى','المرحلة الثانية','المرحلة الثالثة','المرحلة الرابعة','الاختبار'];
+
+  const codes = {};
+  langs.forEach(lang => {
+    codes[lang] = {};
+    for (let lvl = 0; lvl < 5; lvl++) {
+      let code;
+      if (lvl < 4) {
+        const seed = hashName(nameLower + lang + lvl);
+        const part1 = numToCode(seed, 4);
+        const part2 = numToCode(hashName(part1 + nameLower + lvl), 4);
+        code = `${prefixes[lang]}-L${lvl+1}-${part1}-${part2}`;
+      } else {
+        const s1 = hashName(nameLower + 'EXAM' + lang + '@@');
+        const s2 = hashName(nameLower + lang + 'FINAL$$' + s1);
+        const s3 = hashName(s1.toString() + s2.toString() + nameLower);
+        const p1 = numToCode(s1, 4);
+        const p2 = numToCode(s2, 4);
+        const p3 = numToCode(s3, 3);
+        code = `EX-${p1}-${p2}-${p3}`;
+      }
+      codes[lang][lvl] = {
+        code: code,
+        pts: pts[lvl],
+        label: labels_ar[lvl]
+      };
+    }
+  });
+  return codes;
+}
+
+const POINTS_PER_STAGE = [50, 100, 200, 500, 0];
+
+const QUIZ_DATA = {
+  HTML: [
+    [
+      { q:{ar:'ما معنى اختصار HTML؟',en:'What does HTML stand for?'}, opts:{ar:['HyperText Markup Language','High Text Machine Language','Hyper Transfer Markup Language','Home Tool Makeup Language'],en:['HyperText Markup Language','High Text Machine Language','Hyper Transfer Markup Language','Home Tool Makeup Language']}, correct:0 },
+      { q:{ar:'ما الوسم الصحيح للعنوان الرئيسي في HTML؟',en:'Which is the correct tag for the main heading?'}, opts:{ar:['<h6>','<heading>','<h1>','<head>'],en:['<h6>','<heading>','<h1>','<head>']}, correct:2 },
+      { q:{ar:'ما الوسم المستخدم لإنشاء رابط تشعبي؟',en:'Which tag creates a hyperlink?'}, opts:{ar:['<link>','<a>','<href>','<nav>'],en:['<link>','<a>','<href>','<nav>']}, correct:1 },
+      { q:{ar:'أي سمة تحدد وجهة الرابط؟',en:'Which attribute defines the link destination?'}, opts:{ar:['src','link','href','url'],en:['src','link','href','url']}, correct:2 },
+      { q:{ar:'ما الوسم المستخدم لإدراج صورة؟',en:'Which tag inserts an image?'}, opts:{ar:['<image>','<picture>','<img>','<src>'],en:['<image>','<picture>','<img>','<src>']}, correct:2 }
+    ],
+    [
+      { q:{ar:'ما الوسم المستخدم لإنشاء جدول؟',en:'Which tag creates a table?'}, opts:{ar:['<tb>','<tbl>','<table>','<tab>'],en:['<tb>','<tbl>','<table>','<tab>']}, correct:2 },
+      { q:{ar:'ما الوسم المستخدم لخلية الجدول؟',en:'Which tag defines a table cell?'}, opts:{ar:['<cell>','<tc>','<td>','<tr>'],en:['<cell>','<tc>','<td>','<tr>']}, correct:2 },
+      { q:{ar:'ما الوسم المستخدم لإنشاء نموذج إدخال؟',en:'Which tag creates an input form?'}, opts:{ar:['<input>','<form>','<field>','<enter>'],en:['<input>','<form>','<field>','<enter>']}, correct:1 },
+      { q:{ar:'ما نوع الإدخال الذي يُنشئ مربع اختيار؟',en:'Which input type creates a checkbox?'}, opts:{ar:['type=check','type=box','type=checkbox','type=tick'],en:['type=check','type=box','type=checkbox','type=tick']}, correct:2 },
+      { q:{ar:'ما الوسم المستخدم لزر الإرسال؟',en:'Which tag creates a submit button?'}, opts:{ar:['<btn>','<button>','<submit>','كلاهما b وc'],en:['<btn>','<button>','<submit>','Both b and c']}, correct:1 }
+    ],
+    [
+      { q:{ar:'ما الوسم الصحيح لإدراج ملف CSS خارجي؟',en:'Correct tag to include external CSS?'}, opts:{ar:['&lt;style src&gt;','&lt;css&gt;','&lt;link rel=stylesheet&gt;','&lt;include&gt;'],en:['&lt;style src&gt;','&lt;css&gt;','&lt;link rel=stylesheet&gt;','&lt;include&gt;']}, correct:2 },
+      { q:{ar:'ما الوسم المستخدم لإدراج JavaScript خارجي؟',en:'Which tag includes external JavaScript?'}, opts:{ar:['&lt;js&gt;','&lt;script src&gt;','&lt;javascript&gt;','&lt;code&gt;'],en:['&lt;js&gt;','&lt;script src&gt;','&lt;javascript&gt;','&lt;code&gt;']}, correct:1 },
+      { q:{ar:'ما الوسم المستخدم لتشغيل فيديو؟',en:'Which tag embeds a video?'}, opts:{ar:['&lt;media&gt;','&lt;film&gt;','&lt;video&gt;','&lt;embed&gt;'],en:['&lt;media&gt;','&lt;film&gt;','&lt;video&gt;','&lt;embed&gt;']}, correct:2 },
+      { q:{ar:'ما السمة التي تجعل الفيديو يعمل تلقائياً؟',en:'Which attribute makes video autoplay?'}, opts:{ar:['play','start','auto','autoplay'],en:['play','start','auto','autoplay']}, correct:3 },
+      { q:{ar:'ما الوسم المستخدم لإضافة تعليق في HTML؟',en:'How do you add a comment in HTML?'}, opts:{ar:['// تعليق','/* تعليق */','&lt;!-- تعليق --&gt;','# تعليق'],en:['// comment','/* comment */','&lt;!-- comment --&gt;','# comment']}, correct:2 }
+    ],
+    [
+      { q:{ar:'ما وسم HTML5 المستخدم للتنقل؟',en:'Which HTML5 tag is used for navigation?'}, opts:{ar:['&lt;navigation&gt;','&lt;nav&gt;','&lt;menu&gt;','&lt;navi&gt;'],en:['&lt;navigation&gt;','&lt;nav&gt;','&lt;menu&gt;','&lt;navi&gt;']}, correct:1 },
+      { q:{ar:'ما وسم HTML5 للمحتوى المستقل؟',en:'Which HTML5 tag defines independent content?'}, opts:{ar:['&lt;section&gt;','&lt;div&gt;','&lt;article&gt;','&lt;content&gt;'],en:['&lt;section&gt;','&lt;div&gt;','&lt;article&gt;','&lt;content&gt;']}, correct:2 },
+      { q:{ar:'ما السمة المستخدمة لجعل حقل إدخال إلزامياً؟',en:'Which attribute makes an input field required?'}, opts:{ar:['mandatory','required','important','must'],en:['mandatory','required','important','must']}, correct:1 },
+      { q:{ar:'ما نوع الإدخال المستخدم لاختيار لون؟',en:'Which input type opens a color picker?'}, opts:{ar:['type=colour','type=picker','type=color','type=rgb'],en:['type=colour','type=picker','type=color','type=rgb']}, correct:2 },
+      { q:{ar:'ما وسم HTML5 للتذييل؟',en:'Which HTML5 tag defines a footer?'}, opts:{ar:['&lt;bottom&gt;','&lt;footer&gt;','&lt;foot&gt;','&lt;end&gt;'],en:['&lt;bottom&gt;','&lt;footer&gt;','&lt;foot&gt;','&lt;end&gt;']}, correct:1 }
+    ]
+  ],
+  CSS: [
+    [
+      { q:{ar:'ما الخاصية المستخدمة لتغيير لون النص؟',en:'Which property changes text color?'}, opts:{ar:['text-color','font-color','color','foreground'],en:['text-color','font-color','color','foreground']}, correct:2 },
+      { q:{ar:'كيف تكتب تعليقاً في CSS؟',en:'How do you write a comment in CSS?'}, opts:{ar:['// تعليق','<!-- تعليق -->','/* تعليق */','# تعليق'],en:['// comment','<!-- comment -->','/* comment */','# comment']}, correct:2 },
+      { q:{ar:'ما الخاصية التي تغير حجم الخط؟',en:'Which property changes font size?'}, opts:{ar:['text-size','font-size','size','font'],en:['text-size','font-size','size','font']}, correct:1 },
+      { q:{ar:'كيف تختار عنصر بمعرفه id في CSS؟',en:'How do you select an element by id in CSS?'}, opts:{ar:['.myid','*myid','#myid','myid'],en:['.myid','*myid','#myid','myid']}, correct:2 },
+      { q:{ar:'كيف تختار عنصر بـ class في CSS؟',en:'How do you select an element by class?'}, opts:{ar:['#myclass','.myclass','*myclass','myclass'],en:['#myclass','.myclass','*myclass','myclass']}, correct:1 }
+    ],
+    [
+      { q:{ar:'ما خاصية CSS المستخدمة لإضافة مسافة داخلية؟',en:'Which CSS property adds internal spacing?'}, opts:{ar:['margin','spacing','padding','border'],en:['margin','spacing','padding','border']}, correct:2 },
+      { q:{ar:'ما خاصية CSS المستخدمة لإضافة مسافة خارجية؟',en:'Which CSS property adds external spacing?'}, opts:{ar:['padding','margin','spacing','gap'],en:['padding','margin','spacing','gap']}, correct:1 },
+      { q:{ar:'ما قيمة display المستخدمة لعرض العناصر أفقياً بمرونة؟',en:'Which display value creates a flexible horizontal layout?'}, opts:{ar:['block','inline','flex','grid'],en:['block','inline','flex','grid']}, correct:2 },
+      { q:{ar:'ما خاصية CSS لتحديد عرض العنصر؟',en:'Which property sets element width?'}, opts:{ar:['size','length','width','height'],en:['size','length','width','height']}, correct:2 },
+      { q:{ar:'ما الخاصية التي تخفي عنصراً مع الاحتفاظ بمكانه؟',en:'Which property hides an element but keeps its space?'}, opts:{ar:['display:none','opacity:0','visibility:hidden','hidden:true'],en:['display:none','opacity:0','visibility:hidden','hidden:true']}, correct:2 }
+    ],
+    [
+      { q:{ar:'ما خاصية CSS لتحديد نوع الخط؟',en:'Which property sets the font family?'}, opts:{ar:['font-style','font-name','font-family','text-font'],en:['font-style','font-name','font-family','text-font']}, correct:2 },
+      { q:{ar:'ما الخاصية المستخدمة لتدوير عنصر في CSS؟',en:'Which property rotates an element?'}, opts:{ar:['rotate','turn','transform','animation'],en:['rotate','turn','transform','animation']}, correct:2 },
+      { q:{ar:'ما الخاصية لإضافة ظل للنص؟',en:'Which property adds a shadow to text?'}, opts:{ar:['text-shadow','shadow','font-shadow','box-shadow'],en:['text-shadow','shadow','font-shadow','box-shadow']}, correct:0 },
+      { q:{ar:'ما قيمة position التي تجعل العنصر ثابتاً عند التمرير؟',en:'Which position value keeps element fixed while scrolling?'}, opts:{ar:['absolute','relative','sticky','fixed'],en:['absolute','relative','sticky','fixed']}, correct:3 },
+      { q:{ar:'كيف تعرف متغيراً في CSS؟',en:'How do you define a variable in CSS?'}, opts:{ar:['$var: value','--var: value','@var: value','var = value'],en:['$var: value','--var: value','@var: value','var = value']}, correct:1 }
+    ],
+    [
+      { q:{ar:'ما الخاصية لتحديد مدة الانيميشن؟',en:'Which property sets animation duration?'}, opts:{ar:['animation-time','transition-duration','animation-duration','animation-speed'],en:['animation-time','transition-duration','animation-duration','animation-speed']}, correct:2 },
+      { q:{ar:'ما الكلمة المفتاحية لتعريف كادرات الانيميشن؟',en:'Which keyword defines animation keyframes?'}, opts:{ar:['@animation','@frames','@keyframes','@motion'],en:['@animation','@frames','@keyframes','@motion']}, correct:2 },
+      { q:{ar:'ما خاصية CSS Grid لتحديد أعمدة الشبكة؟',en:'Which CSS Grid property defines columns?'}, opts:{ar:['grid-rows','grid-columns','grid-template-columns','columns'],en:['grid-rows','grid-columns','grid-template-columns','columns']}, correct:2 },
+      { q:{ar:'ما خاصية Flexbox لمحاذاة العناصر عمودياً؟',en:'Which Flexbox property aligns items vertically?'}, opts:{ar:['justify-content','align-content','align-items','vertical-align'],en:['justify-content','align-content','align-items','vertical-align']}, correct:2 },
+      { q:{ar:'ما الوحدة النسبية المرتبطة بعرض نافذة المتصفح؟',en:'Which unit is relative to the viewport width?'}, opts:{ar:['%','em','vw','px'],en:['%','em','vw','px']}, correct:2 }
+    ]
+  ],
+  JavaScript: [
+    [
+      { q:{ar:'ما الكلمة المفتاحية لتعريف متغير ثابت في JS؟',en:'Which keyword declares a constant in JS?'}, opts:{ar:['var','let','const','fix'],en:['var','let','const','fix']}, correct:2 },
+      { q:{ar:'ما الناتج من: console.log(typeof "مرحبا")؟',en:'What does console.log(typeof "hello") output?'}, opts:{ar:['text','char','string','word'],en:['text','char','string','word']}, correct:2 },
+      { q:{ar:'كيف تكتب شرطاً في JavaScript؟',en:'How do you write a condition in JavaScript?'}, opts:{ar:['if (condition)','if condition','when (condition)','check (condition)'],en:['if (condition)','if condition','when (condition)','check (condition)']}, correct:0 },
+      { q:{ar:'ما الفرق بين == و === في JavaScript؟',en:'What is the difference between == and === in JavaScript?'}, opts:{ar:['لا فرق','== يقارن النوع أيضاً','=== يقارن القيمة فقط','=== يقارن القيمة والنوع معاً'],en:['No difference','== also checks type','=== checks value only','=== checks both value and type']}, correct:3 },
+      { q:{ar:'ما الدالة المستخدمة لطباعة رسالة للمستخدم؟',en:'Which function shows a message to the user?'}, opts:{ar:['console.log()','print()','alert()','show()'],en:['console.log()','print()','alert()','show()']}, correct:2 }
+    ],
+    [
+      { q:{ar:'كيف تعرف دالة في JavaScript؟',en:'How do you define a function in JavaScript?'}, opts:{ar:['def myFunc()','func myFunc()','function myFunc()','create myFunc()'],en:['def myFunc()','func myFunc()','function myFunc()','create myFunc()']}, correct:2 },
+      { q:{ar:'ما ناتج: [1,2,3].length؟',en:'What is the output of: [1,2,3].length?'}, opts:{ar:['2','4','3','1'],en:['2','4','3','1']}, correct:2 },
+      { q:{ar:'أي دالة تضيف عنصراً في نهاية مصفوفة؟',en:'Which method adds an element at the end of an array?'}, opts:{ar:['add()','push()','insert()','append()'],en:['add()','push()','insert()','append()']}, correct:1 },
+      { q:{ar:'ما الدالة التي تحوّل نصاً إلى رقم صحيح؟',en:'Which function converts a string to an integer?'}, opts:{ar:['toInt()','Number()','parseInt()','convert()'],en:['toInt()','Number()','parseInt()','convert()']}, correct:2 },
+      { q:{ar:'ما ناتج: Boolean(0)؟',en:'What is the output of: Boolean(0)?'}, opts:{ar:['true','0','null','false'],en:['true','0','null','false']}, correct:3 }
+    ],
+    [
+      { q:{ar:'كيف تختار عنصر HTML بمعرفه id في JS؟',en:'How do you select an element by id in JS?'}, opts:{ar:['document.getElement("id")','document.querySelector(".id")','document.getElementById("id")','document.select("id")'],en:['document.getElement("id")','document.querySelector(".id")','document.getElementById("id")','document.select("id")']}, correct:2 },
+      { q:{ar:'ما الخاصية لتغيير محتوى عنصر HTML نصياً؟',en:'Which property changes the text content of an HTML element?'}, opts:{ar:['innerText','innerHTML','textValue','content'],en:['innerText','innerHTML','textValue','content']}, correct:0 },
+      { q:{ar:'ما الدالة التي تنفذ كوداً بعد تأخير زمني؟',en:'Which function executes code after a delay?'}, opts:{ar:['delay()','wait()','setTimeout()','setInterval()'],en:['delay()','wait()','setTimeout()','setInterval()']}, correct:2 },
+      { q:{ar:'كيف تضيف حدثاً لعنصر في JS؟',en:'How do you add an event listener in JS?'}, opts:{ar:['element.on("click", fn)','element.addEvent("click", fn)','element.addEventListener("click", fn)','element.click(fn)'],en:['element.on("click", fn)','element.addEvent("click", fn)','element.addEventListener("click", fn)','element.click(fn)']}, correct:2 },
+      { q:{ar:'ما ناتج: typeof null في JavaScript؟',en:'What is the result of: typeof null in JavaScript?'}, opts:{ar:['"null"','"undefined"','"object"','"empty"'],en:['"null"','"undefined"','"object"','"empty"']}, correct:2 }
+    ],
+    [
+      { q:{ar:'ما الكلمة المفتاحية لإنشاء Promise في JS؟',en:'Which keyword creates a Promise in JS?'}, opts:{ar:['async','await','new Promise','fetch'],en:['async','await','new Promise','fetch']}, correct:2 },
+      { q:{ar:'ما الكلمة المفتاحية للانتظار حتى اكتمال Promise؟',en:'Which keyword waits for a Promise to complete?'}, opts:{ar:['wait','hold','pause','await'],en:['wait','hold','pause','await']}, correct:3 },
+      { q:{ar:'ما دالة JS لجلب بيانات من API؟',en:'Which JS function fetches data from an API?'}, opts:{ar:['get()','request()','fetch()','load()'],en:['get()','request()','fetch()','load()']}, correct:2 },
+      { q:{ar:'ما الدالة التي تحول كائن JS إلى نص JSON؟',en:'Which function converts JS object to JSON string?'}, opts:{ar:['JSON.parse()','JSON.stringify()','JSON.convert()','JSON.encode()'],en:['JSON.parse()','JSON.stringify()','JSON.convert()','JSON.encode()']}, correct:1 },
+      { q:{ar:'ما ناتج: [...[1,2], ...[3,4]]؟',en:'What is the result of: [...[1,2], ...[3,4]]?'}, opts:{ar:['[[1,2],[3,4]]','[1,2,3,4]','error','[1,2],[3,4]'],en:['[[1,2],[3,4]]','[1,2,3,4]','error','[1,2],[3,4]']}, correct:1 }
+    ]
+  ],
+  Python: [
+    [
+      { q:{ar:'كيف تطبع نصاً في Python؟',en:'How do you print text in Python?'}, opts:{ar:['echo("مرحبا")','console.log("مرحبا")','print("مرحبا")','printf("مرحبا")'],en:['echo("hello")','console.log("hello")','print("hello")','printf("hello")']}, correct:2 },
+      { q:{ar:'كيف تعرّف متغيراً في Python؟',en:'How do you define a variable in Python?'}, opts:{ar:['var x = 5','int x = 5','x = 5','let x = 5'],en:['var x = 5','int x = 5','x = 5','let x = 5']}, correct:2 },
+      { q:{ar:'ما نوع البيانات لـ: x = [1, 2, 3]؟',en:'What is the data type of: x = [1, 2, 3]?'}, opts:{ar:['tuple','dict','set','list'],en:['tuple','dict','set','list']}, correct:3 },
+      { q:{ar:'كيف تكتب تعليقاً في Python؟',en:'How do you write a comment in Python?'}, opts:{ar:['// تعليق','/* تعليق */','# تعليق','-- تعليق'],en:['// comment','/* comment */','# comment','-- comment']}, correct:2 },
+      { q:{ar:'ما الدالة للحصول على طول قائمة؟',en:'Which function gets the length of a list?'}, opts:{ar:['size()','count()','length()','len()'],en:['size()','count()','length()','len()']}, correct:3 }
+    ],
+    [
+      { q:{ar:'كيف تعرّف دالة في Python؟',en:'How do you define a function in Python?'}, opts:{ar:['func myFunc():','function myFunc():','def myFunc():','define myFunc():'],en:['func myFunc():','function myFunc():','def myFunc():','define myFunc():']}, correct:2 },
+      { q:{ar:'ما الكلمة المفتاحية لإرجاع قيمة من دالة؟',en:'Which keyword returns a value from a function?'}, opts:{ar:['send','output','return','yield'],en:['send','output','return','yield']}, correct:2 },
+      { q:{ar:'ما ناتج: type(3.14)؟',en:'What is the output of: type(3.14)?'}, opts:{ar:['<class "int">','<class "number">','<class "float">','<class "double">'],en:['<class "int">','<class "number">','<class "float">','<class "double">']}, correct:2 },
+      { q:{ar:'كيف تضيف عنصراً لقائمة في Python؟',en:'How do you add an element to a list in Python?'}, opts:{ar:['list.add(x)','list.push(x)','list.insert(x)','list.append(x)'],en:['list.add(x)','list.push(x)','list.insert(x)','list.append(x)']}, correct:3 },
+      { q:{ar:'كيف تكتب حلقة for في Python؟',en:'How do you write a for loop in Python?'}, opts:{ar:['for (i=0; i<5; i++)','for i in range(5):','foreach i in 5:','loop i in 5:'],en:['for (i=0; i<5; i++)','for i in range(5):','foreach i in 5:','loop i in 5:']}, correct:1 }
+    ],
+    [
+      { q:{ar:'ما الفرق بين List و Tuple في Python؟',en:'What is the difference between List and Tuple in Python?'}, opts:{ar:['لا فرق','Tuple أسرع فقط','List قابلة للتعديل وTuple غير قابلة','Tuple تقبل أنواعاً أكثر'],en:['No difference','Tuple is just faster','List is mutable, Tuple is immutable','Tuple accepts more types']}, correct:2 },
+      { q:{ar:'كيف تنشئ قاموساً في Python؟',en:'How do you create a dictionary in Python?'}, opts:{ar:['d = []','d = ()','d = {}','d = <>'],en:['d = []','d = ()','d = {}','d = <>']}, correct:2 },
+      { q:{ar:'ما الكلمة المفتاحية لمعالجة الأخطاء في Python؟',en:'Which keyword handles errors in Python?'}, opts:{ar:['catch','error','try','handle'],en:['catch','error','try','handle']}, correct:2 },
+      { q:{ar:'ما الكلمة المفتاحية للتحقق من عضوية عنصر في قائمة؟',en:'Which keyword checks membership in a list?'}, opts:{ar:['has','contains','in','include'],en:['has','contains','in','include']}, correct:2 },
+      { q:{ar:'ما ناتج: "hello"[1]؟',en:'What is the output of: "hello"[1]?'}, opts:{ar:['h','e','he','ello'],en:['h','e','he','ello']}, correct:1 }
+    ],
+    [
+      { q:{ar:'كيف تعرّف كلاساً في Python؟',en:'How do you define a class in Python?'}, opts:{ar:['class MyClass{}','class MyClass():','Class MyClass:','define class MyClass:'],en:['class MyClass{}','class MyClass():','Class MyClass:','define class MyClass:']}, correct:1 },
+      { q:{ar:'ما الدالة الخاصة التي تُستدعى عند إنشاء كائن؟',en:'Which special method is called when creating an object?'}, opts:{ar:['__start__','__create__','__new__','__init__'],en:['__start__','__create__','__new__','__init__']}, correct:3 },
+      { q:{ar:'كيف تقرأ ملفاً في Python؟',en:'How do you read a file in Python?'}, opts:{ar:['File.read("f.txt")','open("f.txt").read()','read("f.txt")','load("f.txt")'],en:['File.read("f.txt")','open("f.txt").read()','read("f.txt")','load("f.txt")']}, correct:1 },
+      { q:{ar:'ما مكتبة Python للتعامل مع البيانات الجدولية؟',en:'Which Python library handles tabular data?'}, opts:{ar:['numpy','matplotlib','pandas','scipy'],en:['numpy','matplotlib','pandas','scipy']}, correct:2 },
+      { q:{ar:'ما ناتج: list(range(2, 8, 2))؟',en:'What is the output of: list(range(2, 8, 2))?'}, opts:{ar:['[2,4,6,8]','[2,4,6]','[2,3,4,5,6,7]','[0,2,4,6]'],en:['[2,4,6,8]','[2,4,6]','[2,3,4,5,6,7]','[0,2,4,6]']}, correct:1 }
+    ]
+  ]
+};
+
+const LANG_INFO = {
+  HTML: {
+    ar: `<h3>أساسيات HTML</h3><p>HTML (HyperText Markup Language) هي لغة الترميز الأساسية لبناء صفحات الويب.</p><ul><li><strong>العناصر:</strong> تتكون من وسوم مثل &lt;h1&gt; للعناوين و &lt;p&gt; للفقرات</li><li><strong>السمات:</strong> تضاف داخل الوسوم مثل class، id، href</li><li><strong>الهيكل الأساسي:</strong> كل صفحة تبدأ بـ &lt;!DOCTYPE html&gt;</li><li><strong>الروابط:</strong> تُنشأ بوسم &lt;a href="..."&gt;</li><li><strong>الصور:</strong> تُضاف بوسم &lt;img src="..."&gt;</li></ul>`,
+    en: `<h3>HTML Basics</h3><p>HTML (HyperText Markup Language) is the standard markup language for building web pages.</p><ul><li><strong>Elements:</strong> Built with tags like &lt;h1&gt; for headings and &lt;p&gt; for paragraphs</li><li><strong>Attributes:</strong> Added inside tags like class, id, href</li><li><strong>Basic Structure:</strong> Every page starts with &lt;!DOCTYPE html&gt;</li><li><strong>Links:</strong> Created with &lt;a href="..."&gt; tag</li><li><strong>Images:</strong> Added with &lt;img src="..."&gt; tag</li></ul>`
+  },
+  CSS: {
+    ar: `<h3>أساسيات CSS</h3><p>CSS (Cascading Style Sheets) تُستخدم لتنسيق وتصميم صفحات الويب.</p><ul><li><strong>المحددات:</strong> تستهدف عناصر HTML مثل .class أو #id</li><li><strong>الخصائص:</strong> color, font-size, margin, padding, background</li><li><strong>الأنماط:</strong> Block، Inline، Flex، Grid</li><li><strong>المتغيرات:</strong> تُعرَّف بـ --variable-name</li><li><strong>الانيميشن:</strong> @keyframes لإنشاء حركات</li></ul>`,
+    en: `<h3>CSS Basics</h3><p>CSS (Cascading Style Sheets) is used to style and design web pages.</p><ul><li><strong>Selectors:</strong> Target HTML elements like .class or #id</li><li><strong>Properties:</strong> color, font-size, margin, padding, background</li><li><strong>Display:</strong> Block, Inline, Flex, Grid</li><li><strong>Variables:</strong> Defined with --variable-name</li><li><strong>Animation:</strong> @keyframes to create movements</li></ul>`
+  },
+  JavaScript: {
+    ar: `<h3>أساسيات JavaScript</h3><p>JavaScript هي لغة البرمجة الأكثر استخداماً في تطوير الويب.</p><ul><li><strong>المتغيرات:</strong> var, let, const لتخزين البيانات</li><li><strong>الدوال:</strong> function أو arrow functions () =></li><li><strong>الأحداث:</strong> onclick, onload, onchange</li><li><strong>DOM:</strong> التحكم في عناصر HTML</li><li><strong>الوعود:</strong> Promise و async/await للعمليات غير المتزامنة</li></ul>`,
+    en: `<h3>JavaScript Basics</h3><p>JavaScript is the most widely used programming language in web development.</p><ul><li><strong>Variables:</strong> var, let, const to store data</li><li><strong>Functions:</strong> function keyword or arrow functions () =></li><li><strong>Events:</strong> onclick, onload, onchange</li><li><strong>DOM:</strong> Control HTML elements dynamically</li><li><strong>Promises:</strong> Promise and async/await for async operations</li></ul>`
+  },
+  Python: {
+    ar: `<h3>أساسيات Python</h3><p>Python هي لغة برمجة متعددة الاستخدامات ومناسبة للمبتدئين.</p><ul><li><strong>المتغيرات:</strong> تُعرَّف مباشرة بدون كلمة مفتاحية</li><li><strong>القوائم:</strong> list = [1, 2, 3]</li><li><strong>الدوال:</strong> def function_name():</li><li><strong>الحلقات:</strong> for و while</li><li><strong>الفئات:</strong> class ClassName:</li></ul>`,
+    en: `<h3>Python Basics</h3><p>Python is a versatile, beginner-friendly programming language.</p><ul><li><strong>Variables:</strong> Defined directly without keywords</li><li><strong>Lists:</strong> list = [1, 2, 3]</li><li><strong>Functions:</strong> def function_name():</li><li><strong>Loops:</strong> for and while</li><li><strong>Classes:</strong> class ClassName:</li></ul>`
+  }
+};
+
+const SECTIONS = {
+  ar: ['المرحلة الأولى', 'المرحلة الثانية', 'المرحلة الثالثة', 'المرحلة الرابعة', 'الاختبار', 'شهاداتي'],
+  en: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Exam', 'My Certificates']
+};
+
+// ===== BACKGROUND ANIMATION =====
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+let waves = [];
+
+function getAccentRgb() {
+  if (window._accentRgb) return window._accentRgb;
+  return isLightMode ? '212,0,106' : '255,45,120';
+}
+
+function rgbStrToHex(rgb) {
+  const [r,g,b] = rgb.split(',').map(Number);
+  return '#' + r.toString(16).padStart(2,'0')
+             + g.toString(16).padStart(2,'0')
+             + b.toString(16).padStart(2,'0');
+}
+
+class Wave {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.r = Math.random() * 120 + 40;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.alpha = Math.random() * 0.08 + 0.02;
+    this.type = Math.random() > 0.45 ? 'accent' : 'neutral';
+    this.phase = Math.random() * Math.PI * 2;
+    this.speed = Math.random() * 0.01 + 0.005;
+  }
+  draw(t) {
+    const pulse = Math.sin(t * this.speed + this.phase) * 0.5 + 0.5;
+    const acRgb = getAccentRgb();
+    let color;
+    if (this.type === 'accent') {
+      color = rgbStrToHex(acRgb);
+    } else {
+      color = isLightMode ? '#1a1a1a' : '#ffffff';
+    }
+    ctx.beginPath();
+    ctx.arc(
+      this.x + Math.sin(t * 0.001 + this.phase) * 30,
+      this.y + Math.cos(t * 0.0007 + this.phase) * 20,
+      this.r * (0.8 + pulse * 0.4), 0, Math.PI * 2
+    );
+    ctx.fillStyle = color;
+    ctx.globalAlpha = this.alpha * pulse;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < -200 || this.x > W + 200 || this.y < -200 || this.y > H + 200) this.reset();
+  }
+}
+
+function resizeCanvas() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  if (!waves.length) for (let i = 0; i < 18; i++) waves.push(new Wave());
+}
+
+let animT = 0;
+function animateBG() {
+  requestAnimationFrame(animateBG);
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = isLightMode ? '#f8f4ff' : '#0a0a0f';
+  ctx.fillRect(0, 0, W, H);
+  const _rgb = getAccentRgb();
+  const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H) * 0.75);
+  grad.addColorStop(0,   `rgba(${_rgb},0.07)`);
+  grad.addColorStop(0.5, `rgba(${_rgb},0.03)`);
+  grad.addColorStop(1,   'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+  const grad2 = ctx.createRadialGradient(0, H, 0, 0, H, Math.max(W,H) * 0.5);
+  grad2.addColorStop(0,   `rgba(${_rgb},0.05)`);
+  grad2.addColorStop(1,   'transparent');
+  ctx.fillStyle = grad2;
+  ctx.fillRect(0, 0, W, H);
+  waves.forEach(w => { w.draw(animT); w.update(); });
+  ctx.save();
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.2 * i + Math.sin(animT * 0.001 + i) * 40);
+    for (let x = 0; x <= W; x += 20) {
+      ctx.lineTo(x, H * 0.2 * i + Math.sin(animT * 0.001 + i + x * 0.005) * 40);
+    }
+    ctx.strokeStyle = `rgba(${_rgb},0.04)`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+  ctx.restore();
+  animT++;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); animateBG();
+
+// ===== INTRO ANIMATION =====
+function startIntro() {
+  setTimeout(() => {
+    createBurstParticles();
+    setTimeout(() => {
+      document.getElementById('intro-ring').style.animationPlayState = 'running';
+    }, 800);
+    setTimeout(() => {
+      fadeOutIntro();
+    }, 3200);
+  }, 400);
+}
+function createBurstParticles() {
+  const burst = document.getElementById('particles-burst');
+  burst.innerHTML = '';
+  const colors = ['#ff2d78','#ff6fa8','#ffffff','#c4005a','#ffb3d1'];
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'burst-particle';
+    const angle = (i / 60) * Math.PI * 2;
+    const dist = 100 + Math.random() * 300;
+    const tx = Math.cos(angle) * dist + 'px';
+    const ty = Math.sin(angle) * dist + 'px';
+    p.style.cssText = `
+      left:50%; top:50%; width:${4+Math.random()*8}px; height:${4+Math.random()*8}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${tx}; --ty:${ty};
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1+Math.random()*0.8}s;
+    `;
+    burst.appendChild(p);
+  }
+}
+function fadeOutIntro() {
+  const intro = document.getElementById('intro-screen');
+  intro.style.transition = 'opacity 0.8s ease';
+  intro.style.opacity = '0';
+  setTimeout(() => {
+    intro.classList.add('hidden');
+    showNameScreen();
+  }, 800);
+}
+
+// ===== NAME SCREEN =====
+function showNameScreen() {
+  document.getElementById('name-screen').classList.remove('hidden');
+  document.getElementById('theme-toggle').style.display = 'block';
+  document.getElementById('name-input').addEventListener('keydown', e => { if(e.key==='Enter') submitName(); });
+}
+function submitName() {
+  const val = document.getElementById('name-input').value.trim();
+  if (!val) { showNotif(uiLang==='ar'?'الرجاء إدخال اسمك':'Please enter your name','error'); return; }
+  userName = val;
+  userCodes = generateUserCodes(userName);
+  document.getElementById('name-screen').classList.add('hidden');
+  showLangSelectScreen();
+}
+
+// ===== LANG SELECT =====
+function showLangSelectScreen() {
+  document.getElementById('lang-select-screen').classList.remove('hidden');
+}
+function selectLang(lang) {
+  selectedLang = lang;
+  showPermissionModal(lang);
+}
+function showPermissionModal(lang) {
+  const modal = document.getElementById('permission-modal');
+  modal.classList.remove('hidden');
+  modal.style.animation = 'none';
+  setTimeout(() => { modal.style.animation = ''; }, 10);
+  setTimeout(() => {
+    triggerShatter(modal.querySelector('.permission-box'));
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      document.getElementById('lang-select-screen').classList.add('hidden');
+      showCourseScreen();
+    }, 800);
+  }, 3000);
+}
+function triggerShatter(el) {
+  const overlay = document.getElementById('shatter-overlay');
+  overlay.style.display = 'block';
+  overlay.innerHTML = '';
+  const rect = el.getBoundingClientRect();
+  const numShards = 30;
+  for (let i = 0; i < numShards; i++) {
+    const shard = document.createElement('div');
+    shard.className = 'shard';
+    const w = 20 + Math.random() * 60;
+    const h = 15 + Math.random() * 50;
+    const left = rect.left + Math.random() * rect.width;
+    const top = rect.top + Math.random() * rect.height;
+    const sx = (Math.random() - 0.5) * 400 + 'px';
+    const sy = (Math.random() - 0.5) * 400 + 'px';
+    const sr = (Math.random() - 0.5) * 720 + 'deg';
+    const clip = generatePolygonClip();
+    shard.style.cssText = `
+      width:${w}px; height:${h}px;
+      left:${left}px; top:${top}px;
+      clip-path:${clip};
+      --sx:${sx}; --sy:${sy}; --sr:${sr};
+    `;
+    overlay.appendChild(shard);
+  }
+  el.style.transition = 'opacity 0.3s'; el.style.opacity = '0';
+  setTimeout(() => {
+    overlay.style.display = 'none'; overlay.innerHTML = '';
+  }, 900);
+}
+function generatePolygonClip() {
+  const pts = [];
+  const n = 3 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < n; i++) {
+    pts.push(`${Math.random()*100}% ${Math.random()*100}%`);
+  }
+  return `polygon(${pts.join(', ')})`;
+}
+
+// ===== COURSE SCREEN =====
+function showCourseScreen() {
+  document.getElementById('course-screen').classList.remove('hidden');
+  document.getElementById('display-name').textContent = userName;
+  document.getElementById('course-lang-title').textContent = selectedLang;
+  buildSidebar();
+  updatePointsDisplay();
+}
+
+// ===== بناء الـ SIDEBAR — قسم الشهادة دائماً مفتوح =====
+function buildSidebar() {
+  const container = document.getElementById('sidebar-sections');
+  container.innerHTML = '';
+  const sectionNames = SECTIONS[uiLang];
+  const icons = ['🌱','🌿','🌳','🌲','📝','🏆'];
+  const pts = [50, 100, 200, 500, null, null];
+
+  sectionNames.forEach((name, i) => {
+    const key = selectedLang + '_' + i;
+    const isCompleted = completedSections[key];
+
+    // قسم الشهادة (index 5) دائماً مفتوح — الباقي يتبع القاعدة العادية
+    let isUnlocked;
+    if (i === 5) {
+      isUnlocked = true; // دائماً مفتوح
+    } else {
+      isUnlocked = i === 0 || completedSections[selectedLang + '_' + (i-1)];
+    }
+
+    const div = document.createElement('div');
+    div.className = 'section-item'
+      + (isCompleted ? ' completed' : '')
+      + (!isUnlocked ? ' locked' : '')
+      + (currentSection === i ? ' active' : '');
+
+    div.innerHTML = `
+      <span class="section-icon">${icons[i]}</span>
+      <div class="section-info">
+        <div class="section-name">${name}</div>
+        ${pts[i] ? `<div class="section-pts">${pts[i]} ${uiLang==='ar'?'نقطة':'pts'}</div>` : ''}
+      </div>
+      <span class="section-lock">${!isUnlocked ? '🔒' : (isCompleted ? '✅' : '')}</span>
+    `;
+
+    if (isUnlocked) {
+      div.onclick = () => loadSection(i);
+    } else {
+      div.onclick = () => showNotif(
+        uiLang==='ar' ? 'أكمل المرحلة السابقة أولاً' : 'Complete the previous stage first',
+        'error'
+      );
+    }
+    container.appendChild(div);
+  });
+}
+
+function loadSection(index) {
+  currentSection = index;
+  buildSidebar();
+  const area = document.getElementById('content-area');
+  area.innerHTML = '';
+
+  if (index === 5) {
+    // قسم الشهادة — يتوقف على اكتمال الاختبار فقط
+    loadCertificateSection();
+    return;
+  }
+  if (index === 4) {
+    // لو الشهادة كانت مفتوحة وفيها عداد، أوقفه عند الخروج
+    if (certSessionActive) stopCertTimer();
+    loadExamSection();
+    return;
+  }
+  // لو الشهادة كانت مفتوحة وفيها عداد، أوقفه عند الخروج
+  if (certSessionActive) stopCertTimer();
+  loadVideoSection(index);
+}
+
+function loadVideoSection(index) {
+  const area = document.getElementById('content-area');
+  const key = selectedLang + '_vid_' + index;
+  const t = uiLang === 'ar';
+  const title = t ? ['المرحلة الأولى','المرحلة الثانية','المرحلة الثالثة','المرحلة الرابعة'][index] : 'Stage ' + (index+1);
+  const videoPath = `${index+1} ${selectedLang}.mp4`;
+
+  area.innerHTML = `
+    <div class="section-title-bar">${title} \u2014 ${selectedLang}</div>
+    <div class="video-wrap" style="background:#111;border-radius:16px;overflow:hidden;aspect-ratio:16/9;margin-bottom:15px;">
+      <video id="course-video" controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false" style="width:100%;height:100%;display:block;">
+        <source src="${videoPath}" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-blocked-msg" id="vid-blocked-msg" style="margin-bottom:10px;">
+      &#127911; ${t?'يجب مشاهدة الفيديو كاملاً قبل المتابعة':'You must watch the full video before continuing'}
+    </div>
+    <div id="continue-area"></div>
+  `;
+
+  const video = document.getElementById('course-video');
+  let maxTime = 0;
+  video.addEventListener('timeupdate', () => {
+    if (video.currentTime > maxTime + 1.5) video.currentTime = maxTime;
+    else maxTime = Math.max(maxTime, video.currentTime);
+  });
+  video.addEventListener('ended', () => {
+    videoWatched[key] = true;
+    document.getElementById('vid-blocked-msg').style.display = 'none';
+    showContinueBtn(index);
+    showNotif(t ? '✅ انتهى الفيديو! يمكنك المتابعة' : '✅ Video done! Continue now', 'success');
+  });
+
+  if (videoWatched[key]) {
+    document.getElementById('vid-blocked-msg').style.display = 'none';
+    showContinueBtn(index);
+  }
+}
+function showContinueBtn(index) {
+  const ca = document.getElementById('continue-area');
+  if (!ca) return;
+  const label = uiLang === 'ar' ? 'متابعة ←' : 'Continue →';
+  ca.innerHTML = `<button class="continue-btn" onclick="loadInfoAndQuiz(${index})">${label}</button>`;
+}
+
+function loadInfoAndQuiz(stageIndex) {
+  const area = document.getElementById('content-area');
+  const info = LANG_INFO[selectedLang][uiLang] || LANG_INFO[selectedLang]['ar'];
+  const stageQuestions = QUIZ_DATA[selectedLang][stageIndex] || QUIZ_DATA[selectedLang][0];
+  const key = selectedLang + '_' + stageIndex;
+  const alreadyPassed = quizPassed[key];
+  const t = uiLang === 'ar';
+
+  function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  let questionsHTML = stageQuestions.map((q, qi) => {
+    const opts = q.opts[uiLang] || q.opts['ar'];
+    const qText = _esc(q.q[uiLang] || q.q['ar']);
+    const optsHTML = opts.map((opt, oi) => {
+      const safeOpt = _esc(opt);
+      const letters = ['أ','ب','ج','د'];
+      return `<button class="option-btn" id="opt-${qi}-${oi}" onclick="selectOption(${qi},${oi})" style="text-align:right;padding:12px 18px;"><span style="color:var(--pink);font-weight:700;margin-left:8px;">${letters[oi] || oi+1}.</span> ${safeOpt}</button>`;
+    }).join('');
+    return `<div class="question-block" id="qblock-${qi}" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;margin-bottom:18px;"><p style="font-weight:700;font-size:1rem;margin-bottom:14px;color:var(--pink);">السؤال ${qi+1} / ${stageQuestions.length}</p><p style="font-size:1rem;margin-bottom:14px;line-height:1.7;">${qText}</p><div style="display:flex;flex-direction:column;gap:8px;">${optsHTML}</div></div>`;
+  }).join('');
+
+  area.innerHTML = `
+    <div style="max-height:75vh; overflow-y:auto; padding-right:4px;">
+      <div class="info-section" style="
+        background:var(--glass); border:1px solid var(--glass-border);
+        border-radius:16px; padding:20px 24px; margin-bottom:24px;
+      ">${info}</div>
+      <div class="quiz-section">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+          <h3 style="font-family:'Cinzel Decorative',cursive; color:var(--pink); font-size:1.1rem;">
+            ${t?'اختبار المرحلة':'Stage Quiz'}
+          </h3>
+          <span style="background:var(--pink); color:#fff; border-radius:50px; padding:4px 14px; font-size:0.8rem; font-weight:700;">
+            ${stageQuestions.length} ${t?'أسئلة':'Questions'}
+          </span>
+        </div>
+        ${questionsHTML}
+        <div style="text-align:center; margin-top:10px;">
+          <button class="quiz-submit" id="quiz-submit-btn" onclick="submitQuiz(${stageIndex})">
+            ${t?'✅ إرسال الإجابات':'✅ Submit Answers'}
+          </button>
+        </div>
+        <div id="quiz-result" style="margin-top:20px;"></div>
+      </div>
+    </div>
+  `;
+
+  selectedAnswers = {};
+  if (alreadyPassed) showCodeReveal(stageIndex, document.getElementById('quiz-result'));
+}
+
+let selectedAnswers = {};
+function selectOption(qi, oi) {
+  const stageQuestions = QUIZ_DATA[selectedLang][currentSection] || QUIZ_DATA[selectedLang][0];
+  const numOpts = (stageQuestions[qi].opts[uiLang] || stageQuestions[qi].opts['ar']).length;
+  for (let i = 0; i < numOpts; i++) {
+    const b = document.getElementById(`opt-${qi}-${i}`);
+    if (b) { b.classList.remove('correct','wrong'); b.style.borderColor=''; b.style.background=''; }
+  }
+  const selected = document.getElementById(`opt-${qi}-${oi}`);
+  if (selected) { selected.style.borderColor='var(--pink)'; selected.style.background='rgba(255,45,120,0.15)'; }
+  selectedAnswers[qi] = oi;
+}
+
+function submitQuiz(stageIndex) {
+  const stageQuestions = QUIZ_DATA[selectedLang][stageIndex] || QUIZ_DATA[selectedLang][0];
+  const t = uiLang === 'ar';
+  for (let qi = 0; qi < stageQuestions.length; qi++) {
+    if (selectedAnswers[qi] === undefined) {
+      showNotif(t ? `⚠️ لم تجب على السؤال ${qi+1}` : `⚠️ You didn't answer question ${qi+1}`, 'error');
+      return;
+    }
+  }
+  let correctCount = 0;
+  let totalQ = stageQuestions.length;
+  for (let qi = 0; qi < totalQ; qi++) {
+    const correct = stageQuestions[qi].correct;
+    const chosen = selectedAnswers[qi];
+    const numOpts = (stageQuestions[qi].opts[uiLang] || stageQuestions[qi].opts['ar']).length;
+    for (let idx = 0; idx < numOpts; idx++) {
+      const b = document.getElementById(`opt-${qi}-${idx}`);
+      if (!b) continue;
+      b.disabled = true; b.style.cursor = 'default';
+      if (idx === correct) { b.classList.add('correct'); b.style.borderColor='#00e676'; }
+      else if (idx === chosen && chosen !== correct) { b.classList.add('wrong'); b.style.borderColor='#ff3333'; }
+    }
+    if (chosen === correct) correctCount++;
+  }
+  const result = document.getElementById('quiz-result');
+  const submitBtn = document.getElementById('quiz-submit-btn');
+  if (submitBtn) submitBtn.style.display = 'none';
+  const passScore = Math.ceil(totalQ * 0.6);
+  const passed = correctCount >= passScore;
+  if (passed) {
+    quizPassed[selectedLang + '_' + stageIndex] = true;
+    result.innerHTML = `
+      <div style="text-align:center; padding:20px; background:rgba(0,230,118,0.1); border:1px solid #00e676; border-radius:16px; margin-top:15px;">
+        <div style="font-size:2.5rem; margin-bottom:8px;">🎉</div>
+        <div style="color:#00e676; font-size:1.2rem; font-weight:700; margin-bottom:5px;">
+          ${t ? 'أحسنت! اجتزت الاختبار' : 'Well done! You passed the quiz'}
+        </div>
+        <div style="color:var(--text); opacity:0.8; font-size:0.95rem;">
+          ${t ? `إجاباتك الصحيحة: ${correctCount} من ${totalQ}` : `Correct: ${correctCount} out of ${totalQ}`}
+        </div>
+      </div>
+    `;
+    if (!completedSections[selectedLang + '_' + stageIndex]) {
+      completedSections[selectedLang + '_' + stageIndex] = true;
+      const quizCodeKey = 'QUIZ_' + selectedLang + '_' + stageIndex;
+      if (!earnedCodes[quizCodeKey]) {
+        earnedCodes[quizCodeKey] = true;
+        points += POINTS_PER_STAGE[stageIndex];
+        updatePointsDisplay();
+        sendPointsEmail(stageIndex);
+      }
+      buildSidebar();
+    }
+    setTimeout(() => showCodeReveal(stageIndex, result), 800);
+    showNotif(t ? `🎉 ${correctCount}/${totalQ} إجابة صحيحة!` : `🎉 ${correctCount}/${totalQ} correct!`, 'success');
+  } else {
+    result.innerHTML = `
+      <div style="text-align:center; padding:20px; background:rgba(255,45,120,0.1); border:1px solid var(--pink); border-radius:16px; margin-top:15px;">
+        <div style="font-size:2rem; margin-bottom:8px;">😔</div>
+        <div style="color:var(--pink); font-size:1.1rem; font-weight:700; margin-bottom:5px;">
+          ${t ? 'لم تجتز الاختبار' : 'You did not pass the quiz'}
+        </div>
+        <div style="color:var(--text); opacity:0.8; font-size:0.9rem; margin-bottom:15px;">
+          ${t ? `إجاباتك الصحيحة: ${correctCount} من ${totalQ} — تحتاج ${passScore} على الأقل` : `Correct: ${correctCount}/${totalQ} — Need at least ${passScore}`}
+        </div>
+        <button onclick="retryQuiz(${stageIndex})" style="padding:10px 30px; background:var(--pink); border:none; border-radius:50px; color:#fff; font-family:'Cairo',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer;">
+          🔄 ${t ? 'إعادة المحاولة' : 'Try Again'}
+        </button>
+      </div>
+    `;
+    showNotif(t ? `❌ ${correctCount}/${totalQ} فقط — حاول مجدداً` : `❌ Only ${correctCount}/${totalQ} — try again`, 'error');
+  }
+}
+
+function retryQuiz(stageIndex) {
+  selectedAnswers = {};
+  loadInfoAndQuiz(stageIndex);
+  setTimeout(() => {
+    const el = document.querySelector('.quiz-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }, 200);
+}
+
+function showCodeReveal(stageIndex, container) {
+  const thisEntry = (userCodes[selectedLang] || {})[stageIndex];
+  if (!thisEntry) return;
+  const t = uiLang === 'ar';
+  const labels = t
+    ? ['المرحلة الأولى','المرحلة الثانية','المرحلة الثالثة','المرحلة الرابعة','الاختبار']
+    : ['Stage 1','Stage 2','Stage 3','Stage 4','Exam'];
+  const nextLabels = t
+    ? ['المرحلة الثانية','المرحلة الثالثة','المرحلة الرابعة','الاختبار','شهاداتي']
+    : ['Stage 2','Stage 3','Stage 4','Exam','Certificates'];
+  const codeVal = thisEntry.code;
+  container.innerHTML += `
+    <div class="code-reveal" style="margin-top:20px;">
+      <p style="margin-bottom:8px; opacity:0.8;">
+        🔓 ${t ? 'كود إنجاز' : 'Achievement code for'} <strong style="color:var(--pink);">${labels[stageIndex]}</strong>
+      </p>
+      <div class="unlock-code" style="user-select:all; cursor:copy;" title="${t?'انقر لنسخ':'Click to copy'}" onclick="copyCode('${codeVal}')">${codeVal}</div>
+      <p style="margin-top:10px; font-size:0.8rem; opacity:0.6;">
+        ${t
+          ? `احتفظ بهذا الكود — عند إدخاله يختم ${labels[stageIndex]} ويفتح ${nextLabels[stageIndex]}`
+          : `Keep this code — entering it completes ${labels[stageIndex]} and unlocks ${nextLabels[stageIndex]}`
+        }
+      </p>
+    </div>
+  `;
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    showNotif(uiLang==='ar' ? '📋 تم نسخ الكود' : '📋 Code copied', 'success');
+  }).catch(() => {
+    showNotif(uiLang==='ar' ? 'انسخ الكود يدوياً' : 'Copy code manually', 'error');
+  });
+}
+
+function submitUnlockCode() {
+  const code = document.getElementById('unlock-code-input').value.trim();
+  if (!code) return;
+  const t = uiLang === 'ar';
+  let found = false;
+  const langs = ['HTML','CSS','JavaScript','Python'];
+  const STAGE_PTS = [50, 100, 200, 500, 0];
+
+  langs.forEach(lang => {
+    const langCodes = userCodes[lang] || {};
+    Object.entries(langCodes).forEach(([idxStr, entry]) => {
+      if (entry.code !== code) return;
+      found = true;
+      const idx = parseInt(idxStr);
+      if (lang !== selectedLang) {
+        showNotif(t
+          ? `⚠️ هذا الكود للغة ${lang} وليس ${selectedLang}`
+          : `⚠️ This code is for ${lang}, not ${selectedLang}`, 'error');
+        return;
+      }
+      const labels = t
+        ? ['المرحلة الأولى','المرحلة الثانية','المرحلة الثالثة','المرحلة الرابعة','الاختبار','شهاداتي']
+        : ['Stage 1','Stage 2','Stage 3','Stage 4','Exam','Certificates'];
+      for (let i = 0; i <= idx; i++) {
+        completedSections[lang + '_' + i] = true;
+      }
+      let newPoints = 0;
+      let newStages = [];
+      for (let i = 0; i <= idx; i++) {
+        if (i < 4) {
+          const stageCodeKey = 'QUIZ_' + lang + '_' + i;
+          const codeKey = (userCodes[lang][i] || {}).code || '';
+          if (!earnedCodes[stageCodeKey] && !earnedCodes[codeKey]) {
+            newPoints += STAGE_PTS[i];
+            newStages.push(i + 1);
+            earnedCodes[stageCodeKey] = true;
+            earnedCodes[codeKey] = true;
+          }
+        }
+      }
+      if (newPoints > 0) {
+        points += newPoints;
+        updatePointsDisplay();
+      }
+      const openNext = Math.min(idx + 1, 5);
+      let sealedNames = [];
+      for (let i = 0; i <= idx; i++) sealedNames.push(labels[i]);
+      const sealedStr = sealedNames.join(' + ');
+      const msg = t
+        ? `✅ تم إنجاز: ${sealedStr} → فتح: ${labels[openNext]}${newPoints > 0 ? ` (+${newPoints} نقطة)` : ''}`
+        : `✅ Completed: ${sealedStr} → Unlocked: ${labels[openNext]}${newPoints > 0 ? ` (+${newPoints} pts)` : ''}`;
+      showNotif(msg, 'success');
+      if (newPoints > 0) {
+        sendCodeEmail(lang, idx, newStages, newPoints);
+      }
+      setTimeout(() => {
+        currentSection = openNext;
+        buildSidebar();
+        loadSection(currentSection);
+      }, 700);
+    });
+  });
+
+  if (!found) showNotif(t ? '❌ كود غير صحيح أو لا يخصك' : '❌ Invalid code or not yours', 'error');
+  document.getElementById('unlock-code-input').value = '';
+}
+
+function sendCodeEmail(lang, upToIdx, stagesArr, totalNewPts) {
+  const STAGE_PTS = [50, 100, 200, 500, 0];
+  const stagesDetails = stagesArr.map(s => `المرحلة ${s}: ${STAGE_PTS[s-1]} نقطة`).join('\n');
+  const body = `الطالب: ${userName}\nاللغة: ${lang}\nالمستويات المكتملة: ${stagesArr.map(s=>'المرحلة '+s).join(' + ')}\n${stagesDetails}\nإجمالي النقاط المضافة: ${totalNewPts}\nإجمالي نقاط الطالب: ${points}`.trim();
+  emailjs.init('opXAW7js6UxVKjMGx');
+  emailjs.send('platform@00afify','template_i1s0jig',{
+    to_email:'ahplatform73@gmail.com', student_name:userName,
+    language:lang, stages_completed:stagesArr.join(', '),
+    stages_details:stagesDetails, points_earned:totalNewPts,
+    total_points:points, message:body
+  }).catch(()=>{});
+}
+
+// ===== EXAM SECTION — النظام الجديد =====
+
+// متغيرات الاختبار
+let examTimerInterval = null;
+let examSecondsLeft = 25 * 60;
+let examAnswers = {};       // { qIndex: chosenOption }
+let examCodeAnswers = {};   // { 0: codeText, 1: codeText } للأسئلة البرمجية
+let examSubmitted = false;
+let examCameraStream = null;
+let examPhoneDetectInterval = null;
+let examCurrentQ = 0;       // السؤال الحالي (0-based)
+let examStarted = false;
+
+
+// ===== بيانات اختبارات جميع اللغات =====
+
+const CSS_EXAM_MCQ = [
+  { q: 'ما الخاصية المستخدمة لتغيير لون خلفية العنصر؟', opts: ['color','background-color','bg-color','fill'], correct: 1 },
+  { q: 'ما الوحدة المستخدمة لحجم الخط النسبي بالنسبة للعنصر الأب؟', opts: ['px','rem','em','vw'], correct: 2 },
+  { q: 'ما الخاصية التي تتحكم في ترتيب عناصر Flexbox؟', opts: ['flex-flow','order','flex-rank','position'], correct: 1 },
+  { q: 'أي قيمة لـ position تجعل العنصر خارج التدفق الطبيعي ويتبع أقرب أب محدد؟', opts: ['fixed','relative','absolute','sticky'], correct: 2 },
+  { q: 'ما الخاصية المستخدمة لإضافة ظل للصندوق؟', opts: ['text-shadow','box-shadow','element-shadow','shadow'], correct: 1 },
+  { q: 'ما الدالة المستخدمة لقراءة متغير CSS؟', opts: ['get()','value()','var()','use()'], correct: 2 },
+  { q: 'أي خاصية تتحكم في تحويل شكل العنصر (تدوير، تكبير...)?', opts: ['animation','transition','transform','effect'], correct: 2 },
+  { q: 'ما الخاصية التي تحدد كيفية توزيع العناصر على المحور الرئيسي في Flexbox؟', opts: ['align-items','align-content','justify-content','flex-align'], correct: 2 },
+  { q: 'ما الوحدة النسبية لعرض الشاشة؟', opts: ['%','vh','vw','em'], correct: 2 },
+  { q: 'أي خاصية تتحكم في إخفاء محتوى العنصر الفائض؟', opts: ['clip','hidden','overflow','display'], correct: 2 },
+  { q: 'ما الكلمة المفتاحية لتعريف كادرات الانيميشن؟', opts: ['@frames','@animation','@keyframes','@motion'], correct: 2 },
+  { q: 'ما الخاصية التي تحدد سمك الحدود؟', opts: ['border-width','border-size','border-weight','outline-width'], correct: 0 },
+  { q: 'أي خاصية تجعل العنصر شبكة grid؟', opts: ['display:flex','display:grid','display:table','display:block'], correct: 1 },
+  { q: 'ما الخاصية التي تحدد المسافة بين السطور؟', opts: ['letter-spacing','word-spacing','line-height','text-spacing'], correct: 2 },
+  { q: 'أي خاصية تستخدم لتحديد شكل المؤشر عند التمرير فوق العنصر؟', opts: ['mouse','pointer','cursor','hover'], correct: 2 }
+];
+
+const CSS_EXAM_CODE = [
+  {
+    q: 'اكتب CSS لجعل div بعرض 200px وارتفاع 100px وخلفية زرقاء وحواف دائرية 10px',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('width') && c.includes('200') &&
+             c.includes('height') && c.includes('100') &&
+             (c.includes('background') || c.includes('bg')) &&
+             (c.includes('blue') || c.includes('#0000ff') || c.includes('rgb')) &&
+             c.includes('border-radius');
+    },
+    pts: 15,
+    placeholder: 'div { width: ...; height: ...; background: ...; border-radius: ...; }'
+  },
+  {
+    q: 'اكتب CSS لإنشاء flexbox يحتوي على عناصر في المنتصف أفقياً وعمودياً',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('display') && c.includes('flex') &&
+             c.includes('justify-content') && c.includes('center') &&
+             c.includes('align-items');
+    },
+    pts: 15,
+    placeholder: '{ display: flex; justify-content: ...; align-items: ...; }'
+  }
+];
+
+const JS_EXAM_MCQ = [
+  { q: 'ما الفرق بين let وvar في JavaScript؟', opts: ['لا فرق','let لها نطاق كتلة، var لها نطاق دالة','var أحدث من let','let أسرع من var'], correct: 1 },
+  { q: 'ما ناتج: console.log(2 + "3")؟', opts: ['5','23','Error','NaN'], correct: 1 },
+  { q: 'أي دالة تُزيل آخر عنصر من مصفوفة وتُعيده؟', opts: ['shift()','pop()','splice()','remove()'], correct: 1 },
+  { q: 'ما ناتج: console.log(typeof [])؟', opts: ['"array"','"list"','"object"','"undefined"'], correct: 2 },
+  { q: 'ما الكلمة المفتاحية لإنشاء كلاس في JS؟', opts: ['object','class','define','struct'], correct: 1 },
+  { q: 'ما ناتج: Boolean("") في JavaScript؟', opts: ['true','null','undefined','false'], correct: 3 },
+  { q: 'أي طريقة تُحوّل مصفوفة إلى نص بفاصلة؟', opts: ['toString()','join(",")','concat()','split(",")'], correct: 1 },
+  { q: 'ما الدالة المستخدمة للتحقق من نوع المتغير؟', opts: ['instanceof','typecheck()','typeof','checkType()'], correct: 2 },
+  { q: 'ما ناتج: [1,2,3].map(x => x * 2)؟', opts: ['[1,2,3]','[2,4,6]','6','Error'], correct: 1 },
+  { q: 'ما الرمز المستخدم للوصول إلى خاصية كائن ديناميكياً؟', opts: ['obj.key','obj->key','obj["key"]','obj::key'], correct: 2 },
+  { q: 'ما الكلمة المفتاحية للخروج من حلقة في JS؟', opts: ['exit','stop','break','end'], correct: 2 },
+  { q: 'ما ناتج: Math.floor(4.9)؟', opts: ['5','4','4.9','Error'], correct: 1 },
+  { q: 'أي حدث يُطلق عند اكتمال تحميل الصفحة؟', opts: ['onready','onstart','onload','oncomplete'], correct: 2 },
+  { q: 'ما الطريقة المستخدمة لإيجاد عنصر في مصفوفة؟', opts: ['search()','find()','locate()','get()'], correct: 1 },
+  { q: 'ما ناتج: "hello".toUpperCase()؟', opts: ['hello','HELLO','Hello','Error'], correct: 1 }
+];
+
+const JS_EXAM_CODE = [
+  {
+    q: 'اكتب دالة JavaScript باسم sum تأخذ مصفوفة من الأرقام وتُعيد مجموعها',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return (c.includes('function sum') || c.includes('const sum') || c.includes('let sum')) &&
+             c.includes('return') &&
+             (c.includes('reduce') || c.includes('for') || c.includes('foreach'));
+    },
+    pts: 15,
+    placeholder: 'function sum(arr) { ... return total; }'
+  },
+  {
+    q: 'اكتب كود JavaScript يضيف حدث click لزر بـ id="myBtn" يطبع "مرحبا" في الـ console',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('addeventlistener') && c.includes('click') &&
+             c.includes('console.log') &&
+             (c.includes('mybtn') || c.includes('my-btn') || c.includes('"mybtn"') || c.includes("'mybtn'"));
+    },
+    pts: 15,
+    placeholder: 'document.getElementById("myBtn").addEventListener("click", ...)'
+  }
+];
+
+const PY_EXAM_MCQ = [
+  { q: 'ما ناتج: type({}) في Python؟', opts: ["<class 'list'>","<class 'set'>","<class 'dict'>","<class 'tuple'>"], correct: 2 },
+  { q: 'كيف تنسخ قائمة في Python بدون تأثير على الأصل؟', opts: ['list2 = list1','list2 = list1.copy()','list2 = copy(list1)','list2 = list1[:]'], correct: 1 },
+  { q: 'ما الكلمة المفتاحية لإنشاء مولّد (generator) في Python؟', opts: ['return','yield','generate','send'], correct: 1 },
+  { q: 'ما ناتج: "hello"[-1] في Python؟', opts: ['h','e','o','Error'], correct: 2 },
+  { q: 'أي دالة تحوّل قاموساً إلى قائمة مفاتيحه؟', opts: ['dict.values()','list(dict)','dict.keys()','dict.items()'], correct: 2 },
+  { q: 'ما الفرق بين is و == في Python؟', opts: ['لا فرق','is يقارن القيمة، == يقارن الهوية','is يقارن الهوية، == يقارن القيمة','is أسرع فقط'], correct: 2 },
+  { q: 'ما ناتج: list(map(lambda x: x**2, [1,2,3]))؟', opts: ['[1,2,3]','[1,4,9]','[2,4,6]','Error'], correct: 1 },
+  { q: 'ما الكلمة المفتاحية لتعريف خاصية ثابتة في كلاس Python؟', opts: ['static','const','class variable','@staticmethod'], correct: 3 },
+  { q: 'ما ناتج: bool([]) في Python؟', opts: ['True','None','Error','False'], correct: 3 },
+  { q: 'أي مكتبة تُستخدم للعمليات الرياضية المتقدمة؟', opts: ['pandas','math+numpy','os','sys'], correct: 1 },
+  { q: 'ما الطريقة لدمج قاموسين في Python 3.9+؟', opts: ['dict1 + dict2','dict1.merge(dict2)','dict1 | dict2','dict1.update(dict2)'], correct: 2 },
+  { q: 'ما ناتج: [x for x in range(5) if x % 2 == 0]؟', opts: ['[1,3]','[0,2,4]','[0,1,2,3,4]','[2,4]'], correct: 1 },
+  { q: 'ما الدالة المستخدمة لفرز قائمة بدون تعديلها؟', opts: ['list.sort()','sorted(list)','list.order()','arrange(list)'], correct: 1 },
+  { q: 'ما الكلمة المفتاحية للتحكم في الاستثناء بعد try؟', opts: ['catch','handle','except','error'], correct: 2 },
+  { q: 'ما ناتج: ",".join(["a","b","c"])؟', opts: ['["a","b","c"]','a,b,c','a b c','Error'], correct: 1 }
+];
+
+const PY_EXAM_CODE = [
+  {
+    q: 'اكتب دالة Python باسم reverse_string تأخذ نصاً وتُعيده معكوساً',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('def reverse_string') && c.includes('return') &&
+             (c.includes('[::-1]') || c.includes('reversed') || c.includes('reverse'));
+    },
+    pts: 15,
+    placeholder: 'def reverse_string(s):\n    return ...'
+  },
+  {
+    q: 'اكتب كود Python لإنشاء قاموس يحتوي على أسماء 3 طلاب ودرجاتهم ثم اطبع اسم الطالب الأعلى درجة',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('{') && c.includes(':') &&
+             (c.includes('max') || c.includes('for') || c.includes('if')) &&
+             c.includes('print');
+    },
+    pts: 15,
+    placeholder: 'students = {...}\nprint(max(...))'
+  }
+];
+
+// ===== دالة تحديد أسئلة اللغة الحالية =====
+function _getExamData() {
+  switch(selectedLang) {
+    case 'CSS':        return { mcq: CSS_EXAM_MCQ, code: CSS_EXAM_CODE };
+    case 'JavaScript': return { mcq: JS_EXAM_MCQ,  code: JS_EXAM_CODE  };
+    case 'Python':     return { mcq: PY_EXAM_MCQ,  code: PY_EXAM_CODE  };
+    default:           return { mcq: HTML_EXAM_MCQ, code: HTML_EXAM_CODE };
+  }
+}
+
+
+// ===== أسئلة الاختبار (15 اختياري + 2 برمجي) =====
+const HTML_EXAM_MCQ = [
+  { q: 'ما هو الوسم المستخدم لإنشاء قائمة غير مرتبة في HTML؟', opts: ['<ol>','<ul>','<list>','<dl>'], correct: 1 },
+  { q: 'ما هو الوسم الصحيح لإضافة سطر جديد في HTML؟', opts: ['<break>','<lb>','<br>','<newline>'], correct: 2 },
+  { q: 'ما الوسم المستخدم لتعريف قسم في HTML5؟', opts: ['<div>','<section>','<part>','<block>'], correct: 1 },
+  { q: 'أي وسم يُستخدم لعرض نص بخط عريض؟', opts: ['<bold>','<strong>','<b>','كلاهما b وstrong'], correct: 3 },
+  { q: 'ما الوسم المستخدم لإنشاء قائمة مرتبة؟', opts: ['<ul>','<list>','<ol>','<dl>'], correct: 2 },
+  { q: 'أي سمة تُحدد عنوان URL للصورة؟', opts: ['href','link','src','url'], correct: 2 },
+  { q: 'ما وسم HTML لتعريف معلومات ميتا للصفحة؟', opts: ['<meta>','<head>','<info>','<data>'], correct: 0 },
+  { q: 'ما الوسم المستخدم لتضمين صوت في HTML5؟', opts: ['<sound>','<mp3>','<audio>','<music>'], correct: 2 },
+  { q: 'أي وسم يُستخدم لإنشاء جدول بيانات؟', opts: ['<table>','<grid>','<data>','<db>'], correct: 0 },
+  { q: 'ما الوسم المستخدم لتعريف رأس الجدول؟', opts: ['<td>','<tr>','<th>','<thead>'], correct: 2 },
+  { q: 'أي وسم يُستخدم لرسم الرسومات في HTML5؟', opts: ['<draw>','<svg>','<canvas>','<graphic>'], correct: 2 },
+  { q: 'ما الوسم المستخدم لإنشاء قائمة منسدلة؟', opts: ['<input>','<dropdown>','<select>','<option>'], correct: 2 },
+  { q: 'أي سمة تُضيف نصاً بديلاً للصورة عند عدم تحميلها؟', opts: ['title','alt','desc','text'], correct: 1 },
+  { q: 'ما الوسم المستخدم لتعريف تذييل الصفحة في HTML5؟', opts: ['<bottom>','<footer>','<end>','<foot>'], correct: 1 },
+  { q: 'أي وسم يُستخدم لإنشاء حقل كلمة مرور؟', opts: ['<input type="pass">','<password>','<input type="password">','<pass>'], correct: 2 }
+];
+
+const HTML_EXAM_CODE = [
+  {
+    q: 'اكتب كود HTML لإنشاء رابط يفتح موقع google.com في تبويب جديد بنص "زيارة جوجل"',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('<a') && c.includes('href') && c.includes('google.com')
+          && c.includes('target') && c.includes('_blank') && c.includes('</a>');
+    },
+    pts: 15,
+    placeholder: '<a href="..." target="...">...</a>'
+  },
+  {
+    q: 'اكتب كود HTML لإنشاء جدول به صفَّان وعمودان، الصف الأول رؤوس (th) والثاني بيانات (td)',
+    check: (code) => {
+      const c = code.toLowerCase().replace(/\s+/g,' ');
+      return c.includes('<table') && c.includes('<tr') && c.includes('<th')
+          && c.includes('<td') && c.includes('</table>');
+    },
+    pts: 15,
+    placeholder: '<table>...</table>'
+  }
+];
+
+// ===== 1) شاشة الشروط =====
+function loadExamSection() {
+  _showExamRules();
+}
+
+function _loadExamIframe() {
+  const area = document.getElementById('content-area');
+  const filePath = `${selectedLang}/1.html`;
+  area.innerHTML = `
+    <div class="section-title-bar">${uiLang==='ar'?'الاختبار النهائي':'Final Exam'} — ${selectedLang}</div>
+    <p style="margin-bottom:15px;opacity:0.7;">${uiLang==='ar'?'أكمل الاختبار التالي:':'Complete the following exam:'}</p>
+    <div class="test-frame-wrap">
+      <iframe src="${filePath}" title="Exam"></iframe>
+    </div>
+    <div style="margin-top:20px;text-align:center;">
+      <button class="continue-btn" onclick="completeExam()" style="animation:none;">${uiLang==='ar'?'تأكيد إتمام الاختبار':'Confirm Exam Completion'}</button>
+    </div>
+  `;
+}
+
+function _showExamRules() {
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div style="max-height:80vh;overflow-y:auto;padding:10px 4px;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:3rem;margin-bottom:10px;">📋</div>
+        <h2 style="font-family:'Cinzel Decorative',cursive;color:var(--pink);font-size:1.4rem;">شروط الاختبار</h2>
+        <p style="opacity:0.6;font-size:0.9rem;margin-top:6px;">اقرأ الشروط بعناية قبل البدء</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:28px;">
+        ${[
+          ['🚫','لا يمكنك الخروج من الموقع أثناء الاختبار','سيُسلَّم الاختبار تلقائياً عند الخروج'],
+          ['🤖','لا يُسمح باستخدام الذكاء الاصطناعي','أي مساعدة من AI تُعدّ غشاً'],
+          ['📱','لا تفتح هاتفك أثناء الحل','الكاميرا ستراقب وجود الهاتف'],
+          ['⏱','مدة الاختبار 25 دقيقة','سيُسلَّم تلقائياً عند انتهاء الوقت'],
+          ['📷','الكاميرا مطلوبة طوال الاختبار','يجب الموافقة على إذن الكاميرا للبدء']
+        ].map(([icon,title,sub])=>`
+          <div style="display:flex;align-items:center;gap:16px;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px 20px;">
+            <span style="font-size:2rem;flex-shrink:0;">${icon}</span>
+            <div>
+              <div style="font-weight:700;font-size:1rem;margin-bottom:3px;">${title}</div>
+              <div style="font-size:0.82rem;opacity:0.6;">${sub}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="background:rgba(255,45,120,0.08);border:1.5px solid var(--pink);border-radius:14px;padding:16px 20px;margin-bottom:24px;text-align:center;">
+        <p style="font-size:0.95rem;line-height:1.8;">
+          بالضغط على <strong style="color:var(--pink);">ابدأ الاختبار</strong> فأنت توافق على جميع الشروط أعلاه<br>
+          وستُفتح الكاميرا تلقائياً للمراقبة
+        </p>
+      </div>
+
+      <div style="text-align:center;">
+        <button onclick="_requestCameraAndStart()" style="
+          padding:16px 60px;
+          background:linear-gradient(135deg,var(--pink),var(--pink-dark));
+          border:none;border-radius:50px;
+          color:#fff;font-family:'Cairo',sans-serif;
+          font-size:1.1rem;font-weight:700;cursor:pointer;
+          box-shadow:0 0 30px rgba(255,45,120,0.4);
+          transition:all 0.3s;
+        ">📷 ابدأ الاختبار</button>
+      </div>
+    </div>
+  `;
+}
+
+// ===== 2) طلب الكاميرا =====
+async function _requestCameraAndStart() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    examCameraStream = stream;
+    _startExamUI();
+  } catch(e) {
+    showNotif('❌ يجب السماح بالكاميرا لبدء الاختبار', 'error');
+    const area = document.getElementById('content-area');
+    const btn = area.querySelector('button');
+    if (btn) {
+      btn.textContent = '🔄 حاول مرة أخرى';
+      btn.style.background = 'var(--pink-dark)';
+    }
+  }
+}
+
+// ===== 3) واجهة الاختبار الرئيسية =====
+function _startExamUI() {
+  const { mcq: ACTIVE_MCQ, code: ACTIVE_CODE } = _getExamData();
+  examAnswers = {};
+  examCodeAnswers = { 0: '', 1: '' };
+  examSubmitted = false;
+  examCurrentQ = 0;
+  examStarted = true;
+  examSecondsLeft = 25 * 60;
+
+  // منع الخروج من الصفحة
+  window._examBeforeUnload = function(e) {
+    if (!examSubmitted) {
+      _submitExam('exit');
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  };
+  window.addEventListener('beforeunload', window._examBeforeUnload);
+
+  // منع التنقل خارج الصفحة (visibilitychange)
+  window._examVisibility = function() {
+    if (document.hidden && !examSubmitted) {
+      _submitExam('exit');
+    }
+  };
+  document.addEventListener('visibilitychange', window._examVisibility);
+
+  _renderExamFrame();
+  _startExamTimer();
+  _startPhoneDetection();
+}
+
+// ===== 4) رسم إطار الاختبار =====
+function _renderExamFrame() {
+  const area = document.getElementById('content-area');
+  const totalQ = HTML_EXAM_MCQ.length + HTML_EXAM_CODE.length; // 17
+  const isCodeQ = examCurrentQ >= HTML_EXAM_MCQ.length;
+  const codeIdx = examCurrentQ - HTML_EXAM_MCQ.length;
+
+  const mins = String(Math.floor(examSecondsLeft/60)).padStart(2,'0');
+  const secs = String(examSecondsLeft%60).padStart(2,'0');
+  const pct = (examSecondsLeft/(25*60))*100;
+  const timerColor = examSecondsLeft <= 300 ? '#ff3333' : 'var(--pink)';
+
+  let questionHTML = '';
+  if (!isCodeQ) {
+    // سؤال اختياري
+    const q = HTML_EXAM_MCQ[examCurrentQ];
+    const chosen = examAnswers[examCurrentQ];
+    questionHTML = `
+      <div style="margin-bottom:20px;">
+        <p style="font-size:1.05rem;font-weight:700;line-height:1.8;margin-bottom:18px;">${q.q}</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${q.opts.map((opt,oi)=>`
+            <button onclick="_selectExamOpt(${oi})" style="
+              padding:14px 20px;text-align:right;
+              background:${chosen===oi?'rgba(255,45,120,0.2)':'var(--glass)'};
+              border:${chosen===oi?'1.5px solid var(--pink)':'1px solid var(--glass-border)'};
+              border-radius:12px;color:var(--text);
+              font-family:'Cairo',sans-serif;font-size:0.95rem;
+              cursor:pointer;transition:all 0.2s;
+            ">
+              <span style="color:var(--pink);font-weight:700;margin-left:10px;">${['أ','ب','ج','د'][oi]}.</span> ${opt}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else {
+    // سؤال برمجي
+    const cq = HTML_EXAM_CODE[codeIdx];
+    const savedCode = examCodeAnswers[codeIdx] || '';
+    questionHTML = `
+      <div style="margin-bottom:20px;">
+        <div style="background:rgba(255,45,120,0.08);border:1px solid var(--pink);border-radius:12px;padding:14px 18px;margin-bottom:16px;">
+          <span style="color:var(--pink);font-weight:700;font-size:0.85rem;">💻 سؤال برمجي — ${cq.pts} نقطة</span>
+          <p style="margin-top:8px;font-size:1rem;line-height:1.8;font-weight:600;">${cq.q}</p>
+        </div>
+        <textarea id="exam-code-input" placeholder="${cq.placeholder}" style="
+          width:100%;height:140px;
+          background:rgba(0,0,0,0.4);
+          border:1px solid var(--glass-border);
+          border-radius:12px;padding:14px;
+          color:#00ff88;font-family:monospace;
+          font-size:0.95rem;resize:vertical;
+          outline:none;direction:ltr;
+          transition:border 0.2s;
+        " oninput="examCodeAnswers[${codeIdx}]=this.value">${savedCode}</textarea>
+        <p style="margin-top:8px;font-size:0.8rem;opacity:0.5;">💡 اكتب كود HTML صحيح في الحقل أعلاه</p>
+      </div>
+    `;
+  }
+
+  area.innerHTML = `
+    <div style="display:flex;flex-direction:column;height:100%;">
+
+      <!-- هيدر الاختبار -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-family:'Cinzel Decorative',cursive;color:var(--pink);font-size:1rem;">
+          📝 الاختبار النهائي — HTML
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <!-- كاميرا مصغرة -->
+          <video id="exam-cam-preview" autoplay muted playsinline style="
+            width:70px;height:52px;border-radius:8px;
+            border:2px solid var(--pink);object-fit:cover;
+            transform:scaleX(-1);
+          "></video>
+          <!-- عداد الوقت -->
+          <div style="
+            background:var(--glass);border:1.5px solid ${timerColor};
+            border-radius:10px;padding:8px 16px;
+            font-family:monospace;font-size:1.1rem;font-weight:900;
+            color:${timerColor};min-width:80px;text-align:center;
+          " id="exam-timer-display">⏱ ${mins}:${secs}</div>
+        </div>
+      </div>
+
+      <!-- شريط تقدم الوقت -->
+      <div style="height:4px;background:rgba(255,45,120,0.15);border-radius:2px;margin-bottom:16px;">
+        <div id="exam-time-bar" style="height:100%;background:${timerColor};border-radius:2px;width:${pct}%;transition:width 1s linear;"></div>
+      </div>
+
+      <!-- مؤشر السؤال -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;opacity:0.6;">السؤال ${examCurrentQ+1} من ${totalQ}</span>
+        <div style="flex:1;height:3px;background:rgba(255,45,120,0.1);border-radius:2px;">
+          <div style="height:100%;background:var(--pink);border-radius:2px;width:${((examCurrentQ+1)/totalQ)*100}%;transition:width 0.3s;"></div>
+        </div>
+        ${isCodeQ ? '<span style="background:rgba(255,45,120,0.2);color:var(--pink);border-radius:20px;padding:3px 10px;font-size:0.75rem;font-weight:700;">💻 برمجي</span>' : ''}
+      </div>
+
+      <!-- منطقة السؤال -->
+      <div style="flex:1;overflow-y:auto;padding-bottom:10px;">
+        ${questionHTML}
+      </div>
+
+      <!-- أزرار التنقل -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;">
+        <button onclick="_examPrev()" ${examCurrentQ===0?'disabled':''} style="
+          padding:11px 28px;
+          background:${examCurrentQ===0?'rgba(255,255,255,0.05)':'var(--glass)'};
+          border:1px solid var(--glass-border);border-radius:50px;
+          color:var(--text);font-family:'Cairo',sans-serif;
+          font-size:0.95rem;cursor:${examCurrentQ===0?'not-allowed':'pointer'};
+          opacity:${examCurrentQ===0?'0.4':'1'};transition:all 0.2s;
+        ">→ السابق</button>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:300px;">
+          ${HTML_EXAM_MCQ.map((_,i)=>{
+            const answered = examAnswers[i] !== undefined;
+            const isCur = examCurrentQ === i;
+            return `<div onclick="examCurrentQ=${i};_renderExamFrame()" style="
+              width:28px;height:28px;border-radius:50%;cursor:pointer;
+              background:${isCur?'var(--pink)':answered?'rgba(0,230,118,0.3)':'rgba(255,255,255,0.08)'};
+              border:${isCur?'2px solid var(--pink)':answered?'1px solid #00e676':'1px solid rgba(255,255,255,0.1)'};
+              display:flex;align-items:center;justify-content:center;
+              font-size:0.7rem;font-weight:700;color:${isCur?'#fff':answered?'#00e676':'rgba(255,255,255,0.4)'};
+              transition:all 0.2s;
+            ">${i+1}</div>`;
+          }).join('')}
+          ${HTML_EXAM_CODE.map((_,i)=>{
+            const idx = HTML_EXAM_MCQ.length + i;
+            const answered = (examCodeAnswers[i]||'').trim().length > 0;
+            const isCur = examCurrentQ === idx;
+            return `<div onclick="examCurrentQ=${idx};_renderExamFrame()" style="
+              width:28px;height:28px;border-radius:50%;cursor:pointer;
+              background:${isCur?'var(--pink)':answered?'rgba(0,230,118,0.3)':'rgba(255,45,120,0.1)'};
+              border:${isCur?'2px solid var(--pink)':answered?'1px solid #00e676':'1px solid rgba(255,45,120,0.3)'};
+              display:flex;align-items:center;justify-content:center;
+              font-size:0.65rem;font-weight:700;color:${isCur?'#fff':answered?'#00e676':'var(--pink)'};
+              transition:all 0.2s;
+            ">c${i+1}</div>`;
+          }).join('')}
+        </div>
+
+        ${examCurrentQ < totalQ - 1
+          ? `<button onclick="_examNext()" style="
+              padding:11px 28px;
+              background:linear-gradient(135deg,var(--pink),var(--pink-dark));
+              border:none;border-radius:50px;
+              color:#fff;font-family:'Cairo',sans-serif;
+              font-size:0.95rem;cursor:pointer;transition:all 0.3s;
+            ">← التالي</button>`
+          : `<button onclick="_confirmSubmitExam()" style="
+              padding:11px 28px;
+              background:linear-gradient(135deg,#00b86b,#007a47);
+              border:none;border-radius:50px;
+              color:#fff;font-family:'Cairo',sans-serif;
+              font-size:0.95rem;font-weight:700;cursor:pointer;
+              box-shadow:0 0 20px rgba(0,184,107,0.4);
+            ">✅ تسليم الاختبار</button>`
+        }
+      </div>
+    </div>
+  `;
+
+  // ربط الكاميرا بعنصر الفيديو
+  const camEl = document.getElementById('exam-cam-preview');
+  if (camEl && examCameraStream) camEl.srcObject = examCameraStream;
+}
+
+// ===== 5) التنقل بين الأسئلة =====
+function _examNext() {
+  const totalQ = HTML_EXAM_MCQ.length + HTML_EXAM_CODE.length;
+  if (examCurrentQ < totalQ - 1) {
+    examCurrentQ++;
+    _renderExamFrame();
+  }
+}
+function _examPrev() {
+  if (examCurrentQ > 0) {
+    examCurrentQ--;
+    _renderExamFrame();
+  }
+}
+function _selectExamOpt(oi) {
+  examAnswers[examCurrentQ] = oi;
+  _renderExamFrame();
+}
+
+// ===== 6) عداد الوقت =====
+function _startExamTimer() {
+  if (examTimerInterval) clearInterval(examTimerInterval);
+  examTimerInterval = setInterval(() => {
+    if (examSubmitted) { clearInterval(examTimerInterval); return; }
+    examSecondsLeft--;
+    // تحديث العداد في الـ DOM مباشرة بدون إعادة render كاملة
+    const display = document.getElementById('exam-timer-display');
+    const bar = document.getElementById('exam-time-bar');
+    if (display) {
+      const m = String(Math.floor(examSecondsLeft/60)).padStart(2,'0');
+      const s = String(examSecondsLeft%60).padStart(2,'0');
+      const c = examSecondsLeft <= 300 ? '#ff3333' : 'var(--pink)';
+      display.textContent = `⏱ ${m}:${s}`;
+      display.style.color = c;
+      display.style.borderColor = c;
+    }
+    if (bar) {
+      const pct = (examSecondsLeft/(25*60))*100;
+      bar.style.width = pct + '%';
+      if (examSecondsLeft <= 300) bar.style.background = '#ff3333';
+    }
+    if (examSecondsLeft <= 0) _submitExam('timeout');
+  }, 1000);
+}
+
+// ===== 7) كشف الهاتف عبر الكاميرا (Claude AI API) =====
+function _startPhoneDetection() {
+  if (!examCameraStream) return;
+  const hiddenCanvas = document.createElement('canvas');
+  hiddenCanvas.width = 320; hiddenCanvas.height = 240;
+  const hCtx = hiddenCanvas.getContext('2d');
+  const hiddenVideo = document.createElement('video');
+  hiddenVideo.srcObject = examCameraStream;
+  hiddenVideo.autoplay = true; hiddenVideo.muted = true; hiddenVideo.playsInline = true;
+  hiddenVideo.play();
+
+  examPhoneDetectInterval = setInterval(async () => {
+    if (examSubmitted) { clearInterval(examPhoneDetectInterval); return; }
+    try {
+      hCtx.drawImage(hiddenVideo, 0, 0, 320, 240);
+      const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.6);
+      const base64 = dataUrl.split(',')[1];
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 50,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+              { type: 'text', text: 'Is there a mobile phone or smartphone visible in this image? Reply with only YES or NO.' }
+            ]
+          }]
+        })
+      });
+      const data = await resp.json();
+      const answer = (data.content?.[0]?.text || '').trim().toUpperCase();
+      if (answer.includes('YES')) {
+        clearInterval(examPhoneDetectInterval);
+        showNotif('📱 تم اكتشاف هاتف! سيُسلَّم الاختبار تلقائياً', 'error');
+        setTimeout(() => _submitExam('phone'), 2000);
+      }
+    } catch(e) { /* تجاهل أخطاء الشبكة */ }
+  }, 15000); // كل 15 ثانية
+}
+
+// ===== 8) تأكيد التسليم اليدوي =====
+function _confirmSubmitExam() {
+  const totalQ = HTML_EXAM_MCQ.length + HTML_EXAM_CODE.length;
+  const answeredMCQ = Object.keys(examAnswers).length;
+  const answeredCode = Object.values(examCodeAnswers).filter(v=>v.trim().length>0).length;
+  const totalAnswered = answeredMCQ + answeredCode;
+  const remaining = totalQ - totalAnswered;
+
+  if (remaining > 0) {
+    if (confirm(`لديك ${remaining} سؤال لم تجب عليه بعد.\nهل تريد التسليم الآن؟`)) {
+      _submitExam('manual');
+    }
+  } else {
+    _submitExam('manual');
+  }
+}
+
+// ===== 9) التسليم النهائي =====
+function _submitExam(reason) {
+  if (examSubmitted) return;
+  examSubmitted = true;
+
+  // إيقاف كل المراقبة والعدادات
+  clearInterval(examTimerInterval);
+  clearInterval(examPhoneDetectInterval);
+  window.removeEventListener('beforeunload', window._examBeforeUnload);
+  document.removeEventListener('visibilitychange', window._examVisibility);
+  if (examCameraStream) { examCameraStream.getTracks().forEach(t=>t.stop()); examCameraStream = null; }
+
+  // حساب النتيجة
+  let mcqCorrect = 0, mcqTotal = HTML_EXAM_MCQ.length;
+  const mcqDetails = HTML_EXAM_MCQ.map((q,i) => {
+    const chosen = examAnswers[i];
+    const correct = q.correct;
+    const isCorrect = chosen === correct;
+    if (isCorrect) mcqCorrect++;
+    return {
+      q: q.q,
+      chosen: chosen !== undefined ? q.opts[chosen] : 'لم يُجب',
+      correct: q.opts[correct],
+      isCorrect
+    };
+  });
+
+  let codePts = 0;
+  const codeDetails = HTML_EXAM_CODE.map((cq,i) => {
+    const code = examCodeAnswers[i] || '';
+    const isCorrect = cq.check(code);
+    if (isCorrect) codePts += cq.pts;
+    return { q: cq.q, code, isCorrect, pts: cq.pts };
+  });
+
+  const mcqPts = mcqCorrect * 6; // كل سؤال = 6 نقاط → 15×6=90
+  const totalScore = mcqPts + codePts; // من 120 (90 + 30)
+  const maxScore = mcqTotal * 6 + HTML_EXAM_CODE.reduce((s,c)=>s+c.pts,0);
+  const percentage = Math.round((totalScore / maxScore) * 100);
+  const passed = percentage >= 60;
+
+  const timeUsed = (25*60 - examSecondsLeft);
+  const timeUsedStr = `${Math.floor(timeUsed/60)}د ${timeUsed%60}ث`;
+
+  const reasonMap = { manual:'يدوي', exit:'خروج من الصفحة', timeout:'انتهاء الوقت', phone:'كشف هاتف' };
+
+  // إرسال النتيجة بالإيميل
+  _sendExamEmail({ mcqCorrect, mcqTotal, codePts, totalScore, maxScore, percentage, passed, timeUsedStr, reason: reasonMap[reason]||reason, mcqDetails, codeDetails });
+
+  // إضافة نقاط وكود الإنجاز لو نجح
+  if (passed) {
+    completedSections[selectedLang + '_4'] = true;
+    const examPtsKey = 'EXAM_' + selectedLang;
+    if (!earnedCodes[examPtsKey]) {
+      earnedCodes[examPtsKey] = true;
+      points += 100;
+      updatePointsDisplay();
+    }
+    buildSidebar();
+  }
+
+  // عرض النتيجة
+  _showExamResult({ mcqCorrect, mcqTotal, codePts, totalScore, maxScore, percentage, passed, timeUsedStr, reason, codeDetails, mcqDetails });
+}
+
+// ===== 10) شاشة النتيجة =====
+function _showExamResult({ mcqCorrect, mcqTotal, codePts, totalScore, maxScore, percentage, passed, timeUsedStr, reason, codeDetails, mcqDetails }) {
+  const area = document.getElementById('content-area');
+  const color = passed ? '#00e676' : '#ff3333';
+  const icon = passed ? '🎉' : '😔';
+  const t = uiLang === 'ar';
+
+  let codeResultHTML = codeDetails.map((cd,i)=>`
+    <div style="background:${cd.isCorrect?'rgba(0,230,118,0.08)':'rgba(255,51,51,0.08)'};border:1px solid ${cd.isCorrect?'#00e676':'#ff3333'};border-radius:12px;padding:14px 18px;margin-bottom:10px;">
+      <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px;color:${cd.isCorrect?'#00e676':'#ff5555'};">
+        ${cd.isCorrect?'✅':'❌'} سؤال برمجي ${i+1} — ${cd.isCorrect?`+${cd.pts} نقطة`:'0 نقطة'}
+      </div>
+      <div style="font-size:0.8rem;opacity:0.7;margin-bottom:6px;">${cd.q}</div>
+      ${cd.code ? `<code style="display:block;background:rgba(0,0,0,0.4);border-radius:8px;padding:8px;font-size:0.8rem;color:#00ff88;direction:ltr;overflow-x:auto;">${cd.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code>` : '<span style="opacity:0.4;font-size:0.8rem;">لم يُجب</span>'}
+    </div>
+  `).join('');
+
+  area.innerHTML = `
+    <div style="max-height:80vh;overflow-y:auto;padding:4px;">
+      <!-- بطاقة النتيجة -->
+      <div style="text-align:center;background:var(--glass);border:2px solid ${color};border-radius:20px;padding:30px;margin-bottom:20px;">
+        <div style="font-size:4rem;margin-bottom:10px;">${icon}</div>
+        <h2 style="font-family:'Cinzel Decorative',cursive;color:${color};font-size:1.5rem;margin-bottom:10px;">
+          ${passed ? 'اجتزت الاختبار!' : 'لم تجتز الاختبار'}
+        </h2>
+        <div style="font-size:3rem;font-weight:900;color:${color};margin:10px 0;">${percentage}%</div>
+        <div style="opacity:0.7;font-size:0.9rem;">${totalScore} / ${maxScore} نقطة</div>
+        <div style="display:flex;gap:20px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+          <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:var(--pink);">${mcqCorrect}/${mcqTotal}</div><div style="font-size:0.8rem;opacity:0.6;">اختياري</div></div>
+          <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:var(--pink);">${codePts}/30</div><div style="font-size:0.8rem;opacity:0.6;">برمجي</div></div>
+          <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:var(--pink);">${timeUsedStr}</div><div style="font-size:0.8rem;opacity:0.6;">وقت مستخدم</div></div>
+        </div>
+      </div>
+
+      <!-- نتائج الأسئلة البرمجية -->
+      <div style="margin-bottom:16px;">
+        <h3 style="font-family:'Cinzel Decorative',cursive;color:var(--pink);font-size:0.95rem;margin-bottom:12px;">نتائج الأسئلة البرمجية</h3>
+        ${codeResultHTML}
+      </div>
+
+      <!-- ملخص الاختياري -->
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <h3 style="font-family:'Cinzel Decorative',cursive;color:var(--pink);font-size:0.95rem;margin-bottom:12px;">ملخص الأسئلة الاختيارية</h3>
+        ${mcqDetails.map((d,i)=>`
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:0.83rem;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span style="flex-shrink:0;font-size:1rem;">${d.isCorrect?'✅':'❌'}</span>
+            <div>
+              <div style="font-weight:600;margin-bottom:3px;">${i+1}. ${d.q}</div>
+              <div style="opacity:0.6;">إجابتك: <span style="color:${d.isCorrect?'#00e676':'#ff5555'}">${d.chosen}</span></div>
+              ${!d.isCorrect?`<div style="opacity:0.6;">الصحيحة: <span style="color:#00e676">${d.correct}</span></div>`:''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      ${passed ? `
+        <div class="code-reveal" style="margin-bottom:16px;">
+          <p style="margin-bottom:8px;opacity:0.8;">🏆 كود إنجاز الاختبار النهائي</p>
+          <div class="unlock-code" style="user-select:all;cursor:copy;" onclick="copyCode('${(userCodes[selectedLang]||{})[4]?.code||''}')">
+            ${(userCodes[selectedLang]||{})[4]?.code || 'N/A'}
+          </div>
+          <p style="margin-top:8px;font-size:0.8rem;opacity:0.5;">+100 نقطة أُضيفت لحسابك</p>
+        </div>
+      ` : ''}
+
+      <div style="text-align:center;">
+        <button onclick="_resetAndRetryExam()" style="
+          padding:12px 40px;background:var(--glass);border:1px solid var(--glass-border);
+          border-radius:50px;color:var(--text);font-family:'Cairo',sans-serif;
+          font-size:0.95rem;cursor:pointer;margin-left:10px;
+        ">🔄 إعادة المحاولة</button>
+      </div>
+    </div>
+  `;
+}
+
+function _resetAndRetryExam() {
+  examSubmitted = false;
+  examStarted = false;
+  examAnswers = {};
+  examCodeAnswers = { 0:'', 1:'' };
+  examCurrentQ = 0;
+  examSecondsLeft = 25*60;
+  _showExamRules();
+}
+
+// ===== 11) إرسال النتائج بالإيميل =====
+function _sendExamEmail({ mcqCorrect, mcqTotal, codePts, totalScore, maxScore, percentage, passed, timeUsedStr, reason, mcqDetails, codeDetails }) {
+  const mcqSummary = mcqDetails.map((d,i)=>
+    `${i+1}. ${d.isCorrect?'✅':'❌'} ${d.q}\n   إجابة الطالب: ${d.chosen} | الصحيحة: ${d.correct}`
+  ).join('\n');
+
+  const codeSummary = codeDetails.map((cd,i)=>
+    `كود ${i+1}: ${cd.isCorrect?'✅ صحيح':'❌ خطأ'} (+${cd.isCorrect?cd.pts:0}/${cd.pts})\n   ${cd.q}\n   كود الطالب:\n${cd.code||'(لم يجب)'}`
+  ).join('\n\n');
+
+  const body = `
+====== نتيجة الاختبار النهائي ======
+الطالب: ${userName}
+اللغة: ${selectedLang}
+سبب التسليم: ${reason}
+---
+النتيجة: ${totalScore}/${maxScore} (${percentage}%)
+الاختياري: ${mcqCorrect}/${mcqTotal}
+البرمجي: ${codePts}/30
+الوقت المستخدم: ${timeUsedStr}
+النتيجة: ${passed?'✅ ناجح':'❌ راسب'}
+---
+== تفاصيل الاختياري ==
+${mcqSummary}
+---
+== تفاصيل البرمجي ==
+${codeSummary}
+  `.trim();
+
+  emailjs.init('YOUR_EMAILJS_PUBLIC_KEY');
+  emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+    to_email: 'ahplatform73@gmail.com',
+    student_name: userName,
+    language: selectedLang,
+    score: `${totalScore}/${maxScore} (${percentage}%)`,
+    result: passed ? 'ناجح' : 'راسب',
+    time_used: timeUsedStr,
+    submit_reason: reason,
+    message: body
+  }).catch(()=>{});
+}
+
+function completeExam() {
+  completedSections[selectedLang + '_4'] = true;
+  buildSidebar();
+  showNotif(uiLang==='ar'?'🎉 أتممت الاختبار! الشهادة متاحة الآن':'🎉 Exam done! Certificate available now','success');
+}
+
+// ===== CERTIFICATE SECTION (المعدّل) =====
+function loadCertificateSection() {
+  const area = document.getElementById('content-area');
+  const t = uiLang === 'ar';
+
+  // تحقق من الحظر الدائم أولاً
+  if (localStorage.getItem(CERT_BLOCKED_KEY) === '1') {
+    permanentlyBlockCert();
+    return;
+  }
+
+  // تحقق إن الاختبار مكتمل
+  const examDone = completedSections[selectedLang + '_4'];
+
+  if (!examDone) {
+    // الاختبار لم يكتمل بعد — أظهر رسالة مع زر للذهاب للاختبار
+    area.innerHTML = `
+      <div class="cert-exam-prompt">
+        <div class="prompt-icon">📝</div>
+        <h3>${t ? '🎓 شهادتك في انتظارك!' : '🎓 Your Certificate Awaits!'}</h3>
+        <p>${t
+          ? 'يجب إنهاء الاختبار النهائي أولاً للحصول على شهادتك.\nأكمل الاختبار وعُد إلى هنا!'
+          : 'You must complete the Final Exam first to receive your certificate.\nFinish the exam and come back here!'
+        }</p>
+        <button class="go-exam-btn" onclick="goToExam()">
+          ${t ? '📝 اذهب للاختبار الآن' : '📝 Go to Exam Now'}
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // الاختبار مكتمل — ابدأ عداد 30 دقيقة وأظهر موقع s.html
+  startCertTimer();
+
+  area.innerHTML = `
+    <div class="section-title-bar">🏆 ${t ? 'شهاداتي' : 'My Certificates'} — ${selectedLang}</div>
+    <div style="
+      background: rgba(255,45,120,0.06);
+      border: 1px solid rgba(255,45,120,0.2);
+      border-radius: 14px;
+      padding: 12px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    ">
+      <span style="font-size:1.4rem;">⏱</span>
+      <span style="color: var(--pink); font-weight: 600;">
+        ${t
+          ? 'لديك 30 دقيقة لعرض شهادتك. بعد انتهاء الوقت سيُغلق هذا القسم نهائياً على هذا الجهاز.'
+          : 'You have 30 minutes to view your certificate. After time runs out, this section will be permanently closed on this device.'
+        }
+      </span>
+    </div>
+    <div class="test-frame-wrap" style="height: calc(100vh - 280px); min-height: 400px;">
+      <iframe src="https://c-ahmed-one.netlify.app/" title="Certificate" style="width:100%;height:100%;border:none;background:#fff;"></iframe>
+    </div>
+  `;
+}
+
+// دالة مساعدة للانتقال للاختبار من قسم الشهادة
+function goToExam() {
+  // تحقق إن الاختبار مفتوح (المرحلة الرابعة مكتملة)
+  const stage4Done = completedSections[selectedLang + '_3'];
+  if (!stage4Done) {
+    showNotif(
+      uiLang==='ar' ? '⚠️ يجب إكمال جميع المراحل أولاً' : '⚠️ Complete all stages first',
+      'error'
+    );
+    return;
+  }
+  currentSection = 4;
+  buildSidebar();
+  loadSection(4);
+}
+
+// ===== CERTIFICATE CANVAS (للشهادة المحلية — غير مستخدمة الآن) =====
+function drawCertificate() {
+  const canvas = document.getElementById('cert-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 800, H = 560;
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#0a0a0f'); grad.addColorStop(0.5,'#1a0020'); grad.addColorStop(1,'#0a0a0f');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#ff2d78'; ctx.lineWidth = 3;
+  ctx.strokeRect(15,15,W-30,H-30);
+  ctx.strokeStyle = 'rgba(255,45,120,0.3)'; ctx.lineWidth = 1;
+  ctx.strokeRect(25,25,W-50,H-50);
+  [[30,30],[W-30,30],[30,H-30],[W-30,H-30]].forEach(([x,y]) => {
+    ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2);
+    ctx.fillStyle='#ff2d78'; ctx.fill();
+  });
+  ctx.textAlign='center';
+  ctx.fillStyle='#ff2d78';
+  ctx.font='bold 18px Cinzel Decorative, serif';
+  ctx.fillText('AH PLATFORM', W/2, 80);
+  ctx.fillStyle='rgba(255,45,120,0.4)'; ctx.fillRect(W/2-80,90,160,1);
+  ctx.fillStyle='#ffffff'; ctx.font='bold 14px Cairo, sans-serif';
+  ctx.fillText(uiLang==='ar'?'شهادة إتمام':'Certificate of Completion', W/2, 125);
+  ctx.fillStyle='#ff6fa8'; ctx.font='bold 36px Playfair Display, serif';
+  ctx.fillText(userName, W/2, 210);
+  ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.font='16px Cairo, sans-serif';
+  ctx.fillText(uiLang==='ar'?'يُشهد بأن الطالب المذكور أعلاه قد أتمّ بنجاح':'This is to certify that the above named student has successfully completed', W/2, 260);
+  ctx.fillStyle='#ff2d78'; ctx.font='bold 28px Cinzel Decorative, serif';
+  ctx.fillText(`${selectedLang} Course`, W/2, 320);
+  ctx.fillStyle='#FFD700'; ctx.font='28px serif';
+  ctx.fillText('★ ★ ★ ★ ★', W/2, 375);
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='13px Cairo, sans-serif';
+  ctx.fillText(new Date().toLocaleDateString(uiLang==='ar'?'ar-EG':'en-US'), W/2, 420);
+  ctx.strokeStyle='rgba(255,45,120,0.4)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(W/2-80, 470); ctx.lineTo(W/2+80, 470); ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='12px Cairo, sans-serif';
+  ctx.fillText(uiLang==='ar'?'توقيع المدير':'Director Signature', W/2, 490);
+}
+function downloadCert() {
+  const canvas = document.getElementById('cert-canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = `${userName}_certificate.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ===== POINTS EMAIL =====
+function sendPointsEmail(stageIndex) {
+  const pts = POINTS_PER_STAGE[stageIndex];
+  emailjs.init('YOUR_EMAILJS_PUBLIC_KEY');
+  emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+    to_email: 'ahplatform73@gmail.com',
+    student_name: userName,
+    language: selectedLang,
+    stage: stageIndex + 1,
+    points_earned: pts,
+    total_points: points,
+    message: `الطالب ${userName} اجتاز المرحلة ${stageIndex+1} في ${selectedLang} وكسب ${pts} نقطة. إجمالي النقاط: ${points}`
+  }).catch(() => {});
+}
+
+// ===== UI LANGUAGE =====
+function switchUILang(lang) {
+  uiLang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('ar-btn').classList.toggle('active', lang === 'ar');
+  document.getElementById('en-btn').classList.toggle('active', lang === 'en');
+  document.getElementById('select-section-text').textContent = lang==='ar'?'اختر قسماً من القائمة للبدء':'Select a section from the menu to start';
+  document.getElementById('course-lang-title').textContent = selectedLang;
+  buildSidebar();
+  if (currentSection !== null) loadSection(currentSection);
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  isLightMode = !isLightMode;
+  document.body.classList.toggle('light-mode', isLightMode);
+  const icon = isLightMode ? '☀️' : '🌙';
+  document.getElementById('theme-toggle').textContent = icon;
+  const t2 = document.getElementById('theme-toggle-2');
+  if (t2) t2.textContent = icon;
+  localStorage.setItem('platform_theme', isLightMode ? 'day' : 'night');
+}
+
+// ===== INHERIT THEME & COLOR =====
+function applyParentTheme() {
+  const savedTheme = localStorage.getItem('platform_theme');
+  if (savedTheme === 'day') {
+    isLightMode = true;
+    document.body.classList.add('light-mode');
+    document.getElementById('theme-toggle').textContent = '☀️';
+    const t2 = document.getElementById('theme-toggle-2');
+    if (t2) t2.textContent = '☀️';
+  }
+  const savedColor = localStorage.getItem('platform_saved_color');
+  if (savedColor && /^#[0-9a-fA-F]{6}$/.test(savedColor.trim())) {
+    applyAccentColor(savedColor.trim());
+  }
+}
+
+function hexToRgbStr(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return { r, g, b, str: r+','+g+','+b };
+}
+function lightenHex(hex, factor) {
+  const r = Math.min(255, Math.round(parseInt(hex.slice(1,3),16) * factor));
+  const g = Math.min(255, Math.round(parseInt(hex.slice(3,5),16) * factor));
+  const b = Math.min(255, Math.round(parseInt(hex.slice(5,7),16) * factor));
+  return '#' + r.toString(16).padStart(2,'0')
+             + g.toString(16).padStart(2,'0')
+             + b.toString(16).padStart(2,'0');
+}
+function applyAccentColor(hex) {
+  try {
+    const { r, g, b, str } = hexToRgbStr(hex);
+    const root = document.documentElement;
+    root.style.setProperty('--pink',         hex);
+    root.style.setProperty('--pink-light',   lightenHex(hex, 1.3));
+    root.style.setProperty('--pink-dark',    lightenHex(hex, 0.72));
+    root.style.setProperty('--glass',        `rgba(${str},0.08)`);
+    root.style.setProperty('--glass-border', `rgba(${str},0.25)`);
+    root.style.setProperty('--card-bg',      `rgba(${str},0.05)`);
+    root.style.setProperty('--sidebar-bg',   `rgba(${str},0.04)`);
+    window._accentRgb = str;
+  } catch(e) {}
+}
+
+// ===== POINTS =====
+function updatePointsDisplay() {
+  const el = document.getElementById('points-display');
+  if (el) el.textContent = points;
+}
+
+// ===== NOTIFICATIONS =====
+function showNotif(msg, type='success') {
+  const n = document.createElement('div');
+  n.className = `notif ${type}`;
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => { n.style.transition='opacity 0.5s'; n.style.opacity='0'; setTimeout(()=>n.remove(),500); }, 3000);
+}
+
+// ===== START =====
+window.addEventListener('load', () => {
+  // أول شيء: تحقق من الحظر الدائم
+  if (checkPermBlocked()) return;
+  applyParentTheme();
+  startIntro();
+});
+</script>
+</body>
+</html>

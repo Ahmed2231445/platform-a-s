@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmed Shawky Afify | دليل HTML الشامل</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --purple: #8a2be2;
+            --purple-light: #b266ff;
+            --purple-glow: rgba(138,43,226,0.4);
+            --purple-dim: rgba(138,43,226,0.1);
+            --bg: #080810;
+            --bg-card: #10101a;
+            --bg-card2: #14141f;
+            --text: #e0dff5;
+            --text-dim: #888;
+            --green: #00ffa3;
+            --cyan: #00cfff;
+            --yellow: #ffd166;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ─── HERO ─── */
+        header {
+            position: relative;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px 40px;
+            overflow: hidden;
+        }
+
+        header::before {
+            content:'';
+            position:absolute;
+            inset:0;
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(138,43,226,.35) 0%, transparent 70%);
+            pointer-events:none;
+        }
+
+        .grid-bg {
+            position:absolute;
+            inset:0;
+            background-image:
+                linear-gradient(rgba(138,43,226,.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138,43,226,.07) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--purple-dim);
+            border: 1px solid var(--purple);
+            color: var(--purple-light);
+            font-size: 12px;
+            padding: 4px 16px;
+            border-radius: 100px;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+
+        header h1 {
+            font-size: clamp(28px, 5vw, 52px);
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        header h1 .name {
+            background: linear-gradient(135deg, #b266ff, #00cfff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p.sub {
+            margin-top: 12px;
+            color: var(--text-dim);
+            font-size: 15px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--purple-light);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* ─── NAV TABS ─── */
+        .tabs-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8,8,16,.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(138,43,226,.2);
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            max-width: 1100px;
+            margin: auto;
+            padding: 10px 0;
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar { display:none; }
+
+        .tab {
+            flex-shrink:0;
+            padding: 7px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: transparent;
+            transition: all .2s;
+        }
+
+        .tab:hover { color: var(--text); background: var(--purple-dim); }
+        .tab.active { background: var(--purple); color: white; }
+
+        /* ─── CONTAINER ─── */
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 20px 60px;
+        }
+
+        /* ─── SECTION ─── */
+        .section { display:none; }
+        .section.active { display:block; }
+
+        .section-header {
+            margin-bottom: 28px;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--purple-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h2 .icon {
+            width: 34px; height: 34px;
+            background: var(--purple-dim);
+            border: 1px solid var(--purple);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+            flex-shrink:0;
+        }
+
+        .section-header p {
+            margin-top: 6px;
+            color: var(--text-dim);
+            font-size: 14px;
+            padding-right: 44px;
+        }
+
+        /* ─── CARDS GRID ─── */
+        .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(138,43,226,.2);
+            border-right: 4px solid var(--purple);
+            border-radius: 14px;
+            padding: 22px;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(138,43,226,.25);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--purple-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--purple);
+            flex-shrink: 0;
+        }
+
+        .card p {
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: #bbb;
+            margin-bottom: 12px;
+        }
+
+        .card-tag {
+            display: inline-block;
+            background: rgba(0,255,163,.07);
+            border: 1px solid rgba(0,255,163,.3);
+            color: var(--green);
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 100px;
+            margin-bottom: 10px;
+        }
+
+        /* ─── CODE BLOCK ─── */
+        .code-block {
+            background: #0a0a12;
+            border: 1px solid rgba(138,43,226,.25);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .code-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: rgba(138,43,226,.1);
+            border-bottom: 1px solid rgba(138,43,226,.15);
+        }
+
+        .code-dots { display:flex; gap:5px; }
+        .code-dots span {
+            width:10px;height:10px;border-radius:50%;
+        }
+        .d1{background:#ff5f57;} .d2{background:#febc2e;} .d3{background:#28c840;}
+
+        .code-lang {
+            font-size: 11px;
+            color: var(--purple-light);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(138,43,226,.4);
+            color: var(--purple-light);
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Cairo', sans-serif;
+        }
+        .copy-btn:hover { background: var(--purple); color: white; }
+
+        code {
+            display: block;
+            padding: 16px;
+            color: #c792ea;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            direction: ltr;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.7;
+        }
+
+        .kw { color: #89ddff; }
+        .at { color: #ffcb6b; }
+        .val { color: #c3e88d; }
+        .tag-c { color: #f07178; }
+        .cm { color: #546e7a; font-style: italic; }
+
+        /* ─── BIG CARD (full width) ─── */
+        .card-full {
+            background: var(--bg-card);
+            border: 1px solid rgba(138,43,226,.2);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+
+        .card-full .card-title { font-size: 16px; margin-bottom: 12px; }
+        .card-full p { font-size: 14px; line-height: 1.9; color: #bbb; margin-bottom: 14px; }
+
+        /* ─── ATTRIBUTE TABLE ─── */
+        .attr-table {
+            width:100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        .attr-table th {
+            background: rgba(138,43,226,.15);
+            color: var(--purple-light);
+            padding: 10px 14px;
+            text-align: right;
+            border-bottom: 1px solid rgba(138,43,226,.2);
+        }
+        .attr-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,.04);
+            color: #ccc;
+            vertical-align: top;
+        }
+        .attr-table tr:last-child td { border-bottom: none; }
+        .attr-table td code { display:inline; padding:2px 6px; border-radius:4px; font-size:12px; }
+
+        /* ─── TIPS ─── */
+        .tip {
+            background: rgba(0,207,255,.05);
+            border: 1px solid rgba(0,207,255,.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #aee;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .tip .tip-icon { font-size: 18px; flex-shrink:0; }
+
+        /* ─── PROGRESS / LEVELS ─── */
+        .levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 8px; }
+        .level-card {
+            background: var(--bg-card2);
+            border: 1px solid rgba(138,43,226,.15);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+        .level-icon { font-size: 30px; margin-bottom: 8px; }
+        .level-name { font-size: 14px; font-weight: 700; color: var(--purple-light); margin-bottom: 6px; }
+        .level-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+        /* ─── CHEAT SHEET ─── */
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .cheat-item {
+            background: var(--bg-card2);
+            border: 1px solid rgba(138,43,226,.15);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cheat-tag-name {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #f07178;
+            background: rgba(240,113,120,.08);
+            border-radius: 6px;
+            padding: 4px 10px;
+            display: inline-block;
+        }
+        .cheat-desc { font-size: 12px; color: #aaa; }
+
+        /* ─── QUIZ ─── */
+        .quiz-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(138,43,226,.2);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+        .quiz-q { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+        .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+        .quiz-opt {
+            padding: 11px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(138,43,226,.25);
+            background: var(--bg-card2);
+            cursor: pointer;
+            font-size: 13.5px;
+            font-family: 'Cairo', sans-serif;
+            color: var(--text);
+            text-align: right;
+            transition: all .2s;
+        }
+        .quiz-opt:hover { border-color: var(--purple); background: var(--purple-dim); }
+        .quiz-opt.correct { border-color: var(--green); background: rgba(0,255,163,.08); color: var(--green); }
+        .quiz-opt.wrong { border-color: #ff5f57; background: rgba(255,95,87,.08); color: #ff5f57; }
+        .quiz-feedback { margin-top: 10px; font-size: 13px; min-height: 20px; }
+
+        /* ─── FOOTER ─── */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: #0a0a14;
+            border-top: 1px solid rgba(138,43,226,.15);
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+        footer span { color: var(--purple-light); font-weight: 700; }
+
+        /* ─── SCROLL REVEAL ─── */
+        .reveal { opacity:0; transform: translateY(24px); transition: opacity .5s, transform .5s; }
+        .reveal.visible { opacity:1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="grid-bg"></div>
+    <div class="badge">🚀 دليل HTML الشامل 2025</div>
+    <h1><span class="name">Ahmed Shawky Afify</span></h1>
+    <p class="sub">تعلّم HTML من الصفر حتى الاحتراف — بأمثلة تفاعلية وشرح عربي</p>
+    <div class="stats">
+        <div class="stat"><div class="stat-num">16+</div><div class="stat-label">فئة رئيسية</div></div>
+        <div class="stat"><div class="stat-num">60+</div><div class="stat-label">وسم HTML</div></div>
+        <div class="stat"><div class="stat-num">5</div><div class="stat-label">اختبارات تفاعلية</div></div>
+        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">مجاناً</div></div>
+    </div>
+</header>
+
+<!-- NAV TABS -->
+<div class="tabs-wrap">
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('basics')">📌 الأساسيات</button>
+        <button class="tab" onclick="showTab('text')">✍️ النصوص</button>
+        <button class="tab" onclick="showTab('media')">🎬 الوسائط</button>
+        <button class="tab" onclick="showTab('lists')">📋 القوائم والجداول</button>
+        <button class="tab" onclick="showTab('forms')">📝 النماذج</button>
+        <button class="tab" onclick="showTab('semantic')">🏗️ Semantic HTML</button>
+        <button class="tab" onclick="showTab('advanced')">⚡ متقدم</button>
+        <button class="tab" onclick="showTab('cheatsheet')">📄 Cheat Sheet</button>
+        <button class="tab" onclick="showTab('quiz')">🧠 اختبر نفسك</button>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════ BASICS ═══════════════════ -->
+<div class="section active" id="basics">
+    <div class="section-header reveal">
+        <h2><span class="icon">📌</span> هيكل صفحة HTML</h2>
+        <p>تعرّف على الهيكل الأساسي لأي صفحة ويب قبل أن تبدأ</p>
+    </div>
+
+    <div class="card-full reveal">
+        <div class="card-title"><span class="dot"></span>الهيكل الكامل لصفحة HTML</div>
+        <p>كل صفحة HTML تبدأ بإعلان DOCTYPE ثم تحتوي على قسمين رئيسيين: &lt;head&gt; للمعلومات الخفية و&lt;body&gt; للمحتوى المرئي.</p>
+        <div class="code-block">
+            <div class="code-top">
+                <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="code-lang">HTML</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <code><span class="cm">&lt;!-- إعلان نوع الوثيقة --&gt;</span>
+<span class="tag-c">&lt;!DOCTYPE</span> <span class="at">html</span><span class="tag-c">&gt;</span>
+
+<span class="tag-c">&lt;html</span> <span class="at">lang</span>=<span class="val">"ar"</span><span class="tag-c">&gt;</span>
+
+  <span class="tag-c">&lt;head&gt;</span>
+    <span class="tag-c">&lt;meta</span> <span class="at">charset</span>=<span class="val">"UTF-8"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;meta</span> <span class="at">name</span>=<span class="val">"viewport"</span> <span class="at">content</span>=<span class="val">"width=device-width, initial-scale=1.0"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;title&gt;</span>عنوان الصفحة<span class="tag-c">&lt;/title&gt;</span>
+    <span class="tag-c">&lt;link</span> <span class="at">rel</span>=<span class="val">"stylesheet"</span> <span class="at">href</span>=<span class="val">"style.css"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;/head&gt;</span>
+
+  <span class="tag-c">&lt;body&gt;</span>
+    <span class="cm">&lt;!-- كل المحتوى المرئي يأتي هنا --&gt;</span>
+    <span class="tag-c">&lt;h1&gt;</span>مرحباً بالعالم!<span class="tag-c">&lt;/h1&gt;</span>
+  <span class="tag-c">&lt;/body&gt;</span>
+
+<span class="tag-c">&lt;/html&gt;</span></code>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card reveal">
+            <div class="card-tag">Meta Tags</div>
+            <div class="card-title"><span class="dot"></span>وسوم Meta المهمة</div>
+            <p>تحدد معلومات الصفحة مثل الترميز، الوصف، والكلمات المفتاحية لمحركات البحث.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;meta</span> <span class="at">charset</span>=<span class="val">"UTF-8"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;meta</span> <span class="at">name</span>=<span class="val">"description"</span>
+      <span class="at">content</span>=<span class="val">"وصف الصفحة"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;meta</span> <span class="at">name</span>=<span class="val">"keywords"</span>
+      <span class="at">content</span>=<span class="val">"HTML, تعلم"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;meta</span> <span class="at">name</span>=<span class="val">"author"</span>
+      <span class="at">content</span>=<span class="val">"Ahmed Shawky"</span><span class="tag-c">&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Headings</div>
+            <div class="card-title"><span class="dot"></span>العناوين h1 – h6</div>
+            <p>ست مستويات من العناوين. h1 للعنوان الرئيسي الأهم، وh6 للأصغر. يجب استخدام h1 مرة واحدة فقط في الصفحة.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;h1&gt;</span>عنوان رئيسي<span class="tag-c">&lt;/h1&gt;</span>
+<span class="tag-c">&lt;h2&gt;</span>عنوان ثانوي<span class="tag-c">&lt;/h2&gt;</span>
+<span class="tag-c">&lt;h3&gt;</span>عنوان فرعي<span class="tag-c">&lt;/h3&gt;</span>
+<span class="tag-c">&lt;h4&gt;</span>عنوان أصغر<span class="tag-c">&lt;/h4&gt;</span>
+<span class="tag-c">&lt;h5&gt;</span>عنوان خامس<span class="tag-c">&lt;/h5&gt;</span>
+<span class="tag-c">&lt;h6&gt;</span>عنوان سادس<span class="tag-c">&lt;/h6&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Comments</div>
+            <div class="card-title"><span class="dot"></span>التعليقات</div>
+            <p>لا تظهر في الصفحة، تُستخدم لشرح الكود أو إيقاف تشغيله مؤقتاً.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- هذا تعليق لا يظهر --&gt;</span>
+
+<span class="cm">&lt;!--
+  تعليق
+  متعدد الأسطر
+--&gt;</span>
+
+<span class="cm">&lt;!-- &lt;p&gt;هذا الكود موقف&lt;/p&gt; --&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Attributes</div>
+            <div class="card-title"><span class="dot"></span>الخصائص (Attributes)</div>
+            <p>معلومات إضافية تُضاف داخل الوسم. كل خاصية لها اسم وقيمة.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- id: معرف فريد --&gt;</span>
+<span class="tag-c">&lt;div</span> <span class="at">id</span>=<span class="val">"main"</span><span class="tag-c">&gt;&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- class: لمجموعة عناصر --&gt;</span>
+<span class="tag-c">&lt;p</span> <span class="at">class</span>=<span class="val">"text-red"</span><span class="tag-c">&gt;</span>نص<span class="tag-c">&lt;/p&gt;</span>
+
+<span class="cm">&lt;!-- style: تنسيق مباشر --&gt;</span>
+<span class="tag-c">&lt;p</span> <span class="at">style</span>=<span class="val">"color:red"</span><span class="tag-c">&gt;</span>نص<span class="tag-c">&lt;/p&gt;</span></code>
+            </div>
+        </div>
+    </div>
+
+    <div class="tip reveal">
+        <span class="tip-icon">💡</span>
+        <div>تذكر: وسوم HTML تأتي دائماً في أزواج — وسم فتح <code style="display:inline;padding:2px 6px;border-radius:4px;">&lt;p&gt;</code> ووسم إغلاق <code style="display:inline;padding:2px 6px;border-radius:4px;">&lt;/p&gt;</code> — إلا الوسوم الذاتية الإغلاق مثل &lt;br&gt; و&lt;img&gt; و&lt;meta&gt;</div>
+    </div>
+</div>
+
+<!-- ═══════════════════ TEXT ═══════════════════ -->
+<div class="section" id="text">
+    <div class="section-header reveal">
+        <h2><span class="icon">✍️</span> تنسيق النصوص</h2>
+        <p>كل الوسوم المتعلقة بالنصوص والكتابة في HTML</p>
+    </div>
+
+    <div class="cards">
+        <div class="card reveal">
+            <div class="card-tag">Text Formatting</div>
+            <div class="card-title"><span class="dot"></span>التنسيق الأساسي</div>
+            <p>وسوم لتغيير مظهر النصوص: عريض، مائل، خط تحت، خط منتصف.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;b&gt;</span>نص عريض (Bold)<span class="tag-c">&lt;/b&gt;</span>
+<span class="tag-c">&lt;strong&gt;</span>مهم دلالياً<span class="tag-c">&lt;/strong&gt;</span>
+<span class="tag-c">&lt;i&gt;</span>نص مائل (Italic)<span class="tag-c">&lt;/i&gt;</span>
+<span class="tag-c">&lt;em&gt;</span>تأكيد دلالي<span class="tag-c">&lt;/em&gt;</span>
+<span class="tag-c">&lt;u&gt;</span>خط تحتي<span class="tag-c">&lt;/u&gt;</span>
+<span class="tag-c">&lt;s&gt;</span>نص محذوف<span class="tag-c">&lt;/s&gt;</span>
+<span class="tag-c">&lt;mark&gt;</span>نص محدد<span class="tag-c">&lt;/mark&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Sup & Sub</div>
+            <div class="card-title"><span class="dot"></span>الأس والمؤشر</div>
+            <p>للكتابة فوق السطر (أسس رياضية) أو تحته (صيغ كيميائية).</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- أس رياضي: x² --&gt;</span>
+x<span class="tag-c">&lt;sup&gt;</span>2<span class="tag-c">&lt;/sup&gt;</span>
+
+<span class="cm">&lt;!-- صيغة كيميائية: H₂O --&gt;</span>
+H<span class="tag-c">&lt;sub&gt;</span>2<span class="tag-c">&lt;/sub&gt;</span>O
+
+<span class="cm">&lt;!-- ملاحظة قدم --&gt;</span>
+نص<span class="tag-c">&lt;sup&gt;</span>[1]<span class="tag-c">&lt;/sup&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Quote</div>
+            <div class="card-title"><span class="dot"></span>الاقتباسات</div>
+            <p>لعرض الاقتباسات من مصادر أخرى بشكل صحيح دلالياً.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- اقتباس مضمّن --&gt;</span>
+<span class="tag-c">&lt;q&gt;</span>قول مأثور<span class="tag-c">&lt;/q&gt;</span>
+
+<span class="cm">&lt;!-- اقتباس بلوك --&gt;</span>
+<span class="tag-c">&lt;blockquote</span> <span class="at">cite</span>=<span class="val">"https://..."</span><span class="tag-c">&gt;</span>
+  نص الاقتباس الطويل
+<span class="tag-c">&lt;/blockquote&gt;</span>
+
+<span class="cm">&lt;!-- مصدر --&gt;</span>
+<span class="tag-c">&lt;cite&gt;</span>اسم المرجع<span class="tag-c">&lt;/cite&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Code & Pre</div>
+            <div class="card-title"><span class="dot"></span>عرض الكود البرمجي</div>
+            <p>لعرض كود أو نص محافظاً على المسافات والتنسيق.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- كود مضمّن --&gt;</span>
+<span class="tag-c">&lt;code&gt;</span>let x = 5;<span class="tag-c">&lt;/code&gt;</span>
+
+<span class="cm">&lt;!-- كود بلوك محافظ التنسيق --&gt;</span>
+<span class="tag-c">&lt;pre&gt;</span>
+  <span class="tag-c">&lt;code&gt;</span>
+    function hello() {
+      return "مرحبا";
+    }
+  <span class="tag-c">&lt;/code&gt;</span>
+<span class="tag-c">&lt;/pre&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Links</div>
+            <div class="card-title"><span class="dot"></span>الروابط بالتفصيل</div>
+            <p>وسم &lt;a&gt; للروابط مع جميع خياراته وطرق استخدامه.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- رابط خارجي --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="at">href</span>=<span class="val">"https://google.com"</span>
+   <span class="at">target</span>=<span class="val">"_blank"</span>
+   <span class="at">rel</span>=<span class="val">"noopener"</span><span class="tag-c">&gt;</span>Google<span class="tag-c">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- رابط بريد إلكتروني --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="at">href</span>=<span class="val">"mailto:hi@test.com"</span><span class="tag-c">&gt;</span>راسلني<span class="tag-c">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- رابط هاتف --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="at">href</span>=<span class="val">"tel:+201234567890"</span><span class="tag-c">&gt;</span>اتصل<span class="tag-c">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- رابط داخل الصفحة --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="at">href</span>=<span class="val">"#section1"</span><span class="tag-c">&gt;</span>انتقل<span class="tag-c">&lt;/a&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Span & Div</div>
+            <div class="card-title"><span class="dot"></span>Span و Div</div>
+            <p>span لتنسيق جزء من النص، div لتقسيم الصفحة إلى كتل.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- span: inline --&gt;</span>
+<span class="tag-c">&lt;p&gt;</span>
+  اضغط
+  <span class="tag-c">&lt;span</span> <span class="at">style</span>=<span class="val">"color:red"</span><span class="tag-c">&gt;</span>هنا<span class="tag-c">&lt;/span&gt;</span>
+<span class="tag-c">&lt;/p&gt;</span>
+
+<span class="cm">&lt;!-- div: block --&gt;</span>
+<span class="tag-c">&lt;div</span> <span class="at">class</span>=<span class="val">"box"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;p&gt;</span>محتوى القسم<span class="tag-c">&lt;/p&gt;</span>
+<span class="tag-c">&lt;/div&gt;</span></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ MEDIA ═══════════════════ -->
+<div class="section" id="media">
+    <div class="section-header reveal">
+        <h2><span class="icon">🎬</span> الوسائط والصور</h2>
+        <p>إضافة صور، فيديو، صوت، وخرائط iframe</p>
+    </div>
+
+    <div class="cards">
+        <div class="card reveal">
+            <div class="card-tag">Image</div>
+            <div class="card-title"><span class="dot"></span>الصور بالتفصيل</div>
+            <p>إضافة صورة مع تحديد الحجم ونص بديل لإمكانية الوصول.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;img</span>
+  <span class="at">src</span>=<span class="val">"photo.jpg"</span>
+  <span class="at">alt</span>=<span class="val">"وصف الصورة"</span>
+  <span class="at">width</span>=<span class="val">"300"</span>
+  <span class="at">height</span>=<span class="val">"200"</span>
+  <span class="at">loading</span>=<span class="val">"lazy"</span>
+<span class="tag-c">&gt;</span>
+
+<span class="cm">&lt;!-- صورة من موقع آخر --&gt;</span>
+<span class="tag-c">&lt;img</span> <span class="at">src</span>=<span class="val">"https://site.com/img.png"</span>
+     <span class="at">alt</span>=<span class="val">"صورة خارجية"</span><span class="tag-c">&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Video</div>
+            <div class="card-title"><span class="dot"></span>الفيديو</div>
+            <p>تضمين فيديو مع أدوات التحكم وإمكانية تشغيل أكثر من صيغة.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;video</span>
+  <span class="at">width</span>=<span class="val">"640"</span>
+  <span class="at">controls</span>
+  <span class="at">autoplay</span>
+  <span class="at">muted</span>
+  <span class="at">loop</span>
+  <span class="at">poster</span>=<span class="val">"thumb.jpg"</span>
+<span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;source</span> <span class="at">src</span>=<span class="val">"video.mp4"</span>
+          <span class="at">type</span>=<span class="val">"video/mp4"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;source</span> <span class="at">src</span>=<span class="val">"video.webm"</span>
+          <span class="at">type</span>=<span class="val">"video/webm"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/video&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Audio</div>
+            <div class="card-title"><span class="dot"></span>الصوت</div>
+            <p>تضمين ملف صوتي مع دعم أكثر من صيغة.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;audio</span> <span class="at">controls</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;source</span> <span class="at">src</span>=<span class="val">"song.mp3"</span>
+          <span class="at">type</span>=<span class="val">"audio/mpeg"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;source</span> <span class="at">src</span>=<span class="val">"song.ogg"</span>
+          <span class="at">type</span>=<span class="val">"audio/ogg"</span><span class="tag-c">&gt;</span>
+  متصفحك لا يدعم الصوت
+<span class="tag-c">&lt;/audio&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">iFrame</div>
+            <div class="card-title"><span class="dot"></span>تضمين iFrame</div>
+            <p>لتضمين صفحة أخرى أو خريطة Google أو فيديو يوتيوب.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- يوتيوب --&gt;</span>
+<span class="tag-c">&lt;iframe</span>
+  <span class="at">src</span>=<span class="val">"https://www.youtube.com/embed/ID"</span>
+  <span class="at">width</span>=<span class="val">"560"</span>
+  <span class="at">height</span>=<span class="val">"315"</span>
+  <span class="at">allowfullscreen</span>
+<span class="tag-c">&gt;&lt;/iframe&gt;</span>
+
+<span class="cm">&lt;!-- خريطة جوجل --&gt;</span>
+<span class="tag-c">&lt;iframe</span>
+  <span class="at">src</span>=<span class="val">"https://maps.google.com/maps?..."</span>
+<span class="tag-c">&gt;&lt;/iframe&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Figure</div>
+            <div class="card-title"><span class="dot"></span>Figure و Figcaption</div>
+            <p>لعرض الصور مع تسميات توضيحية بشكل دلالي صحيح.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;figure&gt;</span>
+  <span class="tag-c">&lt;img</span> <span class="at">src</span>=<span class="val">"sunset.jpg"</span>
+       <span class="at">alt</span>=<span class="val">"غروب الشمس"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;figcaption&gt;</span>
+    غروب الشمس على البحر
+  <span class="tag-c">&lt;/figcaption&gt;</span>
+<span class="tag-c">&lt;/figure&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Picture</div>
+            <div class="card-title"><span class="dot"></span>وسم Picture المتجاوب</div>
+            <p>لتقديم صور مختلفة لأحجام شاشات مختلفة (Responsive Images).</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;picture&gt;</span>
+  <span class="tag-c">&lt;source</span>
+    <span class="at">media</span>=<span class="val">"(max-width: 600px)"</span>
+    <span class="at">srcset</span>=<span class="val">"small.jpg"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;source</span>
+    <span class="at">media</span>=<span class="val">"(max-width: 1200px)"</span>
+    <span class="at">srcset</span>=<span class="val">"medium.jpg"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;img</span> <span class="at">src</span>=<span class="val">"large.jpg"</span>
+       <span class="at">alt</span>=<span class="val">"صورة"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/picture&gt;</span></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ LISTS & TABLES ═══════════════════ -->
+<div class="section" id="lists">
+    <div class="section-header reveal">
+        <h2><span class="icon">📋</span> القوائم والجداول</h2>
+        <p>تنظيم البيانات في قوائم وجداول منسقة</p>
+    </div>
+
+    <div class="cards">
+        <div class="card reveal">
+            <div class="card-tag">Unordered List</div>
+            <div class="card-title"><span class="dot"></span>القائمة غير المرتبة</div>
+            <p>قائمة بنقاط بدون ترقيم، تستخدم للعناصر التي لا يهم ترتيبها.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;ul&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>HTML<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>CSS<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>JavaScript<span class="tag-c">&lt;/li&gt;</span>
+<span class="tag-c">&lt;/ul&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Ordered List</div>
+            <div class="card-title"><span class="dot"></span>القائمة المرتبة</div>
+            <p>قائمة مرقمة، تستخدم للخطوات المتسلسلة أو الترتيب المهم.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;ol</span> <span class="at">type</span>=<span class="val">"1"</span> <span class="at">start</span>=<span class="val">"1"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>الخطوة الأولى<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>الخطوة الثانية<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>الخطوة الثالثة<span class="tag-c">&lt;/li&gt;</span>
+<span class="tag-c">&lt;/ol&gt;</span>
+
+<span class="cm">&lt;!-- type="A" للحروف، "i" للروماني --&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Nested List</div>
+            <div class="card-title"><span class="dot"></span>القوائم المتداخلة</div>
+            <p>قوائم داخل قوائم لتمثيل التسلسل الهرمي.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;ul&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Frontend
+    <span class="tag-c">&lt;ul&gt;</span>
+      <span class="tag-c">&lt;li&gt;</span>HTML<span class="tag-c">&lt;/li&gt;</span>
+      <span class="tag-c">&lt;li&gt;</span>CSS<span class="tag-c">&lt;/li&gt;</span>
+    <span class="tag-c">&lt;/ul&gt;</span>
+  <span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Backend<span class="tag-c">&lt;/li&gt;</span>
+<span class="tag-c">&lt;/ul&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Description List</div>
+            <div class="card-title"><span class="dot"></span>قائمة التعريفات</div>
+            <p>لعرض المصطلحات وتعريفاتها مثل القاموس.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;dl&gt;</span>
+  <span class="tag-c">&lt;dt&gt;</span>HTML<span class="tag-c">&lt;/dt&gt;</span>
+  <span class="tag-c">&lt;dd&gt;</span>لغة ترميز النص التشعبي<span class="tag-c">&lt;/dd&gt;</span>
+
+  <span class="tag-c">&lt;dt&gt;</span>CSS<span class="tag-c">&lt;/dt&gt;</span>
+  <span class="tag-c">&lt;dd&gt;</span>أوراق أنماط الصفحات<span class="tag-c">&lt;/dd&gt;</span>
+<span class="tag-c">&lt;/dl&gt;</span></code>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-full reveal" style="margin-top:18px">
+        <div class="card-title"><span class="dot"></span>الجداول بالكامل</div>
+        <p>الجدول الكامل مع رأس، جسم، تذييل، ودمج الخلايا.</p>
+        <div class="code-block">
+            <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <code><span class="tag-c">&lt;table</span> <span class="at">border</span>=<span class="val">"1"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;caption&gt;</span>جدول الدرجات<span class="tag-c">&lt;/caption&gt;</span>
+
+  <span class="tag-c">&lt;thead&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;th&gt;</span>الاسم<span class="tag-c">&lt;/th&gt;</span>
+      <span class="tag-c">&lt;th&gt;</span>الدرجة<span class="tag-c">&lt;/th&gt;</span>
+      <span class="tag-c">&lt;th&gt;</span>التقدير<span class="tag-c">&lt;/th&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+  <span class="tag-c">&lt;/thead&gt;</span>
+
+  <span class="tag-c">&lt;tbody&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>أحمد<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td</span> <span class="at">colspan</span>=<span class="val">"2"</span><span class="tag-c">&gt;</span>95 - ممتاز<span class="tag-c">&lt;/td&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;td</span> <span class="at">rowspan</span>=<span class="val">"2"</span><span class="tag-c">&gt;</span>محمد<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>80<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>جيد جداً<span class="tag-c">&lt;/td&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+  <span class="tag-c">&lt;/tbody&gt;</span>
+
+  <span class="tag-c">&lt;tfoot&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;td</span> <span class="at">colspan</span>=<span class="val">"3"</span><span class="tag-c">&gt;</span>المجموع<span class="tag-c">&lt;/td&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+  <span class="tag-c">&lt;/tfoot&gt;</span>
+<span class="tag-c">&lt;/table&gt;</span></code>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ FORMS ═══════════════════ -->
+<div class="section" id="forms">
+    <div class="section-header reveal">
+        <h2><span class="icon">📝</span> النماذج والمدخلات</h2>
+        <p>جمع البيانات من المستخدمين</p>
+    </div>
+
+    <div class="card-full reveal">
+        <div class="card-title"><span class="dot"></span>نموذج شامل</div>
+        <div class="code-block">
+            <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <code><span class="tag-c">&lt;form</span> <span class="at">action</span>=<span class="val">"/submit"</span> <span class="at">method</span>=<span class="val">"POST"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- حقل نص --&gt;</span>
+  <span class="tag-c">&lt;label</span> <span class="at">for</span>=<span class="val">"name"</span><span class="tag-c">&gt;</span>الاسم:<span class="tag-c">&lt;/label&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"text"</span> <span class="at">id</span>=<span class="val">"name"</span> <span class="at">name</span>=<span class="val">"name"</span>
+         <span class="at">placeholder</span>=<span class="val">"أدخل اسمك"</span> <span class="at">required</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- بريد إلكتروني --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"email"</span> <span class="at">placeholder</span>=<span class="val">"البريد"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- كلمة مرور --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"password"</span> <span class="at">minlength</span>=<span class="val">"8"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- رقم --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"number"</span> <span class="at">min</span>=<span class="val">"0"</span> <span class="at">max</span>=<span class="val">"100"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- تاريخ --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"date"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- لون --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"color"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- نطاق (slider) --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"range"</span> <span class="at">min</span>=<span class="val">"0"</span> <span class="at">max</span>=<span class="val">"100"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- مربع اختيار --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"checkbox"</span><span class="tag-c">&gt;</span> أوافق
+
+  <span class="cm">&lt;!-- زر راديو --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"radio"</span> <span class="at">name</span>=<span class="val">"gender"</span><span class="tag-c">&gt;</span> ذكر
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"radio"</span> <span class="at">name</span>=<span class="val">"gender"</span><span class="tag-c">&gt;</span> أنثى
+
+  <span class="cm">&lt;!-- قائمة منسدلة --&gt;</span>
+  <span class="tag-c">&lt;select</span> <span class="at">name</span>=<span class="val">"city"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;option</span> <span class="at">value</span>=<span class="val">"cairo"</span><span class="tag-c">&gt;</span>القاهرة<span class="tag-c">&lt;/option&gt;</span>
+    <span class="tag-c">&lt;option</span> <span class="at">value</span>=<span class="val">"alex"</span><span class="tag-c">&gt;</span>الإسكندرية<span class="tag-c">&lt;/option&gt;</span>
+  <span class="tag-c">&lt;/select&gt;</span>
+
+  <span class="cm">&lt;!-- منطقة نص --&gt;</span>
+  <span class="tag-c">&lt;textarea</span> <span class="at">rows</span>=<span class="val">"4"</span> <span class="at">cols</span>=<span class="val">"50"</span><span class="tag-c">&gt;&lt;/textarea&gt;</span>
+
+  <span class="cm">&lt;!-- رفع ملف --&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="at">type</span>=<span class="val">"file"</span> <span class="at">accept</span>=<span class="val">".jpg,.pdf"</span><span class="tag-c">&gt;</span>
+
+  <span class="cm">&lt;!-- زر إرسال --&gt;</span>
+  <span class="tag-c">&lt;button</span> <span class="at">type</span>=<span class="val">"submit"</span><span class="tag-c">&gt;</span>إرسال<span class="tag-c">&lt;/button&gt;</span>
+
+<span class="tag-c">&lt;/form&gt;</span></code>
+        </div>
+    </div>
+
+    <div class="tip reveal">
+        <span class="tip-icon">💡</span>
+        <div>استخدم دائماً &lt;label&gt; مع كل &lt;input&gt; وربطهما عبر خاصية <code style="display:inline;padding:2px 6px;border-radius:4px;">for</code> و <code style="display:inline;padding:2px 6px;border-radius:4px;">id</code> — هذا يحسن إمكانية الوصول ويجعل النقر على التسمية يُفعّل الحقل.</div>
+    </div>
+</div>
+
+<!-- ═══════════════════ SEMANTIC ═══════════════════ -->
+<div class="section" id="semantic">
+    <div class="section-header reveal">
+        <h2><span class="icon">🏗️</span> Semantic HTML5</h2>
+        <p>الوسوم الدلالية التي تجعل الكود أوضح لمحركات البحث وقارئات الشاشة</p>
+    </div>
+
+    <div class="card-full reveal">
+        <div class="card-title"><span class="dot"></span>هيكل صفحة Semantic كاملة</div>
+        <div class="code-block">
+            <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <code><span class="tag-c">&lt;body&gt;</span>
+
+  <span class="tag-c">&lt;header&gt;</span>
+    <span class="tag-c">&lt;nav&gt;</span>
+      <span class="tag-c">&lt;a</span> <span class="at">href</span>=<span class="val">"/"</span><span class="tag-c">&gt;</span>الرئيسية<span class="tag-c">&lt;/a&gt;</span>
+    <span class="tag-c">&lt;/nav&gt;</span>
+  <span class="tag-c">&lt;/header&gt;</span>
+
+  <span class="tag-c">&lt;main&gt;</span>
+    <span class="tag-c">&lt;section&gt;</span>
+      <span class="tag-c">&lt;h2&gt;</span>قسم رئيسي<span class="tag-c">&lt;/h2&gt;</span>
+      <span class="tag-c">&lt;article&gt;</span>
+        <span class="tag-c">&lt;h3&gt;</span>مقال<span class="tag-c">&lt;/h3&gt;</span>
+        <span class="tag-c">&lt;p&gt;</span>محتوى المقال...<span class="tag-c">&lt;/p&gt;</span>
+      <span class="tag-c">&lt;/article&gt;</span>
+    <span class="tag-c">&lt;/section&gt;</span>
+
+    <span class="tag-c">&lt;aside&gt;</span>
+      <span class="cm">&lt;!-- شريط جانبي --&gt;</span>
+    <span class="tag-c">&lt;/aside&gt;</span>
+  <span class="tag-c">&lt;/main&gt;</span>
+
+  <span class="tag-c">&lt;footer&gt;</span>
+    <span class="tag-c">&lt;p&gt;</span>&amp;copy; 2025 Ahmed Shawky<span class="tag-c">&lt;/p&gt;</span>
+  <span class="tag-c">&lt;/footer&gt;</span>
+
+<span class="tag-c">&lt;/body&gt;</span></code>
+        </div>
+    </div>
+
+    <div class="cards" style="margin-top:18px">
+        <div class="card reveal">
+            <div class="card-tag">Details & Summary</div>
+            <div class="card-title"><span class="dot"></span>الأكورديون الأصلي</div>
+            <p>لإنشاء أقسام قابلة للطي والتوسيع بدون JavaScript.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;details&gt;</span>
+  <span class="tag-c">&lt;summary&gt;</span>ما هو HTML؟<span class="tag-c">&lt;/summary&gt;</span>
+  <span class="tag-c">&lt;p&gt;</span>
+    HTML هي لغة ترميز النص
+    التشعبي لبناء صفحات الويب.
+  <span class="tag-c">&lt;/p&gt;</span>
+<span class="tag-c">&lt;/details&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Dialog</div>
+            <div class="card-title"><span class="dot"></span>نافذة Dialog</div>
+            <p>نافذة منبثقة أصلية في HTML5 بدون مكتبات.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;dialog</span> <span class="at">id</span>=<span class="val">"myDialog"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;p&gt;</span>مرحباً بك!<span class="tag-c">&lt;/p&gt;</span>
+  <span class="tag-c">&lt;button</span>
+    <span class="at">onclick</span>=<span class="val">"myDialog.close()"</span><span class="tag-c">&gt;</span>
+    إغلاق
+  <span class="tag-c">&lt;/button&gt;</span>
+<span class="tag-c">&lt;/dialog&gt;</span>
+
+<span class="tag-c">&lt;button</span>
+  <span class="at">onclick</span>=<span class="val">"myDialog.showModal()"</span><span class="tag-c">&gt;</span>
+  افتح النافذة
+<span class="tag-c">&lt;/button&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Progress & Meter</div>
+            <div class="card-title"><span class="dot"></span>شريط التقدم</div>
+            <p>لعرض تقدم عملية أو قيمة ضمن نطاق معين.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- شريط تحميل --&gt;</span>
+<span class="tag-c">&lt;progress</span>
+  <span class="at">value</span>=<span class="val">"70"</span>
+  <span class="at">max</span>=<span class="val">"100"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/progress&gt;</span>
+
+<span class="cm">&lt;!-- مقياس --&gt;</span>
+<span class="tag-c">&lt;meter</span>
+  <span class="at">value</span>=<span class="val">"6"</span>
+  <span class="at">min</span>=<span class="val">"0"</span>
+  <span class="at">max</span>=<span class="val">"10"</span>
+  <span class="at">low</span>=<span class="val">"3"</span>
+  <span class="at">high</span>=<span class="val">"8"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/meter&gt;</span></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ ADVANCED ═══════════════════ -->
+<div class="section" id="advanced">
+    <div class="section-header reveal">
+        <h2><span class="icon">⚡</span> مواضيع متقدمة</h2>
+        <p>Canvas، SVG، Accessibility، SEO، وأكثر</p>
+    </div>
+
+    <div class="cards">
+        <div class="card reveal">
+            <div class="card-tag">Canvas</div>
+            <div class="card-title"><span class="dot"></span>رسم بـ Canvas</div>
+            <p>رسم الأشكال والصور ديناميكياً باستخدام JavaScript.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML + JS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;canvas</span> <span class="at">id</span>=<span class="val">"myCanvas"</span>
+        <span class="at">width</span>=<span class="val">"400"</span>
+        <span class="at">height</span>=<span class="val">"200"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/canvas&gt;</span>
+
+<span class="tag-c">&lt;script&gt;</span>
+<span class="kw">const</span> canvas =
+  document.getElementById(<span class="val">'myCanvas'</span>);
+<span class="kw">const</span> ctx = canvas.getContext(<span class="val">'2d'</span>);
+
+ctx.fillStyle = <span class="val">'#8a2be2'</span>;
+ctx.fillRect(10, 10, 150, 80);
+<span class="tag-c">&lt;/script&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">SVG</div>
+            <div class="card-title"><span class="dot"></span>رسومات SVG</div>
+            <p>رسومات متجهية قابلة للتكبير داخل HTML مباشرة.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">SVG</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;svg</span> <span class="at">width</span>=<span class="val">"200"</span> <span class="at">height</span>=<span class="val">"100"</span><span class="tag-c">&gt;</span>
+  <span class="cm">&lt;!-- دائرة --&gt;</span>
+  <span class="tag-c">&lt;circle</span> <span class="at">cx</span>=<span class="val">"50"</span> <span class="at">cy</span>=<span class="val">"50"</span>
+           <span class="at">r</span>=<span class="val">"40"</span>
+           <span class="at">fill</span>=<span class="val">"purple"</span><span class="tag-c">/&gt;</span>
+
+  <span class="cm">&lt;!-- مستطيل --&gt;</span>
+  <span class="tag-c">&lt;rect</span> <span class="at">x</span>=<span class="val">"100"</span> <span class="at">y</span>=<span class="val">"10"</span>
+        <span class="at">width</span>=<span class="val">"80"</span> <span class="at">height</span>=<span class="val">"80"</span>
+        <span class="at">fill</span>=<span class="val">"#b266ff"</span><span class="tag-c">/&gt;</span>
+
+  <span class="cm">&lt;!-- نص --&gt;</span>
+  <span class="tag-c">&lt;text</span> <span class="at">x</span>=<span class="val">"10"</span> <span class="at">y</span>=<span class="val">"95"</span>
+        <span class="at">fill</span>=<span class="val">"white"</span><span class="tag-c">&gt;</span>SVG<span class="tag-c">&lt;/text&gt;</span>
+<span class="tag-c">&lt;/svg&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Accessibility</div>
+            <div class="card-title"><span class="dot"></span>إمكانية الوصول (a11y)</div>
+            <p>جعل موقعك قابلاً للاستخدام لذوي الإعاقة باستخدام ARIA.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="cm">&lt;!-- دور ARIA --&gt;</span>
+<span class="tag-c">&lt;div</span> <span class="at">role</span>=<span class="val">"navigation"</span>
+     <span class="at">aria-label</span>=<span class="val">"القائمة الرئيسية"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- زر مع وصف --&gt;</span>
+<span class="tag-c">&lt;button</span>
+  <span class="at">aria-label</span>=<span class="val">"إغلاق النافذة"</span><span class="tag-c">&gt;</span>
+  ✕
+<span class="tag-c">&lt;/button&gt;</span>
+
+<span class="cm">&lt;!-- وصف مخفي بصرياً --&gt;</span>
+<span class="tag-c">&lt;span</span> <span class="at">class</span>=<span class="val">"sr-only"</span><span class="tag-c">&gt;</span>
+  مطلوب
+<span class="tag-c">&lt;/span&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Data Attributes</div>
+            <div class="card-title"><span class="dot"></span>خصائص data-*</div>
+            <p>لتخزين بيانات مخصصة داخل عناصر HTML لاستخدامها في JavaScript.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML + JS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;div</span>
+  <span class="at">data-id</span>=<span class="val">"42"</span>
+  <span class="at">data-name</span>=<span class="val">"أحمد"</span>
+  <span class="at">data-role</span>=<span class="val">"admin"</span>
+<span class="tag-c">&gt;</span>المستخدم<span class="tag-c">&lt;/div&gt;</span>
+
+<span class="tag-c">&lt;script&gt;</span>
+<span class="kw">const</span> el = document.querySelector(<span class="val">'div'</span>);
+console.log(el.dataset.id);   <span class="cm">// 42</span>
+console.log(el.dataset.name); <span class="cm">// أحمد</span>
+<span class="tag-c">&lt;/script&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Template</div>
+            <div class="card-title"><span class="dot"></span>وسم Template</div>
+            <p>لتعريف قوالب HTML تُستخدم بواسطة JavaScript دون عرضها مباشرة.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;template</span> <span class="at">id</span>=<span class="val">"card-tpl"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;div</span> <span class="at">class</span>=<span class="val">"card"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;h3</span> <span class="at">class</span>=<span class="val">"title"</span><span class="tag-c">&gt;&lt;/h3&gt;</span>
+  <span class="tag-c">&lt;/div&gt;</span>
+<span class="tag-c">&lt;/template&gt;</span>
+
+<span class="tag-c">&lt;script&gt;</span>
+<span class="kw">const</span> tpl =
+  document.getElementById(<span class="val">'card-tpl'</span>);
+<span class="kw">const</span> clone =
+  tpl.content.cloneNode(<span class="kw">true</span>);
+document.body.appendChild(clone);
+<span class="tag-c">&lt;/script&gt;</span></code>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <div class="card-tag">Open Graph</div>
+            <div class="card-title"><span class="dot"></span>Open Graph (مشاركة سوشيال)</div>
+            <p>تحديد كيفية ظهور صفحتك عند مشاركتها على وسائل التواصل الاجتماعي.</p>
+            <div class="code-block">
+                <div class="code-top"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <code><span class="tag-c">&lt;head&gt;</span>
+  <span class="tag-c">&lt;meta</span> <span class="at">property</span>=<span class="val">"og:title"</span>
+        <span class="at">content</span>=<span class="val">"عنوان الصفحة"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;meta</span> <span class="at">property</span>=<span class="val">"og:description"</span>
+        <span class="at">content</span>=<span class="val">"وصف قصير"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;meta</span> <span class="at">property</span>=<span class="val">"og:image"</span>
+        <span class="at">content</span>=<span class="val">"https://site.com/img.jpg"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;meta</span> <span class="at">property</span>=<span class="val">"og:url"</span>
+        <span class="at">content</span>=<span class="val">"https://site.com"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/head&gt;</span></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ CHEAT SHEET ═══════════════════ -->
+<div class="section" id="cheatsheet">
+    <div class="section-header reveal">
+        <h2><span class="icon">📄</span> Cheat Sheet — جميع الوسوم</h2>
+        <p>مرجع سريع لكل وسوم HTML المهمة</p>
+    </div>
+
+    <div class="cheat-grid reveal">
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;!DOCTYPE html&gt;</span><div class="cheat-desc">إعلان نوع المستند</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;html&gt;</span><div class="cheat-desc">جذر صفحة HTML</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;head&gt;</span><div class="cheat-desc">معلومات الصفحة الخفية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;body&gt;</span><div class="cheat-desc">محتوى الصفحة المرئي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;h1&gt; - &lt;h6&gt;</span><div class="cheat-desc">العناوين من الأكبر للأصغر</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;p&gt;</span><div class="cheat-desc">فقرة نصية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;a&gt;</span><div class="cheat-desc">رابط (Anchor)</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;img&gt;</span><div class="cheat-desc">صورة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;video&gt;</span><div class="cheat-desc">فيديو</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;audio&gt;</span><div class="cheat-desc">ملف صوتي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;ul&gt; / &lt;ol&gt;</span><div class="cheat-desc">قائمة غير مرتبة / مرتبة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;li&gt;</span><div class="cheat-desc">عنصر قائمة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;dl&gt; &lt;dt&gt; &lt;dd&gt;</span><div class="cheat-desc">قائمة تعريفات</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;table&gt;</span><div class="cheat-desc">جدول</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;tr&gt; &lt;th&gt; &lt;td&gt;</span><div class="cheat-desc">صف، رأس عمود، خلية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;thead&gt; &lt;tbody&gt; &lt;tfoot&gt;</span><div class="cheat-desc">أقسام الجدول</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;form&gt;</span><div class="cheat-desc">نموذج بيانات</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;input&gt;</span><div class="cheat-desc">حقل إدخال</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;button&gt;</span><div class="cheat-desc">زر</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;select&gt; &lt;option&gt;</span><div class="cheat-desc">قائمة منسدلة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;textarea&gt;</span><div class="cheat-desc">منطقة نص متعدد الأسطر</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;label&gt;</span><div class="cheat-desc">تسمية لحقل إدخال</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;div&gt;</span><div class="cheat-desc">حاوية كتلية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;span&gt;</span><div class="cheat-desc">حاوية مضمنة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;header&gt;</span><div class="cheat-desc">رأس الصفحة/القسم</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;nav&gt;</span><div class="cheat-desc">قائمة تنقل</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;main&gt;</span><div class="cheat-desc">المحتوى الرئيسي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;section&gt;</span><div class="cheat-desc">قسم موضوعي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;article&gt;</span><div class="cheat-desc">مقال مستقل</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;aside&gt;</span><div class="cheat-desc">شريط جانبي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;footer&gt;</span><div class="cheat-desc">تذييل الصفحة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;strong&gt;</span><div class="cheat-desc">نص مهم (عريض دلالياً)</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;em&gt;</span><div class="cheat-desc">تأكيد (مائل دلالياً)</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;mark&gt;</span><div class="cheat-desc">تمييز نص</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;code&gt; &lt;pre&gt;</span><div class="cheat-desc">كود برمجي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;blockquote&gt;</span><div class="cheat-desc">اقتباس طويل</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;br&gt;</span><div class="cheat-desc">سطر جديد</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;hr&gt;</span><div class="cheat-desc">خط أفقي فاصل</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;meta&gt;</span><div class="cheat-desc">بيانات وصفية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;link&gt;</span><div class="cheat-desc">ربط ملفات خارجية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;script&gt;</span><div class="cheat-desc">كود JavaScript</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;style&gt;</span><div class="cheat-desc">أنماط CSS داخلية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;canvas&gt;</span><div class="cheat-desc">رسم بـ JavaScript</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;svg&gt;</span><div class="cheat-desc">رسومات متجهية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;iframe&gt;</span><div class="cheat-desc">تضمين صفحة أخرى</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;details&gt; &lt;summary&gt;</span><div class="cheat-desc">أكورديون أصلي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;dialog&gt;</span><div class="cheat-desc">نافذة منبثقة أصلية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;progress&gt;</span><div class="cheat-desc">شريط تقدم</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;template&gt;</span><div class="cheat-desc">قالب HTML</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;figure&gt; &lt;figcaption&gt;</span><div class="cheat-desc">صورة مع تسمية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;picture&gt;</span><div class="cheat-desc">صور متجاوبة</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;source&gt;</span><div class="cheat-desc">مصدر وسائط متعدد</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;sup&gt; &lt;sub&gt;</span><div class="cheat-desc">أس ومؤشر</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;abbr&gt;</span><div class="cheat-desc">اختصار مع تلميح</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;time&gt;</span><div class="cheat-desc">وقت أو تاريخ دلالي</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;data&gt;</span><div class="cheat-desc">قيمة آلية مع نص</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;wbr&gt;</span><div class="cheat-desc">نقطة كسر سطر اختيارية</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;s&gt;</span><div class="cheat-desc">نص محذوف (Strikethrough)</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;u&gt;</span><div class="cheat-desc">نص مسطّر</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;b&gt;</span><div class="cheat-desc">نص عريض (بدون دلالة)</div></div>
+        <div class="cheat-item"><span class="cheat-tag-name">&lt;i&gt;</span><div class="cheat-desc">نص مائل (بدون دلالة)</div></div>
+    </div>
+</div>
+
+<!-- ═══════════════════ QUIZ ═══════════════════ -->
+<div class="section" id="quiz">
+    <div class="section-header reveal">
+        <h2><span class="icon">🧠</span> اختبر معلوماتك</h2>
+        <p>5 أسئلة تفاعلية عن HTML — اضغط على الإجابة الصحيحة</p>
+    </div>
+
+    <div id="quiz-score" style="text-align:center;margin-bottom:20px;font-size:16px;color:var(--purple-light);"></div>
+
+    <div class="quiz-card reveal">
+        <div class="quiz-q">1️⃣ أي وسم يُستخدم لعرض صورة في HTML؟</div>
+        <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, false)">A. &lt;pic&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, true)">B. &lt;img&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">C. &lt;image&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">D. &lt;src&gt;</button>
+        </div>
+        <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-card reveal">
+        <div class="quiz-q">2️⃣ ما الخاصية التي تجعل الرابط يفتح في تبويب جديد؟</div>
+        <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, false)">A. open="new"</button>
+            <button class="quiz-opt" onclick="answer(this, false)">B. href="_blank"</button>
+            <button class="quiz-opt" onclick="answer(this, true)">C. target="_blank"</button>
+            <button class="quiz-opt" onclick="answer(this, false)">D. tab="new"</button>
+        </div>
+        <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-card reveal">
+        <div class="quiz-q">3️⃣ أي وسم يُستخدم لإنشاء قائمة مرتبة (مرقمة)؟</div>
+        <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, false)">A. &lt;ul&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, true)">B. &lt;ol&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">C. &lt;dl&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">D. &lt;list&gt;</button>
+        </div>
+        <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-card reveal">
+        <div class="quiz-q">4️⃣ ما الفرق بين &lt;b&gt; و &lt;strong&gt;؟</div>
+        <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, false)">A. لا فرق بينهما</button>
+            <button class="quiz-opt" onclick="answer(this, true)">B. &lt;strong&gt; لها دلالة دلالية (أهمية)، &lt;b&gt; مجرد تنسيق</button>
+            <button class="quiz-opt" onclick="answer(this, false)">C. &lt;b&gt; أحدث من &lt;strong&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">D. &lt;strong&gt; للصور فقط</button>
+        </div>
+        <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-card reveal">
+        <div class="quiz-q">5️⃣ أين يجب وضع وسوم &lt;meta&gt; و &lt;title&gt;؟</div>
+        <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, false)">A. داخل &lt;body&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, true)">B. داخل &lt;head&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">C. داخل &lt;footer&gt;</button>
+            <button class="quiz-opt" onclick="answer(this, false)">D. في أي مكان</button>
+        </div>
+        <div class="quiz-feedback"></div>
+    </div>
+
+    <div id="quiz-result" style="display:none;text-align:center;padding:30px;background:var(--bg-card);border:1px solid rgba(138,43,226,.3);border-radius:14px;margin-top:10px;">
+        <div style="font-size:40px;margin-bottom:10px;" id="result-emoji">🎉</div>
+        <div style="font-size:20px;font-weight:700;color:var(--purple-light);" id="result-text"></div>
+        <button onclick="resetQuiz()" style="margin-top:18px;padding:10px 28px;background:var(--purple);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;">إعادة الاختبار</button>
+    </div>
+</div>
+
+</div>
+
+<footer>
+    صُمِّم بـ ❤️ بواسطة <span>Ahmed Shawky Afify</span> &nbsp;|&nbsp; دليل HTML الشامل 2025
+</footer>
+
+<script>
+// ─── TABS ───
+function showTab(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    setTimeout(checkReveal, 100);
+}
+
+// ─── SCROLL REVEAL ───
+function checkReveal() {
+    document.querySelectorAll('.reveal').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 60) el.classList.add('visible');
+    });
+}
+window.addEventListener('scroll', checkReveal);
+setTimeout(checkReveal, 100);
+
+// ─── COPY CODE ───
+function copyCode(btn) {
+    const code = btn.closest('.code-block').querySelector('code');
+    const text = code.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ تم';
+        btn.style.background = 'var(--green)';
+        btn.style.color = '#000';
+        setTimeout(() => { btn.textContent = 'نسخ'; btn.style.background = ''; btn.style.color = ''; }, 1800);
+    });
+}
+
+// ─── QUIZ ───
+let answered = 0, correct = 0;
+const total = 5;
+
+function answer(btn, isCorrect) {
+    const opts = btn.closest('.quiz-options');
+    if (opts.dataset.done) return;
+    opts.dataset.done = '1';
+    answered++;
+
+    const feedback = btn.closest('.quiz-card').querySelector('.quiz-feedback');
+
+    if (isCorrect) {
+        btn.classList.add('correct');
+        correct++;
+        feedback.textContent = '✅ إجابة صحيحة!';
+        feedback.style.color = 'var(--green)';
+    } else {
+        btn.classList.add('wrong');
+        feedback.textContent = '❌ إجابة خاطئة — جرب مرة أخرى!';
+        feedback.style.color = '#ff5f57';
+        // Show correct
+        opts.querySelectorAll('.quiz-opt').forEach(o => {
+            if (o.onclick.toString().includes('true')) o.classList.add('correct');
+        });
+    }
+
+    opts.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
+
+    document.getElementById('quiz-score').textContent = `النتيجة: ${correct} / ${answered}`;
+
+    if (answered === total) {
+        setTimeout(() => {
+            const res = document.getElementById('quiz-result');
+            const emoji = document.getElementById('result-emoji');
+            const text = document.getElementById('result-text');
+            res.style.display = 'block';
+            if (correct === total) { emoji.textContent = '🏆'; text.textContent = 'ممتاز! حصلت على كل الإجابات الصحيحة!'; }
+            else if (correct >= 3) { emoji.textContent = '👍'; text.textContent = `جيد! ${correct} من ${total} إجابات صحيحة`; }
+            else { emoji.textContent = '📚'; text.textContent = `${correct} من ${total} — راجع المعلومات وحاول مجدداً!`; }
+            res.scrollIntoView({behavior:'smooth', block:'center'});
+        }, 400);
+    }
+}
+
+function resetQuiz() {
+    answered = 0; correct = 0;
+    document.querySelectorAll('.quiz-options').forEach(opts => {
+        delete opts.dataset.done;
+        opts.querySelectorAll('.quiz-opt').forEach(o => {
+            o.classList.remove('correct','wrong');
+            o.style.pointerEvents = '';
+        });
+    });
+    document.querySelectorAll('.quiz-feedback').forEach(f => { f.textContent = ''; });
+    document.getElementById('quiz-score').textContent = '';
+    document.getElementById('quiz-result').style.display = 'none';
+}
+</script>
+</body>
+</html>

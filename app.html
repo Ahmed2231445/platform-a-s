@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppForge — صانع تطبيقات الموبايل</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0b0f; --surface:#111318; --surface2:#181b22; --surface3:#1e2230;
+  --border:#2a2f3d; --accent:#6c63ff; --accent2:#ff6b6b; --accent3:#43e97b;
+  --accent4:#f7971e; --text:#e8eaf0; --text2:#8b92a8; --text3:#4a5270;
+  --glow:rgba(108,99,255,0.25);
+  --blk-event:#e85d04; --blk-action:#2563eb; --blk-logic:#7c3aed;
+  --blk-math:#16a34a; --blk-text:#d97706; --blk-var:#db2777; --blk-ctrl:#92400e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:200}
+.logo{font-size:18px;font-weight:900;background:linear-gradient(135deg,var(--accent),#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;flex-shrink:0}
+.mode-tabs{display:flex;background:var(--surface2);border-radius:10px;padding:3px;gap:2px}
+.mtab{padding:5px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Cairo';font-size:13px;font-weight:700;color:var(--text2);background:none;transition:all .2s;display:flex;align-items:center;gap:5px}
+.mtab.on{background:var(--accent);color:#fff;box-shadow:0 0 12px var(--glow)}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-family:'Cairo';font-size:13px;font-weight:700;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-g:hover{background:var(--surface2);color:var(--text)}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 0 12px var(--glow)}
+.btn-p:hover{filter:brightness(1.15)}
+.pname{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--text);font-family:'Cairo';font-size:13px;outline:none;width:130px}
+.main{display:flex;flex:1;overflow:hidden}
+#dv{display:flex;flex:1;overflow:hidden}
+.pl{width:216px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.ph{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.csrch{margin:8px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Cairo';font-size:13px;outline:none}
+.csrch:focus{border-color:var(--accent)}
+.cl{overflow-y:auto;flex:1;padding:6px}
+.cct{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:6px 8px 4px}
+.ci{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:grab;border:1px solid transparent;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:1px;transition:all .15s}
+.ci:hover{background:var(--surface2);border-color:var(--border);color:var(--text)}
+.ci:active{cursor:grabbing}
+.cico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ca{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.cb{height:42px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;flex-shrink:0}
+.cbb{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--text2);font-family:'Cairo';font-size:12px;cursor:pointer;transition:all .15s}
+.cbb:hover{background:var(--surface3);color:var(--text)}
+.cbb.on{background:var(--surface3);color:var(--accent);border-color:var(--accent)}
+.cs{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:40px;background:var(--bg)}
+.pf{width:375px;background:#1a1a2e;border-radius:46px;border:3px solid #2d2d4a;box-shadow:0 0 0 1px #111,0 40px 80px rgba(0,0,0,.8),0 0 50px var(--glow);overflow:hidden;position:relative;flex-shrink:0}
+.pn{height:44px;background:#0f0f1a;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid #2d2d4a}
+.ni{width:110px;height:26px;background:#000;border-radius:20px}
+.pt{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:11px;color:#888;font-family:'JetBrains Mono'}
+.ps{min-height:700px;background:#f8f9fa;position:relative;overflow:hidden}
+.ps.dov{background:#f0f0ff;outline:2px dashed var(--accent)}
+.phm{height:30px;background:#1a1a2e;display:flex;align-items:center;justify-content:center}
+.hb{width:110px;height:4px;background:#333;border-radius:2px}
+.dc{position:absolute;cursor:move;border:2px solid transparent;border-radius:6px;transition:border-color .1s}
+.dc:hover{border-color:rgba(108,99,255,.5)}
+.dc.sel{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--glow)}
+.rh{position:absolute;bottom:-4px;right:-4px;width:10px;height:10px;background:var(--accent);border-radius:2px;cursor:se-resize}
+.ce{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);pointer-events:none;gap:10px}
+.pr{width:248px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.pts{display:flex;border-bottom:1px solid var(--border)}
+.pt2{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.pt2.on{color:var(--accent);border-bottom-color:var(--accent)}
+.pb{flex:1;overflow-y:auto;padding:14px}
+.pg{margin-bottom:18px}
+.pgt{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pr2{margin-bottom:8px}
+.prl{font-size:12px;color:var(--text2);margin-bottom:3px;font-weight:600}
+.pi{width:100%;padding:6px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Cairo';font-size:13px;outline:none}
+.pi:focus{border-color:var(--accent)}
+.pr22{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.psel{width:100%;padding:6px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Cairo';font-size:13px;outline:none}
+.crow{display:flex;gap:7px;align-items:center}
+.li{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:1px}
+.li:hover{background:var(--surface2);color:var(--text)}
+.li.sel{background:rgba(108,99,255,.1);color:var(--accent)}
+#bv{display:none;flex:1;overflow:hidden}
+.blayout{display:flex;flex:1;overflow:hidden;height:100%}
+.bleft{width:256px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.bcats{overflow-y:auto;border-bottom:1px solid var(--border)}
+.bcat{padding:8px 14px;cursor:pointer;font-size:13px;font-weight:700;color:var(--text2);border-bottom:1px solid var(--border);transition:all .15s;display:flex;align-items:center;gap:8px}
+.bcat:hover{background:var(--surface2);color:var(--text)}
+.bcat.on{background:var(--surface3);color:var(--text);border-left:3px solid currentColor}
+.bpal{overflow-y:auto;flex:1;padding:8px}
+.btpl{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;margin-bottom:5px;cursor:grab;font-size:12px;font-weight:700;color:#fff;transition:all .15s;position:relative}
+.btpl:hover{transform:translateX(-3px);box-shadow:4px 0 14px rgba(0,0,0,.3)}
+.btpl:active{cursor:grabbing}
+.btpl-notch{width:12px;height:12px;background:rgba(0,0,0,.3);border-radius:3px;flex-shrink:0}
+.bws{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+.bgrid{position:absolute;inset:0;background-image:radial-gradient(circle,var(--border) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;opacity:.35}
+.bcanvas{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden}
+.bwtb{position:absolute;bottom:16px;right:16px;display:flex;gap:8px;z-index:50}
+.bwb{padding:7px 13px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:'Cairo';font-size:12px;cursor:pointer;transition:all .15s}
+.bwb:hover{background:var(--surface2);color:var(--text)}
+.bemp{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:12px;color:var(--text3)}
+.bemp-icon{font-size:48px;opacity:.25}
+.block{position:absolute;cursor:move;font-family:'Cairo';font-size:13px;font-weight:700;border-radius:8px;min-width:190px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.5));transition:filter .15s}
+.block:hover{filter:drop-shadow(0 6px 20px rgba(0,0,0,.7))}
+.block.bsel{outline:3px solid rgba(255,255,255,.6);outline-offset:1px}
+.bh{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px 8px 0 0;color:#fff}
+.bb{padding:7px 14px 10px;background:rgba(0,0,0,.25);border-radius:0 0 8px 8px;color:#fff}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.brow:last-child{margin-bottom:0}
+.blbl{font-size:12px;color:rgba(255,255,255,.75);white-space:nowrap}
+.bval{background:rgba(255,255,255,.18);border-radius:5px;padding:4px 10px;font-size:12px;color:#fff;border:none;outline:none;font-family:'Cairo';min-width:55px}
+.bval:focus{background:rgba(255,255,255,.28)}
+.bch{padding:5px 5px 5px 22px;background:rgba(0,0,0,.18);border-radius:0 0 8px 8px;min-height:36px;border-right:3px solid rgba(255,255,255,.2)}
+.bdel{position:absolute;top:7px;left:8px;background:rgba(0,0,0,.35);border:none;border-radius:4px;color:#fff;font-size:10px;cursor:pointer;padding:2px 6px;opacity:0;transition:opacity .15s;z-index:5}
+.block:hover .bdel{opacity:1}
+.bright{width:236px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.ctree{overflow-y:auto;flex:1;padding:8px}
+.cti{padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px;display:flex;align-items:center;gap:7px}
+.cti:hover{background:var(--surface2);color:var(--text)}
+.cti.on{background:rgba(108,99,255,.15);color:var(--accent)}
+.cbdg{font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(108,99,255,.2);color:var(--accent);margin-right:auto}
+.bpf{overflow-y:auto;flex:1;padding:14px}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;max-width:90vw;max-height:90vh;overflow-y:auto;position:relative}
+.mx{position:absolute;top:14px;left:14px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 9px;cursor:pointer;color:var(--text2);font-size:14px}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pcard{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s}
+.pcard:hover,.pcard.sel{border-color:var(--accent);background:rgba(108,99,255,.08)}
+.pbar-w{background:var(--surface3);border-radius:999px;height:6px;overflow:hidden;margin:12px 0}
+.pbar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:999px;transition:width .5s}
+.cout{background:#0d1117;border-radius:10px;padding:14px;font-family:'JetBrains Mono';font-size:11px;line-height:1.7;color:#e6edf3;overflow-x:auto;max-height:55vh;overflow-y:auto}
+.cout .kw{color:#ff7b72}.cout .str{color:#a5d6ff}.cout .fn{color:#d2a8ff}.cout .cm{color:#8b949e}.cout .num{color:#79c0ff}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.icard{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .2s}
+.icard:hover{border-color:var(--accent)}
+.icard.con{border-color:var(--accent3)}
+.ist{font-size:11px;color:var(--text3)}
+.ist.con{color:var(--accent3)}
+.iphone17{width:393px;background:linear-gradient(160deg,#2c2c2e 0%,#1c1c1e 40%,#2a2a2c 100%);border-radius:56px;padding:13px;box-shadow:0 0 0 1px rgba(255,255,255,0.10),inset 0 0 0 1px rgba(255,255,255,0.04),0 60px 120px rgba(0,0,0,0.95),0 0 80px var(--glow),inset 0 1px 0 rgba(255,255,255,0.08);position:relative;flex-shrink:0}
+.iphone17::before{content:'';position:absolute;inset:0;border-radius:56px;background:linear-gradient(145deg,rgba(255,255,255,0.13) 0%,transparent 35%,transparent 65%,rgba(255,255,255,0.05) 100%);pointer-events:none;z-index:2}
+.iphone17::after{content:'';position:absolute;left:-3.5px;top:160px;width:3.5px;height:80px;background:linear-gradient(180deg,#3a3a3c,#2c2c2e,#3a3a3c);border-radius:3px 0 0 3px}
+.ip17-vol{position:absolute;right:-3.5px;top:120px;width:3.5px;background:linear-gradient(180deg,#3a3a3c,#2c2c2e,#3a3a3c);border-radius:0 3px 3px 0;height:38px;box-shadow:0 52px 0 #3a3a3c,0 100px 0 #3a3a3c}
+.ip17-inner{background:#000;border-radius:44px;overflow:hidden;position:relative;height:852px;display:flex;flex-direction:column}
+.ip17-di{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:20px;z-index:10;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;gap:8px;box-shadow:0 0 0 2px rgba(255,255,255,0.07),0 4px 20px rgba(0,0,0,0.8)}
+.ip17-cam{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#1a3a5c,#060e18);border:1px solid rgba(255,255,255,0.08);position:relative}
+.ip17-cam::after{content:'';position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(#1e88e5,#0d47a1);top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 4px rgba(30,136,229,0.5)}
+.ip17-face{width:9px;height:9px;border-radius:50%;background:#111;margin-left:-2px}
+.ip17-statusbar{height:54px;background:rgba(0,0,0,0.98);display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 10px;position:relative;z-index:5;flex-shrink:0}
+.ip17-time{color:#fff;font-size:16px;font-weight:700;font-family:'Cairo';letter-spacing:-0.3px}
+.ip17-icons{display:flex;align-items:center;gap:5px;color:#fff;font-size:12px}
+.ip17-content{flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#f8f9fa}
+.ip17-bottom{height:34px;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ip17-home{width:134px;height:5px;background:rgba(255,255,255,0.32);border-radius:3px}
+.ip17-urlbar{background:#1c1c1e;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid #2c2c2e}
+.ip17-urlpill{background:#2c2c2e;border-radius:10px;flex:1;padding:7px 12px;display:flex;align-items:center;gap:6px}
+.ip17-urltext{color:#98989f;font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Cairo';direction:ltr;text-align:left}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* شريط اللون من Platform */
+#platform-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;background:var(--accent);box-shadow:0 0 10px var(--glow);transition:background .5s,box-shadow .5s}
+</style>
+</head>
+<body>
+
+<div id="platform-bar"></div>
+
+<div class="topbar">
+  <div class="logo">⚡ AppForge</div>
+  <div class="mode-tabs">
+    <button class="mtab on" id="t-design" onclick="sw('design')">🎨 تصميم</button>
+    <button class="mtab" id="t-blocks" onclick="sw('blocks')">🧩 بلوكات</button>
+    <button class="mtab" id="t-code" onclick="sw('code')">💻 كود</button>
+    <button class="mtab" id="t-preview" onclick="sw('preview')">▶ تجربة</button>
+  </div>
+  <div style="flex:1"></div>
+  <input class="pname" id="pnm" value="تطبيقي الأول">
+  <button class="btn btn-g" onclick="om('im')">🔗 خدمات</button>
+  <button class="btn btn-g" onclick="om('pm')">🚀 نشر</button>
+  <button class="btn btn-p" onclick="sw('preview')">▶ تجربة</button>
+</div>
+
+<div class="main">
+
+<div id="dv" style="display:flex;flex:1;overflow:hidden">
+  <div class="pl">
+    <div class="ph">🧩 المكونات</div>
+    <input class="csrch" placeholder="🔍 بحث..." oninput="fc(this.value)">
+    <div class="cl" id="compList">
+      <div class="cct">واجهة</div>
+      <div class="ci" draggable="true" data-t="button" ondragstart="sd(event,'button')"><div class="cico" style="background:rgba(108,99,255,.15)">🔘</div>زر</div>
+      <div class="ci" draggable="true" data-t="input" ondragstart="sd(event,'input')"><div class="cico" style="background:rgba(67,233,123,.15)">📝</div>حقل إدخال</div>
+      <div class="ci" draggable="true" data-t="text" ondragstart="sd(event,'text')"><div class="cico" style="background:rgba(255,107,107,.15)">📄</div>نص</div>
+      <div class="ci" draggable="true" data-t="image" ondragstart="sd(event,'image')"><div class="cico" style="background:rgba(247,151,30,.15)">🖼️</div>صورة</div>
+      <div class="ci" draggable="true" data-t="switch" ondragstart="sd(event,'switch')"><div class="cico" style="background:rgba(67,233,123,.15)">🔄</div>مفتاح</div>
+      <div class="ci" draggable="true" data-t="slider" ondragstart="sd(event,'slider')"><div class="cico" style="background:rgba(56,189,248,.15)">🎚️</div>شريط تمرير</div>
+      <div class="cct">تنقل</div>
+      <div class="ci" draggable="true" data-t="navbar" ondragstart="sd(event,'navbar')"><div class="cico" style="background:rgba(108,99,255,.15)">🧭</div>شريط علوي</div>
+      <div class="ci" draggable="true" data-t="bottomnav" ondragstart="sd(event,'bottomnav')"><div class="cico" style="background:rgba(108,99,255,.15)">⬇️</div>شريط سفلي</div>
+      <div class="cct">حاويات</div>
+      <div class="ci" draggable="true" data-t="card" ondragstart="sd(event,'card')"><div class="cico" style="background:rgba(255,107,107,.15)">🃏</div>كارت</div>
+      <div class="ci" draggable="true" data-t="list" ondragstart="sd(event,'list')"><div class="cico" style="background:rgba(247,151,30,.15)">📋</div>قائمة</div>
+      <div class="cct">وسائط</div>
+      <div class="ci" draggable="true" data-t="video" ondragstart="sd(event,'video')"><div class="cico" style="background:rgba(255,107,107,.15)">🎥</div>فيديو</div>
+      <div class="ci" draggable="true" data-t="map" ondragstart="sd(event,'map')"><div class="cico" style="background:rgba(67,233,123,.15)">🗺️</div>خريطة</div>
+      <div class="ci" draggable="true" data-t="chart" ondragstart="sd(event,'chart')"><div class="cico" style="background:rgba(108,99,255,.15)">📊</div>رسم بياني</div>
+      <div class="cct">متقدم</div>
+      <div class="ci" draggable="true" data-t="webview" ondragstart="sd(event,'webview')"><div class="cico" style="background:rgba(247,151,30,.15)">🌐</div>موقع ويب</div>
+      <div class="ci" draggable="true" data-t="api" ondragstart="sd(event,'api')"><div class="cico" style="background:rgba(108,99,255,.15)">⚡</div>API بلوك</div>
+    </div>
+  </div>
+
+  <div class="ca">
+    <div class="cb">
+      <button class="cbb on" onclick="setSc('phone',this)">📱 هاتف</button>
+      <button class="cbb" onclick="setSc('tablet',this)">📲 تابلت</button>
+      <div style="width:1px;height:18px;background:var(--border)"></div>
+      <button class="cbb" onclick="zm(-10)">➖</button>
+      <span id="zl" style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono'">100%</span>
+      <button class="cbb" onclick="zm(10)">➕</button>
+      <div style="width:1px;height:18px;background:var(--border)"></div>
+      <button class="cbb" onclick="undo()">↩ تراجع</button>
+      <button class="cbb" onclick="clrAll()">🗑️ مسح</button>
+      <div style="flex:1"></div>
+      <button class="cbb" id="gbtn" onclick="tGrid()">⊞ شبكة</button>
+    </div>
+    <div class="cs">
+      <div id="zw" style="transform-origin:top center;transition:transform .2s">
+        <div style="position:relative">
+          <div id="gol" style="display:none;position:absolute;inset:0;background-image:linear-gradient(rgba(108,99,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(108,99,255,.1) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:10;border-radius:46px;overflow:hidden"></div>
+          <div class="pf" id="pf">
+            <div class="pn"><div class="ni"></div><div class="pt" id="clk">9:41</div></div>
+            <div class="ps" id="psc"
+              ondragover="event.preventDefault();event.currentTarget.classList.add('dov')"
+              ondragleave="event.currentTarget.classList.remove('dov')"
+              ondrop="dc2(event)">
+              <div class="ce" id="ce"><div style="font-size:36px;opacity:.3">📱</div><div style="font-size:13px">اسحب مكوّن للبدء</div></div>
+            </div>
+            <div class="phm"><div class="hb"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pr">
+    <div class="pts">
+      <div class="pt2 on" id="pt-props" onclick="sPT('props')">خصائص</div>
+      <div class="pt2" id="pt-layers" onclick="sPT('layers')">طبقات</div>
+      <div class="pt2" id="pt-style" onclick="sPT('style')">ستايل</div>
+    </div>
+    <div class="pb" id="pb"><div style="text-align:center;color:var(--text3);margin-top:40px"><div style="font-size:28px;margin-bottom:10px">👆</div><div style="font-size:13px">اختر عنصر لتعديله</div></div></div>
+  </div>
+</div>
+
+<div id="bv" style="display:none;flex:1;overflow:hidden">
+  <div class="blayout">
+    <div class="bleft">
+      <div class="ph">🎨 فئات البلوكات</div>
+      <div class="bcats" id="bcats"></div>
+      <div class="ph" style="border-top:1px solid var(--border)">البلوكات المتاحة</div>
+      <div class="bpal" id="bpal"></div>
+    </div>
+    <div class="bws" id="bws">
+      <div class="bgrid"></div>
+      <div class="bcanvas" id="bc" onclick="deselB()" ondragover="event.preventDefault()" ondrop="dropB(event)"></div>
+      <div class="bemp" id="bemp"><div class="bemp-icon">🧩</div><div style="font-size:14px;font-weight:700">منطقة البلوكات</div><div style="font-size:12px">اختر مكوّن ← اختر فئة ← اسحب بلوك</div></div>
+      <div class="bwtb">
+        <button class="bwb" onclick="zmB(-15)">➖</button>
+        <span id="bzl" style="font-size:12px;color:var(--text2);font-family:'JetBrains Mono'">100%</span>
+        <button class="bwb" onclick="zmB(15)">➕</button>
+        <button class="bwb" onclick="clrBlks()">🗑️ مسح</button>
+        <button class="bwb" onclick="om('cm');genCode('rn',null)">💻 كود</button>
+      </div>
+    </div>
+    <div class="bright">
+      <div class="ph">📱 مكونات التطبيق</div>
+      <div class="ctree" id="ctree"></div>
+      <div class="ph" style="border-top:1px solid var(--border)">⚙️ خصائص البلوك</div>
+      <div class="bpf" id="bpf"><div style="color:var(--text3);font-size:12px;text-align:center;margin-top:20px">اضغط على بلوك لتعديله</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- MODALS -->
+<div id="pm" class="mbg" style="display:none">
+  <div class="modal" style="width:500px">
+    <button class="mx" onclick="cm2('pm')">✕</button>
+    <div style="font-size:18px;font-weight:900;margin-bottom:4px">🚀 نشر التطبيق</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px">اختر طريقة النشر</div>
+    <div class="pgrid">
+      <div class="pcard sel" onclick="selP(this)"><div style="font-size:24px">🤖</div><div style="font-weight:700;margin:4px 0">Android APK</div><div style="font-size:12px;color:var(--text2)">ملف APK للتثبيت</div></div>
+      <div class="pcard" onclick="selP(this)"><div style="font-size:24px">🍎</div><div style="font-weight:700;margin:4px 0">iOS TestFlight</div><div style="font-size:12px;color:var(--text2)">اختبار iPhone</div></div>
+      <div class="pcard" onclick="selP(this)"><div style="font-size:24px">🌐</div><div style="font-weight:700;margin:4px 0">Web PWA</div><div style="font-size:12px;color:var(--text2)">يعمل في المتصفح</div></div>
+      <div class="pcard" onclick="selP(this)"><div style="font-size:24px">📷</div><div style="font-weight:700;margin:4px 0">QR للمعاينة</div><div style="font-size:12px;color:var(--text2)">مسح وتجربة</div></div>
+    </div>
+    <div class="pbar-w"><div class="pbar" id="ppb" style="width:0%"></div></div>
+    <div id="pst" style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:14px">جاهز للبناء</div>
+    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="startPub()">🚀 ابدأ البناء</button>
+  </div>
+</div>
+
+<div id="cm" class="mbg" style="display:none">
+  <div class="modal" style="width:680px">
+    <button class="mx" onclick="cm2('cm')">✕</button>
+    <div style="font-size:18px;font-weight:900;margin-bottom:12px">💻 الكود المُولَّد</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="cbb on" id="ct-rn" onclick="genCode('rn',this)">React Native</button>
+      <button class="cbb" id="ct-fl" onclick="genCode('fl',this)">Flutter</button>
+      <button class="cbb" id="ct-sw" onclick="genCode('sw',this)">Swift</button>
+      <button class="btn btn-g" style="margin-right:auto" onclick="toast('📋 تم النسخ!')">📋 نسخ</button>
+    </div>
+    <div class="cout" id="co"></div>
+  </div>
+</div>
+
+<div id="im" class="mbg" style="display:none">
+  <div class="modal" style="width:520px">
+    <button class="mx" onclick="cm2('im')">✕</button>
+    <div style="font-size:18px;font-weight:900;margin-bottom:4px">🔗 خدمات وتكاملات</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px">وصّل تطبيقك بخدمات خارجية</div>
+    <div class="igrid" id="ig"></div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px">🌐 ربط موقع مخصص (WebView)</div>
+      <div style="display:flex;gap:8px"><input class="pi" id="wvu" placeholder="https://موقعك.com" style="flex:1"><button class="btn btn-p" onclick="addWV()">إضافة</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="prevm" class="mbg" style="display:none">
+  <div class="modal" style="display:flex;flex-direction:column;align-items:center;gap:18px;padding:30px;background:transparent;border:none;box-shadow:none;overflow:visible;max-height:none">
+    <button class="mx" onclick="cm2('prevm')" style="position:fixed;top:16px;left:16px;z-index:1100">✕</button>
+    <div style="font-size:14px;font-weight:900;color:#fff;letter-spacing:.5px">▶ معاينة — iPhone 17 Pro Max</div>
+    <div id="prevc" style="overflow-y:auto;max-height:calc(100vh - 100px)"></div>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+// 🎨 PLATFORM COLOR SYNC
+// يقرأ اللون المحفوظ من موقع Platform ويطبقه هنا
+// ══════════════════════════════════════════════════
+(function syncFromPlatform() {
+  const saved = localStorage.getItem('platform_saved_color');
+  if (!saved) return;
+
+  function hexToRgb(hex) {
+    return {
+      r: parseInt(hex.slice(1,3), 16),
+      g: parseInt(hex.slice(3,5), 16),
+      b: parseInt(hex.slice(5,7), 16)
+    };
+  }
+  function darken(hex, f=0.78) {
+    const {r,g,b} = hexToRgb(hex);
+    const h = v => Math.round(v*f).toString(16).padStart(2,'0');
+    return `#${h(r)}${h(g)}${h(b)}`;
+  }
+
+  const {r,g,b} = hexToRgb(saved);
+  const root = document.documentElement;
+  root.style.setProperty('--accent',  saved);
+  root.style.setProperty('--glow',    `rgba(${r},${g},${b},0.25)`);
+  root.style.setProperty('--border',  `rgba(${r},${g},${b},0.22)`);
+
+  // شريط اللون العلوي
+  const bar = document.getElementById('platform-bar');
+  if (bar) {
+    bar.style.background  = saved;
+    bar.style.boxShadow   = `0 0 12px rgba(${r},${g},${b},0.7)`;
+  }
+})();
+
+// ═══ STATE ═══
+let comps=[],selId=null,dragT=null,zp=100,showG=false,hist=[],cid=0;
+let blocks=[],selBId=null,actComp=null,bzp=100;
+let dragBT=null,dragBC=null,connected={};
+
+function tick(){const n=new Date();document.getElementById('clk').textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');}
+tick();setInterval(tick,60000);
+
+function sw(v){
+  ['design','blocks','code','preview'].forEach(x=>document.getElementById('t-'+x)&&document.getElementById('t-'+x).classList.remove('on'));
+  document.getElementById('dv').style.display='none';
+  document.getElementById('bv').style.display='none';
+  if(v==='design'){document.getElementById('dv').style.display='flex';document.getElementById('t-design').classList.add('on');}
+  else if(v==='blocks'){document.getElementById('bv').style.display='flex';document.getElementById('t-blocks').classList.add('on');rbv();}
+  else if(v==='code'){document.getElementById('t-code').classList.add('on');om('cm');genCode('rn',null);}
+  else if(v==='preview'){document.getElementById('t-preview').classList.add('on');showPrev();}
+}
+
+function sd(e,t){dragT=t;e.dataTransfer.effectAllowed='copy';}
+function dc2(e){
+  e.preventDefault();e.currentTarget.classList.remove('dov');
+  if(!dragT)return;
+  const s=document.getElementById('psc'),r=s.getBoundingClientRect();
+  const x=Math.max(0,Math.min(e.clientX-r.left-60,s.offsetWidth-120));
+  const y=Math.max(0,Math.min(e.clientY-r.top-25,660));
+  const c=mkC(dragT,x,y);comps.push(c);sHist();rC();selC(c.id);dragT=null;
+  toast('✅ تمت إضافة '+cn(c.type));
+}
+
+function mkC(type,x,y){
+  const id=++cid;
+  const D={
+    button:{w:300,h:50,label:'اضغط هنا',bgColor:'#6c63ff',textColor:'#fff',fontSize:16,radius:10},
+    input:{w:320,h:48,placeholder:'اكتب هنا...',borderColor:'#ddd',bgColor:'#fff',fontSize:14},
+    text:{w:280,h:40,content:'نص هنا',fontSize:18,color:'#333',fontWeight:'bold',align:'center'},
+    image:{w:320,h:200,url:'',bgColor:'#e0e0e0'},
+    card:{w:330,h:120,bgColor:'#fff',title:'عنوان',body:'وصف هنا',radius:16},
+    navbar:{w:375,h:56,title:'الرئيسية',bgColor:'#fff',textColor:'#000'},
+    bottomnav:{w:375,h:60,bgColor:'#fff',items:'رئيسي,بحث,مفضلة,حساب'},
+    switch:{w:220,h:40,label:'تفعيل',checked:true,color:'#4CAF50'},
+    slider:{w:300,h:40,min:0,max:100,val:60,color:'#6c63ff'},
+    list:{w:340,h:160,items:'عنصر أول,عنصر ثاني,عنصر ثالث',bgColor:'#fff'},
+    video:{w:320,h:180,url:'',bgColor:'#000'},
+    map:{w:320,h:220,lat:'30.0444',lng:'31.2357'},
+    chart:{w:320,h:180,chartType:'bar',title:'إحصائيات'},
+    webview:{w:375,h:300,url:'https://example.com',title:'موقع'},
+    api:{w:300,h:80,endpoint:'https://api.example.com',method:'GET',label:'API'},
+  };
+  return {id,type,x,y,visible:true,...D[type]};
+}
+
+function rC(){
+  const s=document.getElementById('psc');
+  s.querySelectorAll('.dc').forEach(e=>e.remove());
+  const vis=comps.filter(c=>c.visible!==false);
+  document.getElementById('ce').style.display=vis.length?'none':'flex';
+  comps.forEach(c=>{
+    if(!c.visible)return;
+    const el=document.createElement('div');
+    el.className='dc'+(c.id===selId?' sel':'');
+    el.id='dc-'+c.id;
+    el.style.cssText=`left:${c.x}px;top:${c.y}px;width:${c.w}px;`;
+    el.innerHTML=rend(c);
+    if(c.type!=='navbar'&&c.type!=='bottomnav')el.innerHTML+='<div class="rh" data-id="'+c.id+'"></div>';
+    el.addEventListener('mousedown',ev=>{if(ev.target.classList.contains('rh'))return;mvC(ev,c.id);});
+    el.addEventListener('click',ev=>{ev.stopPropagation();selC(c.id);});
+    s.appendChild(el);
+  });
+  s.querySelectorAll('.rh').forEach(h=>h.addEventListener('mousedown',ev=>{ev.stopPropagation();rsz(ev,+h.dataset.id);}));
+  rLay();rCTree();
+}
+
+function rend(c){
+  switch(c.type){
+    case 'button':return`<button style="width:100%;padding:12px;background:${c.bgColor};color:${c.textColor};font-size:${c.fontSize}px;border-radius:${c.radius}px;border:none;font-family:Cairo;font-weight:700;cursor:pointer">${c.label}</button>`;
+    case 'input':return`<input style="width:100%;padding:11px 14px;border:2px solid ${c.borderColor};background:${c.bgColor};font-size:${c.fontSize}px;border-radius:10px;font-family:Cairo;outline:none" placeholder="${c.placeholder}">`;
+    case 'text':return`<div style="font-size:${c.fontSize}px;color:${c.color};font-weight:${c.fontWeight};text-align:${c.align};font-family:Cairo">${c.content}</div>`;
+    case 'image':return c.url?`<img src="${c.url}" style="width:100%;height:${c.h}px;object-fit:cover;border-radius:8px">`:`<div style="height:${c.h||180}px;background:${c.bgColor};border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;font-family:Cairo">🖼️ صورة</div>`;
+    case 'card':return`<div style="background:${c.bgColor};border-radius:${c.radius}px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.08);height:${c.h}px"><div style="font-weight:700;font-size:16px;margin-bottom:8px;font-family:Cairo">${c.title}</div><div style="font-size:13px;color:#666;font-family:Cairo">${c.body}</div></div>`;
+    case 'navbar':return`<div style="background:${c.bgColor};display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eee;width:100%"><span>☰</span><span style="font-weight:700;font-family:Cairo">${c.title}</span><span>🔔</span></div>`;
+    case 'bottomnav':{const its=c.items.split(','),ic=['🏠','🔍','❤️','👤'];return`<div style="background:${c.bgColor};display:flex;justify-content:space-around;align-items:center;padding:10px 0;border-top:1px solid #eee;width:100%">${its.map((t,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#999;font-family:Cairo"><span>${ic[i]||'•'}</span><span>${t}</span></div>`).join('')}</div>`;}
+    case 'switch':return`<div style="display:flex;align-items:center;gap:10px;font-family:Cairo;font-size:14px"><div style="width:44px;height:24px;background:${c.checked?c.color:'#ccc'};border-radius:12px;position:relative;flex-shrink:0"><div style="position:absolute;top:2px;${c.checked?'right:2px':'left:2px'};width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div></div>${c.label}</div>`;
+    case 'slider':return`<div style="padding:4px 0"><input type="range" min="${c.min}" max="${c.max}" value="${c.val}" style="width:100%;accent-color:${c.color}"></div>`;
+    case 'list':{const its=c.items.split(',');return`<div style="background:${c.bgColor};border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08)">${its.map((t,i)=>`<div style="padding:12px 14px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:10px;font-size:14px;font-family:Cairo"><span style="width:26px;height:26px;background:#f0f0ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#6c63ff">${i+1}</span>${t}</div>`).join('')}</div>`;}
+    case 'video':return`<div style="background:#000;border-radius:12px;height:${c.h}px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:#fff"><div style="font-size:36px">▶️</div><div style="font-size:12px;opacity:.6;font-family:Cairo">تشغيل فيديو</div></div>`;
+    case 'map':return`<div style="background:#e8f4e8;border-radius:12px;height:${c.h}px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden"><div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,150,0,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,150,0,.1) 1px,transparent 1px);background-size:22px 22px"></div><div style="position:relative;text-align:center"><div style="font-size:32px">📍</div><div style="font-size:11px;font-weight:700;font-family:Cairo">خريطة</div></div></div>`;
+    case 'chart':{const bars=[60,80,45,90,70,55,85];return`<div style="background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 6px rgba(0,0,0,.08)"><div style="font-size:12px;font-weight:700;margin-bottom:8px;font-family:Cairo">${c.title}</div><div style="display:flex;align-items:flex-end;gap:5px;height:120px">${bars.map((h,i)=>`<div style="flex:1;background:hsl(${i*40+200},70%,60%);height:${h}%;border-radius:4px 4px 0 0"></div>`).join('')}</div></div>`;}
+    case 'webview':return`<div style="background:#fff;border-radius:12px;height:${c.h}px;display:flex;flex-direction:column;overflow:hidden"><div style="background:#f1f3f4;padding:7px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:#666;border-bottom:1px solid #ddd">🔒<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.url}</span></div><div style="flex:1;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;font-family:Cairo;flex-direction:column;gap:4px"><span style="font-size:24px">🌐</span>${c.title}</div></div>`;
+    case 'api':return`<div style="background:#1a1a2e;border-radius:10px;padding:12px;border:1px solid #333"><div style="font-size:10px;color:#79c0ff;font-family:'JetBrains Mono';margin-bottom:3px">${c.method}</div><div style="font-size:11px;font-family:'JetBrains Mono';color:#a5d6ff;word-break:break-all">${c.endpoint}</div><div style="font-size:10px;color:#8b949e;margin-top:4px">⚡ ${c.label}</div></div>`;
+    default:return`<div style="padding:10px;background:#eee;border-radius:8px;font-size:12px">${c.type}</div>`;
+  }
+}
+
+function mvC(e,id){
+  e.preventDefault();const c=comps.find(x=>x.id===id);if(!c)return;
+  selC(id);const s=document.getElementById('psc'),r=s.getBoundingClientRect();
+  const ox=e.clientX-r.left-c.x,oy=e.clientY-r.top-c.y;
+  function mv(ev){c.x=Math.max(0,Math.min(ev.clientX-r.left-ox,s.offsetWidth-c.w));c.y=Math.max(0,Math.min(ev.clientY-r.top-oy,700));const el=document.getElementById('dc-'+id);if(el){el.style.left=c.x+'px';el.style.top=c.y+'px';}}
+  function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);sHist();}
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+}
+
+function rsz(e,id){
+  const c=comps.find(x=>x.id===id);if(!c)return;
+  const sx=e.clientX,sy=e.clientY,sw2=c.w,sh=c.h||0;
+  function mv(ev){c.w=Math.max(60,sw2+(ev.clientX-sx));if(c.h!==undefined)c.h=Math.max(40,sh+(ev.clientY-sy));rC();}
+  function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);sHist();}
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+}
+
+function selC(id){selId=id;rC();rProps();}
+document.getElementById('psc').addEventListener('click',e=>{if(e.target===e.currentTarget||e.target.id==='ce'){selId=null;rC();rProps();}});
+
+let curPT='props';
+function sPT(t){curPT=t;document.querySelectorAll('.pt2').forEach(x=>x.classList.remove('on'));document.getElementById('pt-'+t).classList.add('on');if(t==='layers')rLay();else if(t==='style')rSty();else rProps();}
+
+function rProps(){
+  const el=document.getElementById('pb');
+  if(!selId){el.innerHTML='<div style="text-align:center;color:var(--text3);margin-top:40px"><div style="font-size:28px;margin-bottom:10px">👆</div><div style="font-size:13px">اختر عنصر لتعديله</div></div>';return;}
+  const c=comps.find(x=>x.id===selId);if(!c)return;
+  let h=`<div class="pg"><div class="pgt">📐 الموضع</div>
+    <div class="pr22"><div class="pr2"><div class="prl">X</div><input class="pi" type="number" value="${c.x}" oninput="up('x',+this.value)"></div>
+    <div class="pr2"><div class="prl">Y</div><input class="pi" type="number" value="${c.y}" oninput="up('y',+this.value)"></div></div>
+    <div class="pr22"><div class="pr2"><div class="prl">عرض</div><input class="pi" type="number" value="${c.w}" oninput="up('w',+this.value)"></div>
+    ${c.h!==undefined?`<div class="pr2"><div class="prl">ارتفاع</div><input class="pi" type="number" value="${c.h}" oninput="up('h',+this.value)"></div>`:''}</div>
+  </div>`;
+  if(c.type==='button')h+=`<div class="pg"><div class="pgt">🔘 الزر</div>
+    <div class="pr2"><div class="prl">النص</div><input class="pi" value="${c.label}" oninput="up('label',this.value)"></div>
+    <div class="pr2"><div class="prl">لون خلفية</div><div class="crow"><input type="color" value="${c.bgColor}" oninput="up('bgColor',this.value)" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="${c.bgColor}" oninput="up('bgColor',this.value)"></div></div>
+    <div class="pr2"><div class="prl">لون نص</div><div class="crow"><input type="color" value="${c.textColor}" oninput="up('textColor',this.value)" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="${c.textColor}" oninput="up('textColor',this.value)"></div></div>
+    <div class="pr22"><div class="pr2"><div class="prl">حجم خط</div><input class="pi" type="number" value="${c.fontSize}" oninput="up('fontSize',+this.value)"></div>
+    <div class="pr2"><div class="prl">حواف</div><input class="pi" type="number" value="${c.radius}" oninput="up('radius',+this.value)"></div></div>
+    <div class="pr2"><button class="btn btn-p" style="width:100%;justify-content:center;margin-top:4px;font-size:12px" onclick="goBlk(${c.id})">🧩 برمج الزر بالبلوكات</button></div>
+  </div>`;
+  else if(c.type==='text')h+=`<div class="pg"><div class="pgt">📄 النص</div>
+    <div class="pr2"><div class="prl">المحتوى</div><textarea class="pi" rows="3" oninput="up('content',this.value)">${c.content}</textarea></div>
+    <div class="pr2"><div class="prl">اللون</div><div class="crow"><input type="color" value="${c.color}" oninput="up('color',this.value)" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="${c.color}" oninput="up('color',this.value)"></div></div>
+    <div class="pr22"><div class="pr2"><div class="prl">حجم خط</div><input class="pi" type="number" value="${c.fontSize}" oninput="up('fontSize',+this.value)"></div>
+    <div class="pr2"><div class="prl">محاذاة</div><select class="psel" onchange="up('align',this.value)"><option value="right" ${c.align==='right'?'selected':''}>يمين</option><option value="center" ${c.align==='center'?'selected':''}>وسط</option><option value="left" ${c.align==='left'?'selected':''}>يسار</option></select></div></div>
+  </div>`;
+  else if(c.type==='input')h+=`<div class="pg"><div class="pgt">📝 الحقل</div>
+    <div class="pr2"><div class="prl">نص ظلي</div><input class="pi" value="${c.placeholder}" oninput="up('placeholder',this.value)"></div>
+    <div class="pr2"><div class="prl">لون حدود</div><div class="crow"><input type="color" value="${c.borderColor}" oninput="up('borderColor',this.value)" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="${c.borderColor}" oninput="up('borderColor',this.value)"></div></div>
+    <div class="pr2"><button class="btn btn-p" style="width:100%;justify-content:center;margin-top:4px;font-size:12px" onclick="goBlk(${c.id})">🧩 برمج الحقل بالبلوكات</button></div>
+  </div>`;
+  else if(c.type==='navbar')h+=`<div class="pg"><div class="pgt">🧭 شريط تنقل</div>
+    <div class="pr2"><div class="prl">العنوان</div><input class="pi" value="${c.title}" oninput="up('title',this.value)"></div>
+    <div class="pr2"><div class="prl">لون خلفية</div><div class="crow"><input type="color" value="${c.bgColor}" oninput="up('bgColor',this.value)" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="${c.bgColor}" oninput="up('bgColor',this.value)"></div></div>
+  </div>`;
+  else if(c.type==='card')h+=`<div class="pg"><div class="pgt">🃏 الكارت</div>
+    <div class="pr2"><div class="prl">العنوان</div><input class="pi" value="${c.title}" oninput="up('title',this.value)"></div>
+    <div class="pr2"><div class="prl">المحتوى</div><input class="pi" value="${c.body}" oninput="up('body',this.value)"></div>
+    <div class="pr2"><div class="prl">لون خلفية</div><div class="crow"><input type="color" value="${c.bgColor}" oninput="up('bgColor',this.value)" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="${c.bgColor}" oninput="up('bgColor',this.value)"></div></div>
+    <div class="pr2"><button class="btn btn-p" style="width:100%;justify-content:center;margin-top:4px;font-size:12px" onclick="goBlk(${c.id})">🧩 برمج الكارت بالبلوكات</button></div>
+  </div>`;
+  else if(c.type==='webview')h+=`<div class="pg"><div class="pgt">🌐 موقع ويب</div>
+    <div class="pr2"><div class="prl">الرابط</div><input class="pi" value="${c.url}" oninput="up('url',this.value)"></div>
+    <div class="pr2"><div class="prl">العنوان</div><input class="pi" value="${c.title}" oninput="up('title',this.value)"></div>
+  </div>`;
+  else if(c.type==='list')h+=`<div class="pg"><div class="pgt">📋 القائمة</div>
+    <div class="pr2"><div class="prl">العناصر (فاصلة)</div><textarea class="pi" rows="3" oninput="up('items',this.value)">${c.items}</textarea></div>
+    <div class="pr2"><button class="btn btn-p" style="width:100%;justify-content:center;margin-top:4px;font-size:12px" onclick="goBlk(${c.id})">🧩 برمج القائمة بالبلوكات</button></div>
+  </div>`;
+  else if(c.type==='map')h+=`<div class="pg"><div class="pgt">🗺️ الخريطة</div>
+    <div class="pr2"><div class="prl">خط العرض</div><input class="pi" value="${c.lat}" oninput="up('lat',this.value)"></div>
+    <div class="pr2"><div class="prl">خط الطول</div><input class="pi" value="${c.lng}" oninput="up('lng',this.value)"></div>
+  </div>`;
+  else if(c.type==='api')h+=`<div class="pg"><div class="pgt">⚡ API</div>
+    <div class="pr2"><div class="prl">الرابط</div><input class="pi" value="${c.endpoint}" oninput="up('endpoint',this.value)"></div>
+    <div class="pr2"><div class="prl">الطريقة</div><select class="psel" onchange="up('method',this.value)"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select></div>
+    <div class="pr2"><div class="prl">التسمية</div><input class="pi" value="${c.label}" oninput="up('label',this.value)"></div>
+    <div class="pr2"><button class="btn btn-p" style="width:100%;justify-content:center;margin-top:4px;font-size:12px" onclick="goBlk(${c.id})">🧩 برمج API بالبلوكات</button></div>
+  </div>`;
+  else h+=`<div class="pr2"><button class="btn btn-p" style="width:100%;justify-content:center;font-size:12px" onclick="goBlk(${c.id})">🧩 برمج بالبلوكات</button></div>`;
+  h+=`<div class="pg"><div class="pgt">⚙️ إجراءات</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-g" style="flex:1;justify-content:center" onclick="dupC()">📋 نسخ</button>
+      <button class="btn" style="background:var(--accent2);color:#fff;flex:1;justify-content:center" onclick="delC()">🗑️ حذف</button>
+    </div>
+  </div>`;
+  el.innerHTML=h;
+}
+
+function up(k,v){const c=comps.find(x=>x.id===selId);if(c){c[k]=v;rC();}}
+function rLay(){
+  const el=document.getElementById('pb');
+  if(!comps.length){el.innerHTML='<div style="text-align:center;color:var(--text3);margin-top:40px;font-size:13px">لا يوجد عناصر</div>';return;}
+  el.innerHTML='<div>'+[...comps].reverse().map(c=>`<div class="li ${c.id===selId?'sel':''}" onclick="selC(${c.id})"><span>${cico(c.type)}</span><span style="flex:1">${cn(c.type)} #${c.id}</span><span onclick="tVis(event,${c.id})" style="cursor:pointer">${c.visible!==false?'👁️':'🙈'}</span></div>`).join('')+'</div>';
+}
+function rSty(){document.getElementById('pb').innerHTML=`<div class="pg"><div class="pgt">🎨 الألوان</div><div class="pr2"><div class="prl">اللون الأساسي</div><div class="crow"><input type="color" value="#6c63ff" style="width:32px;height:32px;border-radius:7px;border:none;cursor:pointer"><input class="pi" value="#6c63ff"></div></div></div>`;}
+function tVis(e,id){e.stopPropagation();const c=comps.find(x=>x.id===id);if(c){c.visible=c.visible===false;rC();if(curPT==='layers')rLay();}}
+function dupC(){const c=comps.find(x=>x.id===selId);if(!c)return;const n={...JSON.parse(JSON.stringify(c)),id:++cid,x:c.x+20,y:c.y+20};comps.push(n);sHist();rC();selC(n.id);toast('📋 تم النسخ');}
+function delC(){comps=comps.filter(x=>x.id!==selId);selId=null;sHist();rC();rProps();toast('🗑️ تم الحذف');}
+function zm(d){zp=Math.max(40,Math.min(200,zp+d));document.getElementById('zw').style.transform=`scale(${zp/100})`;document.getElementById('zl').textContent=zp+'%';}
+function tGrid(){showG=!showG;document.getElementById('gol').style.display=showG?'block':'none';document.getElementById('gbtn').classList.toggle('on',showG);}
+function setSc(t,btn){document.querySelectorAll('.cbb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('pf').style.width=t==='tablet'?'600px':'375px';document.getElementById('pf').style.borderRadius=t==='tablet'?'16px':'46px';}
+function sHist(){hist.push(JSON.parse(JSON.stringify(comps)));if(hist.length>30)hist.shift();}
+function undo(){if(!hist.length)return toast('❌ لا يوجد');comps=hist.pop();selId=null;rC();rProps();toast('↩ تراجع');}
+function clrAll(){if(!confirm('مسح الكل؟'))return;sHist();comps=[];selId=null;rC();rProps();}
+
+const CATS=[
+  {id:'events',lbl:'🟠 أحداث',col:'var(--blk-event)'},
+  {id:'actions',lbl:'🔵 إجراءات',col:'var(--blk-action)'},
+  {id:'logic',lbl:'🟣 منطق',col:'var(--blk-logic)'},
+  {id:'math',lbl:'🟢 حساب',col:'var(--blk-math)'},
+  {id:'text',lbl:'🟡 نصوص',col:'var(--blk-text)'},
+  {id:'vars',lbl:'🔴 متغيرات',col:'var(--blk-var)'},
+  {id:'control',lbl:'🟤 تحكم',col:'var(--blk-ctrl)'},
+];
+const TPLS={
+  events:[
+    {t:'on_click',lbl:'عند الضغط على',ico:'👆',slots:['اسم المكوّن'],ch:true},
+    {t:'on_change',lbl:'عند التغيير',ico:'✏️',slots:['اسم المكوّن'],ch:true},
+    {t:'on_load',lbl:'عند تحميل الشاشة',ico:'🚀',slots:[],ch:true},
+    {t:'on_long',lbl:'ضغط طويل',ico:'✋',slots:['اسم المكوّن'],ch:true},
+    {t:'on_swipe',lbl:'عند السحب',ico:'👋',slots:['اتجاه'],ch:true},
+    {t:'on_scroll',lbl:'عند التمرير',ico:'📜',slots:[],ch:true},
+  ],
+  actions:[
+    {t:'set_text',lbl:'تعيين نص',ico:'✏️',slots:['المكوّن','النص']},
+    {t:'set_visible',lbl:'إظهار/إخفاء',ico:'👁️',slots:['المكوّن','true/false']},
+    {t:'set_color',lbl:'تغيير اللون',ico:'🎨',slots:['المكوّن','اللون']},
+    {t:'navigate',lbl:'الانتقال لشاشة',ico:'🔀',slots:['اسم الشاشة']},
+    {t:'show_toast',lbl:'رسالة منبثقة',ico:'💬',slots:['النص']},
+    {t:'open_url',lbl:'فتح رابط',ico:'🔗',slots:['الرابط']},
+    {t:'call_api',lbl:'استدعاء API',ico:'⚡',slots:['رابط API','طريقة']},
+    {t:'play_sound',lbl:'تشغيل صوت',ico:'🔊',slots:['اسم الصوت']},
+    {t:'share',lbl:'مشاركة',ico:'📤',slots:['النص']},
+    {t:'vibrate',lbl:'اهتزاز',ico:'📳',slots:['مدة (ms)']},
+    {t:'set_storage',lbl:'حفظ في التخزين',ico:'💾',slots:['المفتاح','القيمة']},
+    {t:'get_storage',lbl:'قراءة من التخزين',ico:'📂',slots:['المفتاح']},
+  ],
+  logic:[
+    {t:'if',lbl:'إذا',ico:'🤔',slots:['الشرط'],ch:true},
+    {t:'if_else',lbl:'إذا / وإلا',ico:'↔️',slots:['الشرط'],ch:true,els:true},
+    {t:'compare',lbl:'مقارنة',ico:'⚖️',slots:['قيمة أ','== أو !=','قيمة ب']},
+    {t:'and',lbl:'و (AND)',ico:'🔗',slots:['شرط ١','شرط ٢']},
+    {t:'or',lbl:'أو (OR)',ico:'🔀',slots:['شرط ١','شرط ٢']},
+    {t:'not',lbl:'ليس (NOT)',ico:'❌',slots:['الشرط']},
+  ],
+  math:[
+    {t:'math_op',lbl:'عملية حسابية',ico:'🔢',slots:['أ','+ أو - أو *','ب']},
+    {t:'random',lbl:'رقم عشوائي',ico:'🎲',slots:['من','إلى']},
+    {t:'round',lbl:'تقريب',ico:'〰️',slots:['الرقم']},
+    {t:'abs',lbl:'قيمة مطلقة',ico:'📐',slots:['الرقم']},
+    {t:'clamp',lbl:'تحديد نطاق',ico:'🔒',slots:['الرقم','أدنى','أعلى']},
+  ],
+  text:[
+    {t:'concat',lbl:'دمج نصين',ico:'🔗',slots:['نص ١','نص ٢']},
+    {t:'to_upper',lbl:'حروف كبيرة',ico:'⬆️',slots:['النص']},
+    {t:'to_lower',lbl:'حروف صغيرة',ico:'⬇️',slots:['النص']},
+    {t:'contains',lbl:'يحتوي على',ico:'🔍',slots:['النص','البحث']},
+    {t:'replace',lbl:'استبدال',ico:'🔄',slots:['النص','ابحث عن','بدّل بـ']},
+    {t:'length',lbl:'طول النص',ico:'📏',slots:['النص']},
+    {t:'split',lbl:'تقسيم نص',ico:'✂️',slots:['النص','الفاصل']},
+  ],
+  vars:[
+    {t:'set_var',lbl:'تعيين متغير',ico:'📦',slots:['الاسم','القيمة']},
+    {t:'get_var',lbl:'قراءة متغير',ico:'📤',slots:['الاسم']},
+    {t:'incr_var',lbl:'زيادة متغير',ico:'➕',slots:['الاسم','بمقدار']},
+    {t:'decr_var',lbl:'تقليل متغير',ico:'➖',slots:['الاسم','بمقدار']},
+  ],
+  control:[
+    {t:'loop',lbl:'تكرار',ico:'🔁',slots:['عدد المرات'],ch:true},
+    {t:'for_each',lbl:'لكل عنصر في',ico:'📋',slots:['القائمة'],ch:true},
+    {t:'while',lbl:'طالما',ico:'🔄',slots:['الشرط'],ch:true},
+    {t:'wait',lbl:'انتظار',ico:'⏳',slots:['ثواني']},
+    {t:'stop',lbl:'إيقاف',ico:'🛑',slots:[]},
+  ],
+};
+
+let activeCat='events';
+function rbv(){rBCats();rBPal();rCTree();rBCanvas();}
+function rBCats(){document.getElementById('bcats').innerHTML=CATS.map(c=>`<div class="bcat ${c.id===activeCat?'on':''}" style="color:${c.col}" onclick="selCat('${c.id}')">${c.lbl}</div>`).join('');}
+function selCat(id){activeCat=id;rBCats();rBPal();}
+function rBPal(){
+  const tpls=TPLS[activeCat]||[];
+  const cat=CATS.find(c=>c.id===activeCat);
+  const col=cat?cat.col:'#888';
+  document.getElementById('bpal').innerHTML=tpls.map(t=>`<div class="btpl" draggable="true" style="background:${col}" ondragstart="sdB(event,'${t.t}','${activeCat}')" onclick="addBCenter('${t.t}','${activeCat}')"><div class="btpl-notch"></div><span>${t.ico}</span><span>${t.lbl}</span></div>`).join('');
+}
+function rCTree(){
+  const tree=document.getElementById('ctree');if(!tree)return;
+  const items=[{id:0,type:'screen'},...comps.map(c=>({id:c.id,type:c.type}))];
+  tree.innerHTML=items.map(c=>`<div class="cti ${actComp===c.id?'on':''}" onclick="selCA(${c.id})"><span>${cico(c.type)}</span><span style="flex:1">${cn(c.type)} #${c.id===0?'':c.id}</span>${getBCnt(c.id)?`<span class="cbdg">${getBCnt(c.id)}</span>`:''}</div>`).join('');
+}
+function getBCnt(cid2){return blocks.filter(b=>b.cid===cid2).length;}
+function selCA(id){actComp=id;rCTree();rBCanvas();}
+function sdB(e,t,cat){dragBT=t;dragBC=cat;e.dataTransfer.effectAllowed='copy';}
+function dropB(e){
+  e.preventDefault();if(!dragBT)return;
+  const r=document.getElementById('bc').getBoundingClientRect();
+  const x=Math.max(20,(e.clientX-r.left)*(100/bzp));
+  const y=Math.max(20,(e.clientY-r.top)*(100/bzp));
+  addBlk(dragBT,dragBC,x,y);dragBT=null;
+}
+function addBCenter(t,cat){addBlk(t,cat,60+Math.random()*180,60+blocks.length*100);}
+function addBlk(t,cat,x,y){
+  const catO=CATS.find(c=>c.id===cat);
+  const tpl=TPLS[cat]?.find(x2=>x2.t===t);if(!tpl)return;
+  const b={id:++cid,t,cat,x,y,col:catO?catO.col:'#888',ico:tpl.ico,lbl:tpl.lbl,
+    slots:(tpl.slots||[]).map(s=>({n:s,v:''})),ch:tpl.ch||false,els:tpl.els||false,cid:actComp||0};
+  blocks.push(b);
+  document.getElementById('bemp').style.display='none';
+  rBCanvas();selB(b.id);rCTree();
+  toast('✅ '+tpl.lbl);
+}
+function zmB(d){bzp=Math.max(40,Math.min(200,bzp+d));document.getElementById('bc').style.transform=`scale(${bzp/100})`;document.getElementById('bc').style.transformOrigin='top right';document.getElementById('bzl').textContent=bzp+'%';}
+function clrBlks(){if(!confirm('مسح كل البلوكات؟'))return;blocks=[];rBCanvas();rCTree();toast('🗑️ تم');}
+function rBCanvas(){
+  const cv=document.getElementById('bc');cv.innerHTML='';
+  document.getElementById('bemp').style.display=blocks.length?'none':'flex';
+  blocks.forEach(b=>cv.appendChild(mkBlkEl(b)));
+}
+function mkBlkEl(b){
+  const el=document.createElement('div');
+  el.className='block'+(b.id===selBId?' bsel':'');
+  el.id='blk-'+b.id;
+  el.style.cssText=`left:${b.x}px;top:${b.y}px;background:${b.col};`;
+  let inner=`<button class="bdel" onclick="delBlk(${b.id})">✕</button><div class="bh" style="background:${b.col}"><span>${b.ico}</span><span>${b.lbl}</span></div>`;
+  if(b.slots.length){inner+=`<div class="bb">`;b.slots.forEach((s,i)=>{inner+=`<div class="brow"><span class="blbl">${s.n}:</span><input class="bval" value="${s.v}" oninput="uBSlot(${b.id},${i},this.value)" placeholder="${s.n}" onclick="event.stopPropagation()"></div>`;});inner+=`</div>`;}
+  if(b.ch){inner+=`<div class="bch" style="border-right-color:rgba(255,255,255,.25)"><div style="font-size:11px;color:rgba(255,255,255,.35);padding:2px">اسحب بلوكات للداخل...</div></div>`;}
+  if(b.els){inner+=`<div style="background:rgba(0,0,0,.2);padding:5px 12px;font-size:12px;color:rgba(255,255,255,.65);border-top:1px solid rgba(255,255,255,.1)">🔀 وإلا (else)</div><div class="bch" style="border-right-color:rgba(255,255,255,.25)"><div style="font-size:11px;color:rgba(255,255,255,.35);padding:2px">اسحب بلوكات هنا...</div></div>`;}
+  el.innerHTML=inner;
+  el.addEventListener('mousedown',e=>{if(e.target.classList.contains('bval')||e.target.classList.contains('bdel'))return;e.preventDefault();e.stopPropagation();selB(b.id);mvBlk(e,b);});
+  el.addEventListener('click',e=>{e.stopPropagation();selB(b.id);});
+  return el;
+}
+function mvBlk(e,b){
+  const cv=document.getElementById('bc'),r=cv.getBoundingClientRect();
+  const ox=e.clientX-r.left-b.x*(bzp/100),oy=e.clientY-r.top-b.y*(bzp/100);
+  function mv(ev){b.x=Math.max(0,(ev.clientX-r.left-ox)/(bzp/100));b.y=Math.max(0,(ev.clientY-r.top-oy)/(bzp/100));const el=document.getElementById('blk-'+b.id);if(el){el.style.left=b.x+'px';el.style.top=b.y+'px';}}
+  function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+}
+function selB(id){
+  selBId=id;
+  document.querySelectorAll('.block').forEach(e=>e.classList.remove('bsel'));
+  const el=document.getElementById('blk-'+id);if(el)el.classList.add('bsel');
+  rBProps(id);
+}
+function deselB(){selBId=null;document.querySelectorAll('.block').forEach(e=>e.classList.remove('bsel'));document.getElementById('bpf').innerHTML='<div style="color:var(--text3);font-size:12px;text-align:center;margin-top:20px">اضغط على بلوك لتعديله</div>';}
+function rBProps(id){
+  const b=blocks.find(x=>x.id===id);if(!b)return;
+  const pf=document.getElementById('bpf');
+  pf.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">${b.ico} ${b.lbl}</div>
+    ${b.slots.map((s,i)=>`<div class="pr2"><div class="prl">${s.n}</div><input class="pi" value="${s.v}" oninput="uBSlot(${b.id},${i},this.value)" placeholder="${s.n}"></div>`).join('')}
+    <div style="margin-top:14px"><button class="btn" style="background:var(--accent2);color:#fff;width:100%;justify-content:center;font-size:12px" onclick="delBlk(${b.id})">🗑️ حذف البلوك</button></div>`;
+}
+function uBSlot(bid,idx,val){const b=blocks.find(x=>x.id===bid);if(b&&b.slots[idx])b.slots[idx].v=val;}
+function delBlk(id){blocks=blocks.filter(b=>b.id!==id);selBId=null;rBCanvas();rCTree();toast('🗑️ تم حذف البلوك');}
+function goBlk(cid2){actComp=cid2;sw('blocks');setTimeout(()=>{selCat('events');rCTree();toast('🧩 اختر حدث وابدأ البرمجة!');},80);}
+
+function genCode(lang,btn){
+  if(btn){document.querySelectorAll('#cm .cbb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+  const out=document.getElementById('co');if(!out)return;
+  if(lang==='rn'){
+    let s=`<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;\n<span class="kw">import</span> { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } <span class="kw">from</span> <span class="str">'react-native'</span>;\n\n<span class="cm">// تم توليده بواسطة AppForge</span>\n<span class="kw">export default function</span> <span class="fn">App</span>() {\n  <span class="kw">return</span> (\n    <span class="str">&lt;ScrollView style={styles.container}&gt;</span>\n`;
+    comps.forEach(c=>{s+=`      <span class="cm">{/* ${cn(c.type)} #${c.id} */}</span>\n`;s+=rnC(c);});
+    s+=`    <span class="str">&lt;/ScrollView&gt;</span>\n  );\n}\n\n<span class="kw">const</span> styles = StyleSheet.<span class="fn">create</span>({\n  container: { flex:<span class="num">1</span>, backgroundColor:<span class="str">'#f8f9fa'</span> }\n});\n`;
+    out.innerHTML=s;
+  } else if(lang==='fl'){
+    out.innerHTML=`<span class="cm">// Flutter (Dart) — AppForge</span>\n<span class="kw">import</span> <span class="str">'package:flutter/material.dart'</span>;\n<span class="kw">void</span> <span class="fn">main</span>() => runApp(MyApp());\n<span class="kw">class</span> <span class="fn">MyApp</span> <span class="kw">extends</span> StatelessWidget {\n  Widget <span class="fn">build</span>(context) => MaterialApp(home:Scaffold(body:Stack(children:[\n${comps.map(c=>`    Positioned(left:${c.x}.0,top:${c.y}.0,child:SizedBox(width:${c.w}.0)),`).join('\n')}\n  ])));\n}`;
+  } else {
+    out.innerHTML=`<span class="cm">// SwiftUI — AppForge</span>\n<span class="kw">import</span> SwiftUI\n<span class="kw">struct</span> <span class="fn">ContentView</span>: View {\n  <span class="kw">var</span> body: <span class="kw">some</span> View {\n    ZStack(alignment:.topLeading) {\n${comps.map(c=>`      ${swC(c)}`).join('\n')}\n    }\n  }\n}`;
+  }
+}
+function rnC(c){
+  if(c.type==='button')return`      <span class="str">&lt;TouchableOpacity style={{backgroundColor:'${c.bgColor}',padding:12,borderRadius:${c.radius},margin:4}}&gt;\n        &lt;Text style={{color:'${c.textColor}',fontSize:${c.fontSize},textAlign:'center',fontWeight:'bold'}}&gt;</span>${c.label}<span class="str">&lt;/Text&gt;&lt;/TouchableOpacity&gt;</span>\n`;
+  if(c.type==='text')return`      <span class="str">&lt;Text style={{fontSize:${c.fontSize},color:'${c.color}',margin:4}}&gt;</span>${c.content}<span class="str">&lt;/Text&gt;</span>\n`;
+  if(c.type==='input')return`      <span class="str">&lt;TextInput style={{borderWidth:2,borderColor:'${c.borderColor}',padding:11,borderRadius:10,margin:4}} placeholder=</span><span class="str">"${c.placeholder}"</span><span class="str">/&gt;</span>\n`;
+  return`      <span class="str">&lt;View style={{width:${c.w},height:${c.h||80},margin:4}} /&gt;</span>\n`;
+}
+function swC(c){
+  if(c.type==='button')return`Button("${c.label}"){}.offset(x:${c.x},y:${c.y})`;
+  if(c.type==='text')return`Text("${c.content}").offset(x:${c.x},y:${c.y})`;
+  return`Rectangle().frame(width:${c.w},height:${c.h||50}).offset(x:${c.x},y:${c.y})`;
+}
+
+function showPrev(){
+  const n=new Date();
+  const ts=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+  const wv=comps.find(c=>c.type==='webview'&&c.url&&c.url!=='https://example.com'&&(c.url.startsWith('http://')||c.url.startsWith('https://')));
+  let sc='';
+  if(wv){
+    sc=`<div style="display:flex;flex-direction:column;height:100%"><div class="ip17-urlbar"><div class="ip17-urlpill"><span style="font-size:11px;color:#98989f">🔒</span><span class="ip17-urltext">${wv.url}</span></div></div><iframe src="${wv.url}" style="flex:1;border:none;width:100%"></iframe></div>`;
+  } else {
+    const src=document.getElementById('psc').cloneNode(true);
+    src.style.pointerEvents='none';src.style.minHeight='100%';src.style.width='100%';
+    src.querySelectorAll('.rh').forEach(h=>h.remove());
+    src.querySelectorAll('.dc').forEach(e=>{e.style.border='none';e.classList.remove('sel');});
+    sc=src.outerHTML;
+  }
+  document.getElementById('prevc').innerHTML=`
+    <div class="iphone17">
+      <div class="ip17-vol"></div>
+      <div class="ip17-inner">
+        <div class="ip17-statusbar">
+          <span class="ip17-time">${ts}</span>
+          <div class="ip17-di"><div class="ip17-face"></div><div class="ip17-cam"></div></div>
+          <div class="ip17-icons"><span>▲▲▲</span>&nbsp;<span>🔋</span></div>
+        </div>
+        <div class="ip17-content">${sc}</div>
+        <div class="ip17-bottom"><div class="ip17-home"></div></div>
+      </div>
+    </div>`;
+  om('prevm');
+}
+
+function om(id){document.getElementById(id).style.display='flex';}
+function cm2(id){document.getElementById(id).style.display='none';}
+document.querySelectorAll('.mbg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';}));
+function selP(el){document.querySelectorAll('.pcard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+function startPub(){
+  const bar=document.getElementById('ppb'),st=document.getElementById('pst');
+  const steps=[[25,'جاري الضغط...'],[55,'جاري البناء...'],[80,'توليد الملف...'],[100,'✅ جاهز!']];
+  let i=0;const t=setInterval(()=>{if(i>=steps.length){clearInterval(t);toast('🎉 تم البناء!');return;}bar.style.width=steps[i][0]+'%';st.textContent=steps[i][1];i++;},900);
+}
+const INTS=[{ico:'🗺️',n:'Google Maps',id:'gm'},{ico:'🔑',n:'Firebase',id:'fb'},{ico:'💳',n:'Stripe',id:'st'},{ico:'📧',n:'SendGrid',id:'sg'},{ico:'📦',n:'Supabase',id:'sb'},{ico:'📱',n:'OneSignal',id:'os'},{ico:'🎥',n:'YouTube API',id:'yt'},{ico:'🌐',n:'REST API',id:'ra'}];
+document.getElementById('ig').innerHTML=INTS.map(i=>`<div class="icard ${connected[i.id]?'con':''}" id="ic-${i.id}" onclick="togInt('${i.id}')"><div style="font-size:22px;margin-bottom:4px">${i.ico}</div><div style="font-size:13px;font-weight:700">${i.n}</div><div class="ist ${connected[i.id]?'con':''}">${connected[i.id]?'✅ متصل':'اضغط للربط'}</div></div>`).join('');
+function togInt(id){connected[id]=!connected[id];const el=document.getElementById('ic-'+id);el.classList.toggle('con',connected[id]);el.querySelector('.ist').textContent=connected[id]?'✅ متصل':'اضغط للربط';el.querySelector('.ist').className='ist'+(connected[id]?' con':'');toast(connected[id]?'✅ تم الربط!':'🔌 تم الفصل');}
+function addWV(){const url=document.getElementById('wvu').value.trim();if(!url)return toast('❌ أدخل رابطاً');const c=mkC('webview',0,100);c.url=url;c.title=url;c.w=375;c.h=350;comps.push(c);sHist();rC();cm2('im');sw('design');toast('🌐 تمت إضافة الموقع');}
+function fc(q){document.querySelectorAll('.ci').forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q.toLowerCase())?'flex':'none';});}
+function cn(t){const m={button:'زر',input:'حقل إدخال',text:'نص',image:'صورة',card:'كارت',navbar:'شريط علوي',bottomnav:'شريط سفلي',switch:'مفتاح',slider:'شريط تمرير',list:'قائمة',video:'فيديو',map:'خريطة',chart:'رسم بياني',webview:'موقع ويب',api:'API',screen:'الشاشة'};return m[t]||t;}
+function cico(t){const m={button:'🔘',input:'📝',text:'📄',image:'🖼️',card:'🃏',navbar:'🧭',bottomnav:'⬇️',switch:'🔄',slider:'🎚️',list:'📋',video:'🎥',map:'🗺️',chart:'📊',webview:'🌐',api:'⚡',screen:'📱'};return m[t]||'📦';}
+function toast(msg){const t=document.getElementById('tst');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.mbg').forEach(m=>m.style.display='none');
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
+  if(e.key==='Delete'&&selId&&!['INPUT','TEXTAREA'].includes(e.target.tagName))delC();
+  if(e.key==='Delete'&&selBId&&!['INPUT','TEXTAREA'].includes(e.target.tagName))delBlk(selBId);
+  if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();dupC();}
+});
+
+rC();rbv();
+const _c=localStorage.getItem('platform_saved_color');
+setTimeout(()=>toast(_c?'🎨 تم تطبيق ألوان Platform!':'👋 اسحب مكوّن للبدء!'),600);
+</script>
+</body>
+</html>

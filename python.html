@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ahmed.afify — Python Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Fira+Code:wght@300;400;500;600&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+<style>
+:root {
+  --pink:#ff2d78; --pink-light:#ff6fa8; --pink-dim:#ff2d7833; --pink-glow:#ff2d7866;
+  --black:#050508; --dark:#0d0d14; --dark2:#13131e; --dark3:#1a1a2a; --dark4:#222236;
+  --text:#f0e6f0; --text-dim:#a08898; --border:#ff2d7830;
+  --fs:13px; --lh:1.7;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--black); color:var(--text); font-family:'Cairo',sans-serif; overflow:hidden; height:100vh; display:flex; flex-direction:column; }
+
+/* ===== INTRO ===== */
+#intro-screen { position:fixed; inset:0; z-index:9999; background:#020205; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
+#intro-screen.fade-out { animation:iOut .9s cubic-bezier(.77,0,.18,1) forwards; }
+@keyframes iOut{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.04)}100%{opacity:0;transform:scale(1.09);pointer-events:none}}
+#ig{position:absolute;inset:0;background-image:linear-gradient(rgba(255,45,120,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,45,120,.045) 1px,transparent 1px);background-size:60px 60px;animation:gd 22s linear infinite}
+@keyframes gd{0%{background-position:0 0}100%{background-position:60px 60px}}
+#iglow{position:absolute;width:660px;height:660px;border-radius:50%;background:radial-gradient(circle,rgba(255,45,120,.14) 0%,rgba(255,45,120,.05) 40%,transparent 70%);animation:gp 3.2s ease-in-out infinite;pointer-events:none}
+@keyframes gp{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.18);opacity:1}}
+#isc{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px);pointer-events:none;opacity:.45}
+.ic{position:absolute;width:52px;height:52px;border-color:var(--pink);border-style:solid;opacity:0;animation:cr .5s ease forwards}
+.ic.tl{top:36px;left:36px;border-width:2px 0 0 2px;animation-delay:.25s}
+.ic.tr{top:36px;right:36px;border-width:2px 2px 0 0;animation-delay:.35s}
+.ic.bl{bottom:36px;left:36px;border-width:0 0 2px 2px;animation-delay:.45s}
+.ic.br{bottom:36px;right:36px;border-width:0 2px 2px 0;animation-delay:.55s}
+@keyframes cr{to{opacity:1}}
+.idl{position:absolute;font-family:'Fira Code',monospace;font-size:9.5px;color:rgba(255,45,120,.22);letter-spacing:.08em;white-space:nowrap;opacity:0;animation:di .7s ease forwards}
+.idl.L{left:56px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:left center;animation-delay:.7s}
+.idl.R{right:56px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center;animation-delay:.85s}
+.idl.B{bottom:64px;left:50%;transform:translateX(-50%);animation-delay:1s;font-size:9px}
+@keyframes di{to{opacity:1}}
+.ihex{position:absolute;border:1px solid rgba(255,45,120,.07);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:hs linear infinite;pointer-events:none}
+@keyframes hs{to{transform:rotate(360deg)}}
+.ipar{position:absolute;border-radius:50%;pointer-events:none;animation:pf linear infinite}
+@keyframes pf{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20vh) scale(1);opacity:0}}
+.iring{position:absolute;border-radius:50%;animation:re ease-out forwards;pointer-events:none}
+@keyframes re{0%{transform:scale(0);opacity:.6}100%{transform:scale(1);opacity:0}}
+.irain{position:absolute;top:0;font-family:'Fira Code',monospace;color:rgba(255,45,120,.12);writing-mode:vertical-rl;letter-spacing:4px;pointer-events:none;white-space:nowrap;animation:rf linear infinite}
+@keyframes rf{0%{transform:translateY(-100%);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(100vh);opacity:0}}
+#ilw{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:0}
+#ilm{width:118px;height:118px;opacity:0;animation:md .85s cubic-bezier(0.34,1.56,.64,1) .5s forwards;filter:drop-shadow(0 0 28px rgba(255,45,120,.85))}
+@keyframes md{0%{opacity:0;transform:translateY(-28px) scale(.65)}100%{opacity:1;transform:translateY(0) scale(1)}}
+#iname{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(34px,5.5vw,66px);letter-spacing:.04em;background:linear-gradient(130deg,#fff 0%,#ff9fc8 35%,#ff2d78 65%,#fff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0;animation:ns 1s cubic-bezier(.16,1,.3,1) 1.1s forwards;filter:drop-shadow(0 0 18px rgba(255,45,120,.45));margin-top:6px}
+@keyframes ns{0%{opacity:0;transform:translateY(18px) skewX(-5deg);letter-spacing:.15em}100%{opacity:1;transform:translateY(0) skewX(0);letter-spacing:.04em}}
+#idot{display:inline-block;-webkit-text-fill-color:#ff2d78;filter:drop-shadow(0 0 10px #ff2d78)}
+#itag{font-family:'Rajdhani',sans-serif;font-weight:300;font-size:clamp(11px,1.6vw,15px);letter-spacing:.32em;color:rgba(255,255,255,.32);text-transform:uppercase;opacity:0;animation:tu .8s ease 1.65s forwards;margin-top:4px}
+@keyframes tu{0%{opacity:0;transform:translateY(8px);letter-spacing:.5em}100%{opacity:1;transform:translateY(0);letter-spacing:.32em}}
+#irule{width:0;height:1px;margin:16px auto 0;background:linear-gradient(90deg,transparent,#ff2d78,transparent);animation:rg .9s ease 1.45s forwards;box-shadow:0 0 10px rgba(255,45,120,.5)}
+@keyframes rg{to{width:340px}}
+#isub{font-family:'Fira Code',monospace;font-size:12.5px;color:rgba(255,111,168,.65);letter-spacing:.1em;opacity:0;animation:sf .6s ease 2s forwards;margin-top:14px}
+@keyframes sf{to{opacity:1}}
+#ibdg{display:flex;gap:8px;margin-top:12px;opacity:0;animation:sf .6s ease 2.1s forwards}
+.ibadge{font-family:'Fira Code',monospace;font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+.ibadge.py{background:#1a3040;color:#4ec9b0;border:1px solid #4ec9b033}
+.ibadge.js{background:#3a3010;color:#f7df1e;border:1px solid #f7df1e33}
+.ibadge.wa{background:#2a1a3a;color:#c084fc;border:1px solid #c084fc33}
+.ibadge.ai{background:#3a1a1a;color:#ff6fa8;border:1px solid #ff2d7833}
+#ipw{margin-top:36px;width:clamp(260px,34vw,390px);opacity:0;animation:sf .5s ease 2.25s forwards}
+#ipl{display:flex;justify-content:space-between;font-family:'Fira Code',monospace;font-size:9.5px;color:rgba(255,45,120,.45);margin-bottom:7px;letter-spacing:.07em}
+#ipt{height:2px;background:rgba(255,45,120,.08);border-radius:2px;overflow:visible;position:relative}
+#ipb{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,#ff2d78,#ff9fc8);transition:width .12s linear;box-shadow:0 0 10px rgba(255,45,120,.9);position:relative}
+#ipb::after{content:'';position:absolute;right:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ff6fa8;box-shadow:0 0 14px #ff2d78,0 0 4px #fff}
+#iticker{position:absolute;bottom:78px;left:50%;transform:translateX(-50%);font-family:'Fira Code',monospace;font-size:9.5px;color:rgba(255,45,120,.35);white-space:nowrap;letter-spacing:.04em;opacity:0;animation:sf .4s ease 2.3s forwards}
+#iskip{position:absolute;bottom:28px;right:38px;font-family:'Fira Code',monospace;font-size:10.5px;color:rgba(255,45,120,.38);border:1px solid rgba(255,45,120,.14);padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .25s;opacity:0;animation:sf .5s ease 2.6s forwards}
+#iskip:hover{color:var(--pink);border-color:var(--pink);background:rgba(255,45,120,.08)}
+
+/* ===== PYODIDE LOADER ===== */
+#pyodide-loader{position:fixed;inset:0;background:rgba(5,5,8,.95);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;backdrop-filter:blur(6px)}
+#pyodide-loader .lt{font-size:22px;font-weight:900;color:var(--pink);text-shadow:0 0 24px var(--pink)}
+#pyodide-loader .ls{font-size:13px;color:var(--text-dim);max-width:380px;text-align:center;line-height:1.8}
+#pyodide-loader .lbw{width:340px;height:8px;background:var(--dark3);border-radius:10px;border:1px solid var(--border);overflow:hidden}
+#pyodide-loader .lb{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--pink-light));border-radius:10px;transition:width .4s ease;box-shadow:0 0 14px var(--pink-glow)}
+#pyodide-loader .lst{font-family:'Fira Code',monospace;font-size:11px;color:var(--pink-light);min-height:18px}
+#pyodide-loader .lsn{font-size:52px;animation:sb 1s ease-in-out infinite}
+@keyframes sb{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(10deg)}}
+
+/* ===== APP ===== */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+header{position:relative;z-index:10;background:linear-gradient(90deg,var(--dark) 0%,#1a0a14 50%,var(--dark) 100%);border-bottom:1px solid var(--pink);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 0 30px var(--pink-glow);flex-shrink:0;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:900;color:var(--pink);text-shadow:0 0 20px var(--pink);letter-spacing:-.5px;flex-shrink:0}
+.logo span{color:var(--text)}
+.header-tabs{display:flex;gap:4px}
+.header-tab{padding:6px 16px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;transition:all .2s}
+.header-tab:hover,.header-tab.active{border-color:var(--pink);color:var(--pink);background:var(--pink-dim);box-shadow:0 0 12px var(--pink-dim)}
+.lang-switcher{display:flex;align-items:center;background:var(--dark3);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
+.lang-btn{padding:5px 12px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;transition:all .2s;letter-spacing:.5px}
+.lang-btn.active{background:var(--pink);color:white;box-shadow:0 0 10px var(--pink-glow)}
+.lang-btn:hover:not(.active){background:var(--pink-dim);color:var(--pink)}
+.lang-divider{width:1px;height:24px;background:var(--border)}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.main-layout{position:relative;z-index:5;display:grid;grid-template-columns:300px 1fr 320px;grid-template-rows:1fr 200px;gap:1px;flex:1;overflow:hidden;background:var(--border)}
+.panel{background:var(--dark);display:flex;flex-direction:column;overflow:hidden}
+.panel-header{padding:10px 14px;background:var(--dark2);border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--pink-light);letter-spacing:.5px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+#library-panel{grid-row:1 / 3}
+.search-box{padding:10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.search-input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;outline:none;transition:border-color .2s;direction:rtl}
+.search-input:focus{border-color:var(--pink);box-shadow:0 0 10px var(--pink-dim)}
+.search-input::placeholder{color:var(--text-dim)}
+.library-scroll{flex:1;overflow-y:auto;padding:8px}
+.library-scroll::-webkit-scrollbar{width:4px}
+.library-scroll::-webkit-scrollbar-thumb{background:var(--pink-dim);border-radius:2px}
+.category{margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.category-header{padding:9px 12px;background:var(--dark3);cursor:pointer;font-size:12px;font-weight:700;color:var(--pink-light);display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .2s}
+.category-header:hover{background:var(--dark4)}
+.category-arrow{transition:transform .2s;font-size:10px}
+.category.open .category-arrow{transform:rotate(180deg)}
+.category-items{display:none;background:var(--dark2)}
+.category.open .category-items{display:block}
+.code-item{padding:7px 14px;cursor:pointer;font-size:12px;color:var(--text-dim);transition:all .15s;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.code-item:last-child{border-bottom:none}
+.code-item:hover{background:var(--pink-dim);color:var(--pink);padding-right:18px}
+.code-item::before{content:'◈';font-size:8px;color:var(--pink);opacity:.6}
+#editor-panel{grid-column:2;grid-row:1}
+.editor-toolbar{padding:8px 12px;background:var(--dark2);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn{padding:6px 14px;border-radius:6px;border:1px solid var(--pink);background:transparent;color:var(--pink);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn:hover{background:var(--pink);color:white;box-shadow:0 0 15px var(--pink-glow)}
+.btn.run{background:var(--pink);color:white}
+.btn.run:hover{box-shadow:0 0 20px var(--pink);transform:scale(1.04)}
+.btn.run:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.clear{border-color:#555;color:#999}
+.btn.clear:hover{border-color:#888;color:var(--text);background:var(--dark3);box-shadow:none}
+.mode-toggle{display:flex;align-items:center;background:var(--dark3);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-right:auto}
+.mode-btn{padding:4px 10px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Fira Code',monospace;font-size:11px;font-weight:600;transition:all .2s}
+.mode-btn.active{background:var(--pink);color:white}
+.mode-btn:hover:not(.active){background:var(--pink-dim);color:var(--pink)}
+.tab-bar{display:flex;gap:2px;padding:0 12px;background:var(--dark3);border-bottom:1px solid var(--border);flex-shrink:0;align-items:center}
+.editor-tab{padding:6px 14px;font-size:12px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:'Fira Code',monospace}
+.editor-tab.active{color:var(--pink);border-bottom-color:var(--pink)}
+.lang-indicator{margin-right:auto;font-size:10px;padding:2px 8px;border-radius:10px;font-family:'Fira Code',monospace;font-weight:600}
+.lang-indicator.py{background:#1a3040;color:#4ec9b0;border:1px solid #4ec9b033}
+.lang-indicator.js{background:#3a3010;color:#f7df1e;border:1px solid #f7df1e33}
+
+/* ============================================================
+   EDITOR AREA — LINE NUMBERS BESIDE EACH LINE
+   The gutter and textarea share the same font/size/line-height
+   so every span lines up perfectly with its row.
+   ============================================================ */
+.editor-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+#line-numbers {
+  /* fixed width gutter */
+  flex-shrink: 0;
+  width: 52px;
+  padding: 12px 0;
+  background: var(--dark2);
+  border-left: 1px solid var(--border);   /* RTL layout: border on left side */
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* One <span> per line */
+#line-numbers span {
+  display: block;
+  /* height = font-size × line-height, must match #code-editor exactly */
+  height: calc(var(--fs) * var(--lh));
+  line-height: calc(var(--fs) * var(--lh));
+  text-align: center;
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: .45;
+  transition: color .1s, opacity .1s, background .1s;
+}
+
+/* The line where the cursor lives */
+#line-numbers span.cur {
+  color: var(--pink);
+  opacity: 1;
+  background: rgba(255, 45, 120, .07);
+}
+
+#code-editor {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Fira Code', monospace;
+  font-size: var(--fs);
+  line-height: var(--lh);
+  padding: 12px 14px;
+  resize: none;
+  outline: none;
+  tab-size: 4;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+  overflow-y: auto;
+  caret-color: var(--pink);
+}
+
+#output-panel{grid-column:2;grid-row:2}
+.output-content{flex:1;overflow-y:auto;padding:12px 16px;font-family:'Fira Code',monospace;font-size:12px;line-height:1.8;color:#c8e6c9}
+.output-content::-webkit-scrollbar{width:4px}
+.output-content::-webkit-scrollbar-thumb{background:var(--pink-dim)}
+.output-error{color:#ff6b6b}.output-info{color:var(--pink-light)}.output-warn{color:#ffd700}.output-log{color:#7ec8e3}
+.output-line{margin-bottom:2px;white-space:pre-wrap;word-break:break-all}
+#explain-panel{grid-column:3;grid-row:1 / 3}
+.explain-content{flex:1;overflow-y:auto;padding:14px}
+.explain-content::-webkit-scrollbar{width:4px}
+.explain-content::-webkit-scrollbar-thumb{background:var(--pink-dim)}
+.explain-block{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;font-size:12px;line-height:1.8;color:var(--text-dim);direction:rtl;text-align:right}
+.explain-block h4{color:var(--pink);margin-bottom:8px;font-size:13px}
+.explain-block code{background:var(--dark4);padding:2px 6px;border-radius:4px;font-family:'Fira Code',monospace;color:var(--pink-light);font-size:11px}
+.explain-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:6px}
+.badge-func{background:#1a3a2a;color:#4ade80;border:1px solid #4ade8033}
+.badge-cond{background:#2a1a3a;color:#c084fc;border:1px solid #c084fc33}
+.badge-loop{background:#3a2a1a;color:#fb923c;border:1px solid #fb923c33}
+.badge-class{background:#1a2a3a;color:#60a5fa;border:1px solid #60a5fa33}
+.badge-lib{background:#3a1a1a;color:var(--pink-light);border:1px solid var(--pink-dim)}
+.libraries-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px}
+.lib-card{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;transition:all .2s;text-align:center}
+.lib-card:hover{border-color:var(--pink);box-shadow:0 0 10px var(--pink-dim);transform:translateY(-1px)}
+.lib-card .lib-icon{font-size:20px;margin-bottom:4px}
+.lib-card .lib-name{font-size:11px;font-weight:700;color:var(--pink-light)}
+.lib-card .lib-desc{font-size:10px;color:var(--text-dim);margin-top:2px}
+.lib-card .lib-status{font-size:9px;margin-top:3px;padding:1px 5px;border-radius:8px;display:inline-block}
+.lib-status.available{background:#1a3a2a;color:#4ade80;border:1px solid #4ade8033}
+.lib-status.installable{background:#2a2a1a;color:#f7df1e;border:1px solid #f7df1e33}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--dark2);border:1px solid var(--pink);border-radius:12px;padding:24px;max-width:560px;width:90%;box-shadow:0 0 40px var(--pink-glow);direction:rtl}
+.modal h3{color:var(--pink);margin-bottom:12px;font-size:16px}
+.modal p{color:var(--text-dim);font-size:13px;line-height:1.8;margin-bottom:12px}
+.modal pre{background:var(--dark4);padding:12px;border-radius:8px;font-family:'Fira Code',monospace;font-size:12px;color:var(--pink-light);overflow-x:auto;direction:ltr;text-align:left;margin-bottom:12px}
+.modal-close{padding:8px 20px;border-radius:8px;border:1px solid var(--pink);background:var(--pink);color:white;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;font-size:13px}
+.notif{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark3);border:1px solid var(--pink);padding:10px 20px;border-radius:8px;color:var(--pink);font-size:13px;z-index:200;transition:transform .3s;box-shadow:0 0 20px var(--pink-glow)}
+.notif.show{transform:translateX(-50%) translateY(0)}
+.pyodide-ready-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Fira Code',monospace;background:#1a3a2a;color:#4ade80;border:1px solid #4ade8033;margin-right:6px}
+.pyodide-loading-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Fira Code',monospace;background:#3a3010;color:#f7df1e;border:1px solid #f7df1e33;margin-right:6px;animation:bp 1.5s ease-in-out infinite}
+@keyframes bp{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<!-- ====== INTRO ====== -->
+<div id="intro-screen">
+  <div id="ig"></div><div id="iglow"></div><div id="isc"></div>
+  <div class="ic tl"></div><div class="ic tr"></div><div class="ic bl"></div><div class="ic br"></div>
+  <div class="idl L">SYS::INIT_v2.5.1 // PYTHON_RUNTIME // WEBASSEMBLY // PYODIDE</div>
+  <div class="idl R">MODULE::NUMPY // PANDAS // MATPLOTLIB // SCIPY // MICROPIP</div>
+  <div class="idl B">&#169; Ahmed.afify &#8212;<a href="online-python.com">Python</a>Studio IDE // All Systems Operational // 2025</div>
+  <div id="ilw">
+    <svg id="ilm" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ff9fc8"/><stop offset="50%" stop-color="#ff2d78"/><stop offset="100%" stop-color="#cc1155"/></linearGradient>
+        <linearGradient id="g2" x1="120" y1="0" x2="0" y2="120" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/><stop offset="100%" stop-color="#ff9fc8" stop-opacity=".65"/></linearGradient>
+        <filter id="gf"><feGaussianBlur stdDeviation="2.5" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gf2"><feGaussianBlur stdDeviation="4" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <polygon points="60,5 110,30 110,90 60,115 10,90 10,30" fill="none" stroke="url(#g1)" stroke-width="1.5" opacity=".65" filter="url(#gf)"/>
+      <polygon points="60,18 97,38 97,80 60,100 23,80 23,38" fill="none" stroke="url(#g1)" stroke-width=".8" opacity=".25"/>
+      <polygon points="60,32 84,46 84,72 60,86 36,72 36,46" fill="none" stroke="rgba(255,45,120,.15)" stroke-width=".7"/>
+      <path d="M36 85 L60 28 L84 85" stroke="url(#g2)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#gf)"/>
+      <path d="M44 68 L76 68" stroke="url(#g1)" stroke-width="3" stroke-linecap="round" filter="url(#gf)"/>
+      <circle cx="60" cy="24" r="4" fill="#ff2d78" filter="url(#gf2)"/>
+      <circle cx="60" cy="24" r="8" fill="none" stroke="rgba(255,45,120,.3)" stroke-width="1"/>
+      <rect x="56.5" y="107" width="7" height="7" fill="none" stroke="rgba(255,45,120,.6)" stroke-width="1.2" transform="rotate(45 60 110.5)"/>
+      <rect x="8" y="26.5" width="6" height="6" fill="none" stroke="rgba(255,111,168,.4)" stroke-width="1" transform="rotate(45 11 29.5)"/>
+      <rect x="106" y="82.5" width="6" height="6" fill="none" stroke="rgba(255,111,168,.4)" stroke-width="1" transform="rotate(45 109 85.5)"/>
+      <path d="M42 52 Q50 44 60 52 Q70 60 78 52" stroke="rgba(255,45,120,.3)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div id="iname">Ahmed<span id="idot">.</span>afify</div>
+    <div id="itag">Python Developer &amp; Code Architect</div>
+    <div id="irule"></div>
+    <div id="isub">&#128013; Python Studio &#8212; Powered by Pyodide &amp; WebAssembly</div>
+    <div id="ibdg">
+      <span class="ibadge py">Python 3.x</span>
+      <span class="ibadge wa">WebAssembly</span>
+      <span class="ibadge ai">Pandas &middot; NumPy</span>
+      <span class="ibadge js">JavaScript</span>
+    </div>
+  </div>
+  <div id="ipw">
+    <div id="ipl"><span id="iptxt">INITIALIZING...</span><span id="ippct">0%</span></div>
+    <div id="ipt"><div id="ipb"></div></div>
+  </div>
+  <div id="iticker">&#9654; Loading Ahmed.afify Python Studio...</div>
+  <div id="iskip" onclick="skipIntro()">[ SKIP INTRO ]</div>
+</div>
+
+<!-- ====== PYODIDE LOADER ====== -->
+<div id="pyodide-loader">
+  <div class="lsn">&#128013;</div>
+  <div class="lt" id="lt">جاري تحميل Python...</div>
+  <div class="ls" id="ls">يتم تحميل Python الحقيقي (Pyodide) في المتصفح عبر WebAssembly.<br>هذا يحدث مرة واحدة فقط ~ 10MB</div>
+  <div class="lbw"><div class="lb" id="lb"></div></div>
+  <div class="lst" id="lst">Initializing...</div>
+</div>
+
+<canvas id="bg-canvas"></canvas>
+
+<header>
+  <div class="logo">&#128013; <span><a href="https://www.online-python.com/">Python</a></span>Studio</div>
+  <div class="header-tabs">
+    <button class="header-tab active" onclick="switchMainTab('editor',this)" data-ar="&#9999;&#65039; المحرر" data-en="&#9999;&#65039; Editor">&#9999;&#65039; المحرر</button>
+    <button class="header-tab" onclick="switchMainTab('libraries',this)" data-ar="&#128230; المكتبات" data-en="&#128230; Libraries">&#128230; المكتبات</button>
+    <button class="header-tab" onclick="switchMainTab('about',this)" data-ar="&#8505;&#65039; عن البرنامج" data-en="&#8505;&#65039; About">&#8505;&#65039; عن البرنامج</button>
+  </div>
+  <div class="header-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="lang-ar" onclick="setLang('ar')">العربية</button>
+      <div class="lang-divider"></div>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">English</button>
+    </div>
+    <div style="color:var(--text-dim);font-size:12px;">Python 3.x Studio</div>
+  </div>
+</header>
+
+<div class="main-layout">
+  <div class="panel" id="library-panel">
+    <div class="panel-header"><span>&#128218;</span> <span class="i18n" data-ar="مكتبة الأكواد" data-en="Code Library">مكتبة الأكواد</span></div>
+    <div class="search-box">
+      <input class="search-input" id="search-input" type="text" placeholder="&#128269; ابحث عن كود..." oninput="searchCodes(this.value)">
+    </div>
+    <div class="library-scroll" id="library-list"></div>
+  </div>
+
+  <div class="panel" id="editor-panel">
+    <div class="panel-header">
+      <span>&#9999;&#65039;</span> <span class="i18n" data-ar="محرر الكود" data-en="Code Editor">محرر الكود</span>
+      <div class="editor-toolbar" style="margin-right:auto;padding:0;background:none;border:none;">
+        <button class="btn run" onclick="runCode()" id="btn-run">&#9654; <span class="i18n" data-ar="تشغيل" data-en="Run">تشغيل</span></button>
+        <button class="btn" onclick="explainCode()">&#128161; <span class="i18n" data-ar="شرح" data-en="Explain">شرح</span></button>
+        <button class="btn clear" onclick="clearEditor()">&#128465; <span class="i18n" data-ar="مسح" data-en="Clear">مسح</span></button>
+        <button class="btn clear" onclick="copyCode()">&#128203; <span class="i18n" data-ar="نسخ" data-en="Copy">نسخ</span></button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="editor-tab active" id="file-tab">main.py</div>
+      <span class="lang-indicator py" id="lang-indicator">Python</span>
+      <span class="pyodide-loading-badge" id="pyodide-badge">&#8987; Python loading...</span>
+      <div class="mode-toggle" style="margin-right:0">
+        <button class="mode-btn active" id="mode-py" onclick="setCodeMode('python')">&#128013; Python</button>
+        <button class="mode-btn" id="mode-js" onclick="setCodeMode('javascript')">&#9889; JavaScript</button>
+      </div>
+    </div>
+
+    <!-- EDITOR: gutter + textarea side by side -->
+    <div class="editor-area">
+      <div id="line-numbers"><span class="cur">1</span></div>
+      <textarea id="code-editor" spellcheck="false"
+        placeholder="# اكتب كود Python هنا..."
+        oninput="syncLN();updateExplain()"></textarea>
+    </div>
+  </div>
+
+  <div class="panel" id="output-panel">
+    <div class="panel-header">
+      <span>&#9889;</span> <span class="i18n" data-ar="المخرجات" data-en="Output">المخرجات</span>
+      <button class="btn clear" style="margin-right:auto;padding:4px 10px;font-size:11px;" onclick="clearOutput()"><span class="i18n" data-ar="مسح" data-en="Clear">مسح</span></button>
+    </div>
+    <div class="output-content" id="output-area">
+      <div class="output-line output-info">// اضغط &#9654; تشغيل لرؤية المخرجات</div>
+    </div>
+  </div>
+
+  <div class="panel" id="explain-panel">
+    <div class="panel-header"><span>&#128161;</span> <span class="i18n" data-ar="شرح الكود" data-en="Code Explanation">شرح الكود</span></div>
+    <div class="explain-content" id="explain-content">
+      <div class="explain-block">
+        <h4>&#128218; كيفية الاستخدام</h4>
+        <ul style="list-style:none;color:var(--text-dim);font-size:12px;line-height:2;">
+          <li>• اختر كوداً من المكتبة</li>
+          <li>• اضغط <strong style="color:var(--pink)">&#9654; تشغيل</strong></li>
+          <li>• المكتبات تُثبَّت تلقائياً &#10003;</li>
+          <li>• رقم كل سطر بجانبه &#128290;</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title"></h3>
+    <p id="modal-desc"></p>
+    <pre id="modal-code"></pre>
+    <div style="display:flex;gap:8px;">
+      <button class="modal-close" onclick="insertFromModal()">&#128203; <span class="i18n" data-ar="إدراج في المحرر" data-en="Insert into Editor">إدراج في المحرر</span></button>
+      <button class="modal-close" style="background:transparent;color:var(--pink);" onclick="closeModal()"><span class="i18n" data-ar="إغلاق" data-en="Close">إغلاق</span></button>
+    </div>
+  </div>
+</div>
+<div class="notif" id="notif"></div>
+
+<script>
+/* ==================== INTRO ==================== */
+(function(){
+  var s=document.getElementById('intro-screen');if(!s)return;
+  var snips=['import','pandas','numpy','def','class','for','while','return','print()','lambda','async','await','True','False','None','>>>','...','pd.','np.','plt.','df.','DataFrame','array'];
+  for(var r=0;r<16;r++){var c=document.createElement('div');c.className='irain';c.style.left=(Math.random()*95)+'%';c.style.fontSize=(8+Math.random()*5)+'px';c.style.animationDuration=(5+Math.random()*9)+'s';c.style.animationDelay=(Math.random()*7)+'s';c.style.opacity=(0.06+Math.random()*0.14);var txt='';for(var rr=0;rr<20;rr++)txt+=snips[Math.floor(Math.random()*snips.length)]+' ';c.textContent=txt;s.appendChild(c);}
+  for(var p=0;p<26;p++){var par=document.createElement('div');par.className='ipar';var sz=2+Math.random()*5;par.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;background:rgba(255,'+(Math.floor(40+Math.random()*80))+','+(Math.floor(80+Math.random()*90))+','+(0.25+Math.random()*0.55).toFixed(2)+');animation-duration:'+(4+Math.random()*9)+'s;animation-delay:'+(Math.random()*5)+'s;box-shadow:0 0 '+(sz*2.5)+'px rgba(255,45,120,0.7);';s.appendChild(par);}
+  [[7,10],[84,7],[4,73],[87,66],[44,4],[49,87],[19,43],[77,38]].forEach(function(pos,i){var h=document.createElement('div');h.className='ihex';var sz=28+Math.random()*55;h.style.cssText='left:'+pos[0]+'%;top:'+pos[1]+'%;width:'+sz+'px;height:'+sz+'px;animation-duration:'+(12+i*6)+'s;animation-delay:'+(i*0.5)+'s;border-color:rgba(255,45,120,'+(0.04+Math.random()*0.07)+');';s.appendChild(h);});
+  s.addEventListener('click',function(e){var ring=document.createElement('div');ring.className='iring';var sz=180+Math.random()*240;ring.style.cssText='left:'+(e.clientX-sz/2)+'px;top:'+(e.clientY-sz/2)+'px;width:'+sz+'px;height:'+sz+'px;border:1px solid rgba(255,45,120,0.3);animation:re 1.3s ease-out forwards;';s.appendChild(ring);setTimeout(function(){ring.remove();},1400);});
+  var cur=document.createElement('div');cur.style.cssText='position:fixed;width:18px;height:18px;pointer-events:none;border:1.5px solid #ff2d78;border-radius:50%;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 10px #ff2d78;mix-blend-mode:screen;';
+  var cd=document.createElement('div');cd.style.cssText='position:fixed;width:4px;height:4px;pointer-events:none;background:#ff2d78;border-radius:50%;z-index:99999;transform:translate(-50%,-50%);';
+  document.body.appendChild(cur);document.body.appendChild(cd);
+  document.addEventListener('mousemove',function(e){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';cd.style.left=e.clientX+'px';cd.style.top=e.clientY+'px';});
+  var bar=document.getElementById('ipb'),pctEl=document.getElementById('ippct'),lblEl=document.getElementById('iptxt'),tick=document.getElementById('iticker');
+  var cp=0;
+  var stgs=[{p:10,l:'BOOT::SYSTEM',t:'\u25b8 Initializing Ahmed.afify Python Studio...'},{p:24,l:'LOAD::ASSETS',t:'\u25b8 Loading Orbitron \u00b7 Cairo \u00b7 Fira Code fonts...'},{p:40,l:'INIT::CANVAS',t:'\u25b8 Building WebGL particle animation engine...'},{p:58,l:'LOAD::PYODIDE',t:'\u25b8 Fetching Pyodide WebAssembly runtime (~10MB)...'},{p:74,l:'SETUP::PYTHON',t:'\u25b8 Configuring Python 3.x stdlib & micropip...'},{p:89,l:'READY::LIBS',t:'\u25b8 Pre-binding numpy \u00b7 pandas \u00b7 matplotlib \u00b7 scipy...'},{p:100,l:'LAUNCH::READY',t:'\u25b8 Ahmed.afify Python Studio \u2014 All systems go \u2713'}];
+  var si=0;
+  function mvp(t2,cb){function st(){cp=Math.min(cp+1.4,t2);if(bar)bar.style.width=cp+'%';if(pctEl)pctEl.textContent=Math.round(cp)+'%';if(cp<t2)requestAnimationFrame(st);else if(cb)cb();}requestAnimationFrame(st);}
+  function ns2(){if(si>=stgs.length)return;var st2=stgs[si];if(lblEl)lblEl.textContent=st2.l;if(tick)tick.textContent=st2.t;mvp(st2.p,function(){si++;if(si<stgs.length)setTimeout(ns2,340);else setTimeout(launch,650);});}
+  setTimeout(ns2,2500);
+  var de=document.getElementById('idot'),don=true;
+  var di=setInterval(function(){if(!document.getElementById('intro-screen')||document.getElementById('intro-screen').style.display==='none'){clearInterval(di);return;}don=!don;if(de)de.style.opacity=don?'1':'0.15';},480);
+  function launch(){if(bar)bar.style.width='100%';if(pctEl)pctEl.textContent='100%';if(lblEl)lblEl.textContent='LAUNCH::COMPLETE';if(tick)tick.textContent='\u2713 Welcome, Ahmed.afify Python Studio \u2014 Happy coding!';setTimeout(function(){s.classList.add('fade-out');setTimeout(function(){s.style.display='none';cur.remove();cd.remove();},950);},750);}
+  window.skipIntro=function(){s.classList.add('fade-out');setTimeout(function(){s.style.display='none';cur.remove();cd.remove();},950);};
+})();
+
+// ══════════════════════════════════════════════
+// ── SYNC COLOR FROM PLATFORM (مع الأنيميشن) ──
+// ══════════════════════════════════════════════
+(function syncPlatformColor() {
+  const savedColor = localStorage.getItem('platform_saved_color');
+  if (!savedColor) return;
+
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    return { r, g, b };
+  }
+
+  function darkenHex(hex, factor = 0.78) {
+    const { r, g, b } = hexToRgb(hex);
+    return `#${Math.round(r*factor).toString(16).padStart(2,'0')}${Math.round(g*factor).toString(16).padStart(2,'0')}${Math.round(b*factor).toString(16).padStart(2,'0')}`;
+  }
+
+  const { r, g, b } = hexToRgb(savedColor);
+  const root = document.documentElement;
+
+  // ── CSS Variables ──
+  root.style.setProperty('--pink',       savedColor);
+  root.style.setProperty('--pink-light', `rgb(${Math.min(r+40,255)},${Math.min(g+40,255)},${Math.min(b+40,255)})`);
+  root.style.setProperty('--pink-dim',   `rgba(${r},${g},${b},0.2)`);
+  root.style.setProperty('--pink-glow',  `rgba(${r},${g},${b},0.4)`);
+  root.style.setProperty('--border',     `rgba(${r},${g},${b},0.18)`);
+
+  // ── حفظ اللون عشان الأنيميشن يلاقيه ──
+  window.__syncedRGB = `${r},${g},${b}`;
+
+  // ── تعديل الأنيميشن بعد ما الـ canvas يتحمل ──
+  window.addEventListener('load', function() {
+    // override دالة animateDots اللي بتشغل الجسيمات
+    var canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var rgb = window.__syncedRGB;
+
+    // إعادة كتابة لون الجسيمات والخطوط
+    var originalAnimateDots = window.animateDots;
+
+    // patch الـ fillStyle و strokeStyle في الـ canvas
+    var origFill   = ctx.__proto__.set ? null : null;
+    var _fillStyle = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'fillStyle');
+    var _strokeStyle = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'strokeStyle');
+
+    // override fillStyle
+    Object.defineProperty(ctx, 'fillStyle', {
+      set: function(val) {
+        if (typeof val === 'string' && val.includes('255,45,120')) {
+          val = val.replace('255,45,120', rgb);
+        }
+        _fillStyle.set.call(this, val);
+      },
+      get: function() {
+        return _fillStyle.get.call(this);
+      }
+    });
+
+    // override strokeStyle
+    Object.defineProperty(ctx, 'strokeStyle', {
+      set: function(val) {
+        if (typeof val === 'string' && val.includes('255,45,120')) {
+          val = val.replace('255,45,120', rgb);
+        }
+        _strokeStyle.set.call(this, val);
+      },
+      get: function() {
+        return _strokeStyle.get.call(this);
+      }
+    });
+  });
+})();
+
+/* ==================== LANGUAGE ==================== */
+var currentLang='ar',currentCodeMode='python';
+var i18n={ar:{sp:'&#128269; ابحث عن كود...',op:'// اضغط &#9654; تشغيل لرؤية المخرجات',run:'&#9889; جاري التنفيذ...',ce:'&#9888;&#65039; الكود فارغ!',ee:'&#9888;&#65039; المحرر فارغ!',ci:'&#9989; تم إدراج الكود',cc:'&#128203; تم نسخ الكود!',la:'&#9989; تم إضافة المكتبة',lc:'&#128230; انقر على مكتبة',ca:'&#128161; تم التحليل',ex:'&#9989; تم التنفيذ',ins:'&#128230; جاري تثبيت',iok:'&#9989; تم تثبيت',ifail:'&#10060; فشل تثبيت',jsr:'&#9889; تشغيل JavaScript...',jss:'// JavaScript &#10003;'},en:{sp:'&#128269; Search code...',op:'// Press &#9654; Run to see output',run:'&#9889; Running...',ce:'&#9888;&#65039; Code is empty!',ee:'&#9888;&#65039; Editor is empty!',ci:'&#9989; Code inserted',cc:'&#128203; Code copied!',la:'&#9989; Library added',lc:'&#128230; Click a library',ca:'&#128161; Code analyzed',ex:'&#9989; Executed',ins:'&#128230; Installing',iok:'&#9989; Installed',ifail:'&#10060; Failed to install',jsr:'&#9889; Running JavaScript...',jss:'// JavaScript executed &#10003;}'}};
+function t(k){return(i18n[currentLang]||i18n.ar)[k]||k;}
+function setLang(lg){
+  currentLang=lg;document.documentElement.lang=lg;document.documentElement.dir=lg==='ar'?'rtl':'ltr';
+  document.getElementById('lang-ar').classList.toggle('active',lg==='ar');
+  document.getElementById('lang-en').classList.toggle('active',lg==='en');
+  document.querySelectorAll('.i18n').forEach(function(el){var v=el.getAttribute('data-'+lg);if(v)el.innerHTML=v;});
+  document.querySelectorAll('.header-tab').forEach(function(b){var v=b.getAttribute('data-'+lg);if(v)b.innerHTML=v;});
+  var badge=document.getElementById('pyodide-badge');
+  if(badge)badge.textContent=pyodideReady?(lg==='ar'?'&#9989; Python جاهز':'&#9989; Python Ready'):(lg==='ar'?'&#8987; يتحمل...':'&#8987; Loading...');
+  if(currentCodeMode==='javascript')renderJSLib();else{renderLib(codeLib);var c=document.querySelector('.category');if(c)c.classList.add('open');}
+  showDefExplain();
+}
+function showDefExplain(){
+  var c=document.getElementById('explain-content');
+  c.innerHTML=currentLang==='ar'?'<div class="explain-block"><h4>&#128218; كيفية الاستخدام</h4><ul style="list-style:none;color:var(--text-dim);font-size:12px;line-height:2;"><li>&#8226; اختر كوداً من المكتبة</li><li>&#8226; اضغط <strong style="color:var(--pink)">&#9654; تشغيل</strong></li><li>&#8226; المكتبات تُثبَّت تلقائياً &#10003;</li><li>&#8226; رقم كل سطر بجانبه &#128290;</li></ul></div>':'<div class="explain-block"><h4>&#128218; How to Use</h4><ul style="list-style:none;color:var(--text-dim);font-size:12px;line-height:2;"><li>&#8226; Pick a snippet from the library</li><li>&#8226; Press <strong style="color:var(--pink)">&#9654; Run</strong></li><li>&#8226; Libraries auto-install &#10003;</li><li>&#8226; Line number beside every line &#128290;</li></ul></div>';
+}
+function setCodeMode(mode){
+  currentCodeMode=mode;var isPy=mode==='python';
+  document.getElementById('mode-py').classList.toggle('active',isPy);
+  document.getElementById('mode-js').classList.toggle('active',!isPy);
+  var ind=document.getElementById('lang-indicator');ind.className='lang-indicator '+(isPy?'py':'js');ind.textContent=isPy?'Python':'JavaScript';
+  document.getElementById('file-tab').textContent=isPy?'main.py':'main.js';
+  if(!isPy)renderJSLib();else{renderLib(codeLib);var c=document.querySelector('.category');if(c)c.classList.add('open');}
+  showNotif(isPy?'&#128013; Python Mode':'&#9889; JavaScript Mode');
+}
+
+/* ==================== CANVAS ==================== */
+var canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d'),dots=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}resize();window.addEventListener('resize',resize);
+function initDots(){dots=[];var n=Math.floor(canvas.width*canvas.height/8000);for(var i=0;i<n;i++)dots.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,alpha:Math.random()*.6+.1,pulse:Math.random()*Math.PI*2});}
+initDots();
+
+// دالة تجيب الـ RGB من localStorage مباشرة
+function getAnimRGB(){
+  var saved=localStorage.getItem('platform_saved_color');
+  if(saved&&saved.startsWith('#')&&saved.length===7){
+    var r=parseInt(saved.slice(1,3),16);
+    var g=parseInt(saved.slice(3,5),16);
+    var b=parseInt(saved.slice(5,7),16);
+    return r+','+g+','+b;
+  }
+  return '255,45,120';
+}
+
+function animateDots(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  var rgb=getAnimRGB();
+  dots.forEach(function(d){
+    d.x+=d.vx;d.y+=d.vy;d.pulse+=.02;
+    if(d.x<0)d.x=canvas.width;if(d.x>canvas.width)d.x=0;
+    if(d.y<0)d.y=canvas.height;if(d.y>canvas.height)d.y=0;
+    var a=d.alpha*(.6+.4*Math.sin(d.pulse));
+    ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+    ctx.fillStyle='rgba('+rgb+','+a+')';
+    ctx.fill();
+  });
+  for(var i=0;i<dots.length;i++)for(var j=i+1;j<dots.length;j++){
+    var dx=dots[i].x-dots[j].x,dy=dots[i].y-dots[j].y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<100){
+      ctx.beginPath();ctx.moveTo(dots[i].x,dots[i].y);ctx.lineTo(dots[j].x,dots[j].y);
+      ctx.strokeStyle='rgba('+rgb+','+(1-dist/100)*.12+')';
+      ctx.lineWidth=.5;ctx.stroke();
+    }
+  }
+  requestAnimationFrame(animateDots);
+}
+animateDots();
+
+/* ==================== LINE NUMBERS ==================== */
+/*
+  Each <span> in #line-numbers has the same pixel height as one line
+  in the textarea (font-size × line-height = 13px × 1.7 = 22.1px).
+  The gutter scrolls in sync with the textarea so numbers always
+  sit exactly beside their corresponding line.
+*/
+function syncLN(){
+  var ed = document.getElementById('code-editor');
+  var gutter = document.getElementById('line-numbers');
+  var lines = ed.value.split('\n');
+  var activeLine = ed.value.substring(0, ed.selectionStart).split('\n').length;
+
+  var html = '';
+  for (var i = 1; i <= lines.length; i++) {
+    html += '<span' + (i === activeLine ? ' class="cur"' : '') + '>' + i + '</span>';
+  }
+  gutter.innerHTML = html;
+  gutter.scrollTop = ed.scrollTop;
+}
+
+// Initial render
+syncLN();
+
+// Keep in sync with all relevant events
+var ce = document.getElementById('code-editor');
+ce.addEventListener('input',   syncLN);
+ce.addEventListener('keyup',   syncLN);
+ce.addEventListener('click',   syncLN);
+ce.addEventListener('mouseup', syncLN);
+ce.addEventListener('scroll',  function(){ document.getElementById('line-numbers').scrollTop = this.scrollTop; });
+ce.addEventListener('keydown', function(e){
+  if(e.key==='Tab'){
+    e.preventDefault();
+    var s=e.target.selectionStart,end=e.target.selectionEnd;
+    e.target.value=e.target.value.substring(0,s)+'    '+e.target.value.substring(end);
+    e.target.selectionStart=e.target.selectionEnd=s+4;
+    syncLN();
+  }
+});
+
+function updateLineNumbers(){ syncLN(); }
+
+/* ==================== CODE LIBRARY ==================== */
+var codeLib=[
+  {category:"&#128308; الأساسيات",categoryEn:"&#128308; Basics",items:[
+    {name:"طباعة نص",nameEn:"Print Text",code:'print("مرحباً يا عالم!")\nprint("Hello, World!")',desc:"دالة print()",descEn:"print() function"},
+    {name:"المتغيرات",nameEn:"Variables",code:'x = 10\ny = 3.14\nname = "Python"\nis_fun = True\nprint(type(x), type(y), type(name))',desc:"أنواع البيانات",descEn:"Data types"},
+    {name:"العمليات الحسابية",nameEn:"Arithmetic",code:'a, b = 10, 3\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)',desc:"العمليات الحسابية",descEn:"Arithmetic operators"},
+  ]},
+  {category:"&#128256; الشرط",categoryEn:"&#128256; Conditionals",items:[
+    {name:"if / elif / else",nameEn:"if / elif / else",code:'score = 75\nif score >= 90:\n    grade = "A"\nelif score >= 70:\n    grade = "C"\nelse:\n    grade = "F"\nprint(f"الدرجة: {grade}")',desc:"الشرط المتفرع",descEn:"Multi-branch if"},
+    {name:"Ternary",nameEn:"Ternary",code:'x = 15\nresult = "موجب" if x > 0 else "سالب"\nprint(result)',desc:"الشرط المختصر",descEn:"Ternary operator"},
+  ]},
+  {category:"&#128260; الحلقات",categoryEn:"&#128260; Loops",items:[
+    {name:"for loop",nameEn:"for loop",code:'for i in range(5):\n    print(f"العدد: {i}")',desc:"حلقة for",descEn:"for loop"},
+    {name:"while loop",nameEn:"while loop",code:'count = 0\nwhile count < 5:\n    print(count)\n    count += 1',desc:"حلقة while",descEn:"while loop"},
+    {name:"List Comprehension",nameEn:"List Comprehension",code:'squares = [x**2 for x in range(1, 11)]\nprint(squares)\nevens = [x for x in range(20) if x % 2 == 0]\nprint(evens)',desc:"إنشاء قوائم",descEn:"List comprehension"},
+  ]},
+  {category:"&#9881;&#65039; الدوال",categoryEn:"&#9881;&#65039; Functions",items:[
+    {name:"دالة بسيطة",nameEn:"Simple Function",code:'def greet(name):\n    print(f"مرحباً {name}! 👋")\n\ngreet("أحمد")\ngreet("فاطمة")',desc:"تعريف دالة",descEn:"Function definition"},
+    {name:"Lambda",nameEn:"Lambda",code:'square = lambda x: x ** 2\nnums = [1,2,3,4,5,6]\ndoubled = list(map(lambda x: x*2, nums))\nevens = list(filter(lambda x: x%2==0, nums))\nprint(doubled)\nprint(evens)',desc:"Lambda دوال",descEn:"Lambda functions"},
+  ]},
+  {category:"&#128203; هياكل البيانات",categoryEn:"&#128203; Data Structures",items:[
+    {name:"القوائم",nameEn:"Lists",code:'fruits = ["تفاح","موز","عنب"]\nfruits.append("برتقال")\nfruits.remove("موز")\nprint(fruits)\nfruits.sort()\nprint(fruits)',desc:"القوائم",descEn:"Lists"},
+    {name:"القواميس",nameEn:"Dictionaries",code:'person = {"name":"أحمد","age":25,"city":"القاهرة"}\nprint(person["name"])\nperson["email"] = "ahmed@x.com"\nfor k, v in person.items():\n    print(f"{k}: {v}")',desc:"القواميس",descEn:"Dictionaries"},
+  ]},
+  {category:"&#9888;&#65039; معالجة الأخطاء",categoryEn:"&#9888;&#65039; Error Handling",items:[
+    {name:"try / except",nameEn:"try / except",code:'try:\n    result = 100 / 0\nexcept ZeroDivisionError:\n    print("❌ لا يمكن القسمة على صفر")\nexcept Exception as e:\n    print(f"❌ خطأ: {e}")\nfinally:\n    print("✅ انتهى دائماً")',desc:"معالجة الأخطاء",descEn:"Error handling"},
+  ]},
+  {category:"&#129518; مكتبات قياسية",categoryEn:"&#129518; Standard Libraries",items:[
+    {name:"math",nameEn:"math",code:'import math\nprint(math.pi)\nprint(math.sqrt(16))\nprint(math.factorial(5))\nprint(math.sin(math.radians(90)))',desc:"مكتبة math",descEn:"math library"},
+    {name:"random",nameEn:"random",code:'import random\nprint(random.randint(1, 100))\ncolors = ["أحمر","أخضر","أزرق"]\nprint(random.choice(colors))\nrandom.shuffle(colors)\nprint(colors)',desc:"مكتبة random",descEn:"random library"},
+    {name:"json",nameEn:"json",code:'import json\ndata = {"name":"أحمد","age":25,"skills":["Python","AI"]}\njs = json.dumps(data, ensure_ascii=False, indent=2)\nprint(js)',desc:"مكتبة json",descEn:"json library"},
+  ]},
+  {category:"&#128290; NumPy",categoryEn:"&#128290; NumPy",items:[
+    {name:"أساسيات NumPy",nameEn:"NumPy Basics",code:'import numpy as np\narr = np.array([1, 2, 3, 4, 5])\nprint("المصفوفة:", arr)\nprint("الشكل:", arr.shape)\nprint("المجموع:", arr.sum())\nprint("المتوسط:", arr.mean())',desc:"أساسيات NumPy",descEn:"NumPy basics",requires:["numpy"]},
+    {name:"مصفوفة 2D",nameEn:"2D Array",code:'import numpy as np\nmatrix = np.array([[1,2,3],[4,5,6],[7,8,9]])\nprint("المصفوفة:\\n", matrix)\nprint("المقلوب:\\n", matrix.T)\nprint("مجموع الأعمدة:", matrix.sum(axis=0))',desc:"مصفوفة ثنائية",descEn:"2D arrays",requires:["numpy"]},
+    {name:"دوال الإنشاء",nameEn:"Creation Functions",code:'import numpy as np\nprint(np.zeros((3,3)))\nprint(np.ones((2,4)))\nprint(np.eye(3))\nprint(np.arange(0,10,2))\nprint(np.linspace(0,1,5))',desc:"دوال إنشاء NumPy",descEn:"NumPy creation",requires:["numpy"]},
+  ]},
+  {category:"&#128202; Pandas",categoryEn:"&#128202; Pandas",items:[
+    {name:"DataFrame أساسي",nameEn:"Basic DataFrame",code:'import pandas as pd\ndata = {\n    "الاسم": ["أحمد","سارة","محمد","فاطمة"],\n    "العمر": [25, 30, 22, 28],\n    "الدرجة": [85, 92, 78, 96]\n}\ndf = pd.DataFrame(data)\nprint(df)',desc:"DataFrame أساسي",descEn:"Basic DataFrame",requires:["pandas"]},
+    {name:"الإحصاءات",nameEn:"Statistics",code:'import pandas as pd\ndf = pd.DataFrame({"الاسم":["أحمد","سارة","محمد","فاطمة","علي"],"العمر":[25,30,22,28,35],"الراتب":[5000,8000,4500,9000,7500]})\nprint(df.describe())\nprint("\\nمتوسط الراتب:", df["الراتب"].mean())',desc:"إحصاءات pandas",descEn:"Pandas statistics",requires:["pandas"]},
+    {name:"تصفية وفرز",nameEn:"Filter & Sort",code:'import pandas as pd\ndf = pd.DataFrame({"الاسم":["أحمد","سارة","محمد","فاطمة","علي"],"العمر":[25,30,22,28,35],"الدرجة":[85,92,78,96,88]})\nbig = df[df["العمر"] > 25]\nprint("العمر > 25:\\n", big)\nprint("\\nمرتب:\\n", df.sort_values("الدرجة", ascending=False))',desc:"تصفية وفرز",descEn:"Filter and sort",requires:["pandas"]},
+  ]},
+  {category:"&#128200; Matplotlib",categoryEn:"&#128200; Matplotlib",items:[
+    {name:"رسم أعمدة",nameEn:"Bar Chart",code:'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nimport io, base64\ncats=["يناير","فبراير","مارس","أبريل","مايو"]\nvals=[4200,5100,3800,6200,5500]\nfig,ax=plt.subplots(figsize=(6,4))\nbars=ax.bar(cats,vals,color="#ff2d78",alpha=0.85)\nfor bar,v in zip(bars,vals): ax.text(bar.get_x()+bar.get_width()/2,bar.get_height()+80,f"{v:,}",ha="center",fontsize=8,color="white")\nax.set_title("المبيعات",color="white");ax.set_facecolor("#1a1a2a");fig.patch.set_facecolor("#13131e");ax.tick_params(colors="white")\nbuf=io.BytesIO();plt.savefig(buf,format="png",dpi=90,bbox_inches="tight");buf.seek(0)\nprint("__IMAGE__data:image/png;base64,"+base64.b64encode(buf.read()).decode());plt.close()',desc:"رسم أعمدة",descEn:"Bar chart",requires:["matplotlib"]},
+    {name:"رسم دائري",nameEn:"Pie Chart",code:'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nimport io, base64\nlabels=["Python","JS","Java","C++","Others"]\nsizes=[40,25,15,10,10]\ncolors=["#ff2d78","#ff6fa8","#c084fc","#60a5fa","#4ade80"]\nfig,ax=plt.subplots(figsize=(5,5))\nax.pie(sizes,labels=labels,colors=colors,autopct="%1.1f%%",startangle=90,wedgeprops={"edgecolor":"#13131e","linewidth":1.5})\nax.set_title("أشهر لغات البرمجة",color="white");fig.patch.set_facecolor("#13131e")\nbuf=io.BytesIO();plt.savefig(buf,format="png",dpi=90,bbox_inches="tight");buf.seek(0)\nprint("__IMAGE__data:image/png;base64,"+base64.b64encode(buf.read()).decode());plt.close()',desc:"رسم دائري",descEn:"Pie chart",requires:["matplotlib"]},
+  ]},
+  {category:"&#127918; الألعاب الرسومية",categoryEn:"&#127918; Pygame / Canvas Games",items:[
+    {name:"لعبة Pong بسيطة",nameEn:"Simple Pong Game",code:'import pygame\npygame.init()\nW,H=600,400\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Pong - Ahmed.afify")\nclock=pygame.time.Clock()\nball=[W//2,H//2,4,4]\npad1=pygame.Rect(10,H//2-40,10,80)\npad2=pygame.Rect(W-20,H//2-40,10,80)\nfont=pygame.font.SysFont(None,36)\ns1=s2=0\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n    keys=pygame.key.get_pressed()\n    if keys[pygame.K_w] and pad1.top>0:pad1.y-=5\n    if keys[pygame.K_s] and pad1.bottom<H:pad1.y+=5\n    if keys[pygame.K_UP] and pad2.top>0:pad2.y-=5\n    if keys[pygame.K_DOWN] and pad2.bottom<H:pad2.y+=5\n    ball[0]+=ball[2];ball[1]+=ball[3]\n    if ball[1]<=0 or ball[1]>=H:ball[3]*=-1\n    br=pygame.Rect(ball[0]-8,ball[1]-8,16,16)\n    if br.colliderect(pad1) or br.colliderect(pad2):ball[2]*=-1\n    if ball[0]<0:s2+=1;ball[0]=W//2;ball[1]=H//2\n    if ball[0]>W:s1+=1;ball[0]=W//2;ball[1]=H//2\n    screen.fill((15,15,25))\n    pygame.draw.rect(screen,(255,45,120),pad1)\n    pygame.draw.rect(screen,(100,180,255),pad2)\n    pygame.draw.ellipse(screen,(255,255,255),(ball[0]-8,ball[1]-8,16,16))\n    pygame.draw.line(screen,(50,50,80),(W//2,0),(W//2,H),1)\n    t=font.render(f"{s1}   {s2}",True,(200,200,200))\n    screen.blit(t,(W//2-40,10))\n    pygame.display.flip()\n    clock.tick(60)\npygame.quit()',desc:"لعبة Pong بلاعبين",descEn:"Two-player Pong",requires:["pygame"]},
+    {name:"ثعبان Snake",nameEn:"Snake Game",code:'import pygame,random\npygame.init()\nW=H=400;CELL=20\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Snake - Ahmed.afify")\nclock=pygame.time.Clock()\ndef rnd():return[random.randrange(0,W,CELL),random.randrange(0,H,CELL)]\nsnake=[[100,100],[80,100],[60,100]]\ndx,dy=CELL,0\nfood=rnd()\nscore=0\nfont=pygame.font.SysFont(None,28)\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n        if e.type==pygame.KEYDOWN:\n            if e.key==pygame.K_UP and dy==0:dx,dy=0,-CELL\n            elif e.key==pygame.K_DOWN and dy==0:dx,dy=0,CELL\n            elif e.key==pygame.K_LEFT and dx==0:dx,dy=-CELL,0\n            elif e.key==pygame.K_RIGHT and dx==0:dx,dy=CELL,0\n    head=[snake[0][0]+dx,snake[0][1]+dy]\n    if head[0]<0 or head[0]>=W or head[1]<0 or head[1]>=H or head in snake:\n        running=False;continue\n    snake.insert(0,head)\n    if head==food:score+=10;food=rnd()\n    else:snake.pop()\n    screen.fill((10,10,20))\n    for i,seg in enumerate(snake):\n        c=(0,220,100) if i==0 else (0,160,70)\n        pygame.draw.rect(screen,c,(seg[0]+1,seg[1]+1,CELL-2,CELL-2),border_radius=4)\n    pygame.draw.ellipse(screen,(255,60,60),(food[0],food[1],CELL,CELL))\n    txt=font.render(f"Score: {score}",True,(200,200,200))\n    screen.blit(txt,(5,5))\n    pygame.display.flip()\n    clock.tick(10)\nprint(f"Game Over! Score: {score}")\npygame.quit()',desc:"لعبة الثعبان الكلاسيكية",descEn:"Classic Snake",requires:["pygame"]},
+    {name:"كرات ترتد",nameEn:"Bouncing Balls",code:'import pygame,random,math\npygame.init()\nW,H=600,400\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Bouncing Balls - Ahmed.afify")\nclock=pygame.time.Clock()\nballs=[]\nfor _ in range(12):\n    r=random.randint(12,28)\n    balls.append({"x":random.randint(r,W-r),"y":random.randint(r,H-r),"r":r,\n        "vx":random.uniform(-4,4),"vy":random.uniform(-4,4),\n        "c":(random.randint(80,255),random.randint(40,180),random.randint(100,255))})\nfont=pygame.font.SysFont(None,24)\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n        if e.type==pygame.MOUSEBUTTONDOWN:\n            balls.append({"x":e.pos[0],"y":e.pos[1],"r":random.randint(10,25),\n                "vx":random.uniform(-5,5),"vy":random.uniform(-5,5),\n                "c":(random.randint(100,255),random.randint(40,200),random.randint(100,255))})\n    screen.fill((8,8,18))\n    for b in balls:\n        b["x"]+=b["vx"];b["y"]+=b["vy"]\n        if b["x"]-b["r"]<0 or b["x"]+b["r"]>W:b["vx"]*=-1\n        if b["y"]-b["r"]<0 or b["y"]+b["r"]>H:b["vy"]*=-1\n        pygame.draw.circle(screen,b["c"],(int(b["x"]),int(b["y"])),b["r"])\n        pygame.draw.circle(screen,(255,255,255,60),(int(b["x"])-b["r"]//3,int(b["y"])-b["r"]//3),b["r"]//4)\n    t=font.render(f"Balls: {len(balls)} | Click to add",True,(150,100,180))\n    screen.blit(t,(8,8))\n    pygame.display.flip()\n    clock.tick(60)\npygame.quit()',desc:"كرات ترتد مع الفيزياء",descEn:"Physics bouncing balls",requires:["pygame"]},
+    {name:"مطر النجوم Starfield",nameEn:"Starfield Effect",code:'import pygame,random\npygame.init()\nW,H=700,450\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Starfield - Ahmed.afify")\nclock=pygame.time.Clock()\nstars=[{"x":random.randint(0,W),"y":random.randint(0,H),"z":random.uniform(0.1,3),"s":random.uniform(0.5,2.5)} for _ in range(220])\nspeed=3\nfont=pygame.font.SysFont(None,22)\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n        if e.type==pygame.KEYDOWN:\n            if e.key==pygame.K_UP:speed=min(speed+1,12)\n            if e.key==pygame.K_DOWN:speed=max(speed-1,1)\n    screen.fill((4,4,12))\n    for s in stars:\n        s["y"]+=s["z"]*speed\n        if s["y"]>H:s["y"]=0;s["x"]=random.randint(0,W)\n        bright=min(255,int(60+s["z"]*65))\n        r=max(1,int(s["s"]*s["z"]/1.5))\n        pygame.draw.circle(screen,(bright,bright,min(255,bright+60)),(int(s["x"]),int(s["y"])),r)\n    t=font.render(f"Speed: {speed} | ↑↓ to change",True,(100,80,140))\n    screen.blit(t,(8,8))\n    pygame.display.flip()\n    clock.tick(60)\npygame.quit()',desc:"تأثير حقل النجوم ثلاثي الأبعاد",descEn:"3D starfield effect",requires:["pygame"]},
+    {name:"لعبة Breakout",nameEn:"Breakout Game",code:'import pygame\npygame.init()\nW,H=480,520\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Breakout - Ahmed.afify")\nclock=pygame.time.Clock()\ncolors=[(255,60,100),(255,140,40),(255,220,40),(80,200,100),(60,160,255),(180,80,255)]\nbricks=[]\nfor row in range(6):\n    for col in range(10):\n        bricks.append(pygame.Rect(col*46+5,row*28+50,42,22))\npad=pygame.Rect(W//2-45,H-30,90,12)\nball=[W//2,H-60];bv=[4,-4];score=0;lives=3\nfont=pygame.font.SysFont(None,28)\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n    keys=pygame.key.get_pressed()\n    if keys[pygame.K_LEFT] and pad.left>0:pad.x-=6\n    if keys[pygame.K_RIGHT] and pad.right<W:pad.x+=6\n    ball[0]+=bv[0];ball[1]+=bv[1]\n    if ball[0]<=6 or ball[0]>=W-6:bv[0]*=-1\n    if ball[1]<=0:bv[1]*=-1\n    if ball[1]>=H:lives-=1;ball=[W//2,H-60];bv=[4,-4]\n    if lives<=0:running=False\n    br=pygame.Rect(ball[0]-7,ball[1]-7,14,14)\n    if br.colliderect(pad):bv[1]=-abs(bv[1])\n    hit=[b for b in bricks if br.colliderect(b)]\n    for b in hit:bricks.remove(b);score+=10;bv[1]*=-1\n    screen.fill((8,8,20))\n    for i,b in enumerate(bricks):\n        pygame.draw.rect(screen,colors[i//10%6],b,border_radius=4)\n        pygame.draw.rect(screen,(0,0,0),b,1,border_radius=4)\n    pygame.draw.rect(screen,(255,45,120),pad,border_radius=6)\n    pygame.draw.ellipse(screen,(255,255,255),(ball[0]-7,ball[1]-7,14,14))\n    t=font.render(f"Score:{score}  Lives:{lives}",True,(200,180,220))\n    screen.blit(t,(5,10))\n    pygame.display.flip()\n    clock.tick(60)\nprint(f"Final Score: {score}")\npygame.quit()',desc:"لعبة Breakout الكلاسيكية",descEn:"Classic Breakout game",requires:["pygame"]},
+    {name:"رسم فراكتال Mandelbrot",nameEn:"Mandelbrot Fractal",code:'import pygame\npygame.init()\nW,H=500,400\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Mandelbrot - Ahmed.afify")\nclock=pygame.time.Clock()\ndef mandelbrot(c,max_it=60):\n    z=0\n    for i in range(max_it):\n        if abs(z)>2:return i\n        z=z*z+c\n    return max_it\ndef hsv_color(h):\n    import colorsys\n    r,g,b=colorsys.hsv_to_rgb(h/360,1,1)\n    return(int(r*255),int(g*255),int(b*255))\nxmin,xmax=-2.5,1.0\nymin,ymax=-1.2,1.2\npx=pygame.PixelArray(screen)\nfor x in range(W):\n    for y in range(H):\n        c=complex(xmin+(xmax-xmin)*x/W,ymin+(ymax-ymin)*y/H)\n        m=mandelbrot(c)\n        if m==60:color=(0,0,0)\n        else:color=hsv_color((m*6)%360)\n        px[x][y]=screen.map_rgb(*color)\ndel px\nfont=pygame.font.SysFont(None,22)\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n    t=font.render("Mandelbrot Fractal | Close to exit",True,(200,200,200))\n    screen.blit(t,(8,8))\n    pygame.display.flip()\n    clock.tick(10)\npygame.quit()',desc:"فراكتال ماندلبروت الملون",descEn:"Mandelbrot fractal",requires:["pygame"]},
+    {name:"محاكاة الجاذبية",nameEn:"Gravity Simulation",code:'import pygame,math\npygame.init()\nW,H=640,420\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Gravity Sim - Ahmed.afify")\nclock=pygame.time.Clock()\nG=500\nbodies=[{"x":W//2,"y":H//2,"m":8000,"vx":0,"vy":0,"r":18,"c":(255,200,50)},\n        {"x":W//2+180,"y":H//2,"m":20,"vx":0,"vy":52,"r":7,"c":(80,140,255)},\n        {"x":W//2-220,"y":H//2,"m":15,"vx":0,"vy":-46,"r":6,"c":(255,90,90)},\n        {"x":W//2+100,"y":H//2-160,"m":10,"vx":40,"vy":30,"r":5,"c":(80,220,140)}]\ntrails=[[] for _ in bodies]\nrunning=True\nwhile running:\n    dt=clock.tick(60)/1000.0\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n    for i,b in enumerate(bodies):\n        if i==0:continue\n        for j,o in enumerate(bodies):\n            if i==j:continue\n            dx=o["x"]-b["x"];dy=o["y"]-b["y"]\n            d=max(math.sqrt(dx*dx+dy*dy),20)\n            f=G*b["m"]*o["m"]/(d*d)\n            b["vx"]+=f*dx/d/b["m"]*dt\n            b["vy"]+=f*dy/d/b["m"]*dt\n        b["x"]+=b["vx"]*dt;b["y"]+=b["vy"]*dt\n        trails[i].append((int(b["x"]),int(b["y"])))\n        if len(trails[i])>120:trails[i].pop(0)\n    screen.fill((6,6,16))\n    for i,trail in enumerate(trails):\n        for k in range(1,len(trail)):\n            a=int(255*k/len(trail))\n            pygame.draw.line(screen,(*bodies[i]["c"][:3],),trail[k-1],trail[k],1)\n    for b in bodies:\n        pygame.draw.circle(screen,b["c"],(int(b["x"]),int(b["y"])),b["r"])\n    pygame.display.flip()\npygame.quit()',desc:"محاكاة الجاذبية مع مسارات",descEn:"N-body gravity simulation",requires:["pygame"]},
+    {name:"لعبة Space Shooter",nameEn:"Space Shooter",code:'import pygame,random\npygame.init()\nW,H=480,580\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Space Shooter - Ahmed.afify")\nclock=pygame.time.Clock()\nship=pygame.Rect(W//2-20,H-70,40,40)\nbullets=[];enemies=[];score=0;lives=3\nspawn_t=0;font=pygame.font.SysFont(None,28)\nrunning=True\nwhile running:\n    dt=clock.tick(60)\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n        if e.type==pygame.KEYDOWN and e.key==pygame.K_SPACE:\n            bullets.append(pygame.Rect(ship.centerx-3,ship.top,6,14))\n    keys=pygame.key.get_pressed()\n    if keys[pygame.K_LEFT] and ship.left>0:ship.x-=5\n    if keys[pygame.K_RIGHT] and ship.right<W:ship.x+=5\n    spawn_t+=dt\n    if spawn_t>900:spawn_t=0;enemies.append(pygame.Rect(random.randint(10,W-50),0,40,30))\n    for b in bullets[:]:b.y-=8;(bullets.remove(b) if b.bottom<0 else None)\n    for en in enemies[:]:en.y+=2\n    for b in bullets[:]:\n        for en in enemies[:]:\n            if b.colliderect(en):bullets.remove(b) if b in bullets else None;enemies.remove(en);score+=10;break\n    for en in enemies[:]:\n        if en.top>H:enemies.remove(en);lives-=1\n        elif en.colliderect(ship):lives-=1;enemies.remove(en)\n    if lives<=0:running=False\n    screen.fill((5,5,18))\n    for i in range(0,H,4):\n        if random.random()<0.003:pygame.draw.circle(screen,(200,200,255),(random.randint(0,W),i),1)\n    pygame.draw.polygon(screen,(255,45,120),[(ship.centerx,ship.top),(ship.left,ship.bottom),(ship.right,ship.bottom)])\n    for b in bullets:pygame.draw.rect(screen,(255,220,60),b,border_radius=3)\n    for en in enemies:pygame.draw.rect(screen,(80,200,255),en,border_radius=5)\n    t=font.render(f"Score:{score}  Lives:{lives}",True,(200,180,240))\n    screen.blit(t,(5,5))\n    pygame.display.flip()\nprint(f"Game Over! Score:{score}")\npygame.quit()',desc:"لعبة إطلاق نار فضائية",descEn:"Space shooter game",requires:["pygame"]},
+    {name:"ساعة رسومية",nameEn:"Analog Clock",code:'import pygame,math,time\npygame.init()\nW=H=400;CX=CY=200;R=170\nscreen=pygame.display.set_mode((W,H))\npygame.display.set_caption("Clock - Ahmed.afify")\nclock=pygame.time.Clock()\ndef hand(surf,angle,length,width,color):\n    rad=math.radians(angle-90)\n    ex=int(CX+length*math.cos(rad));ey=int(CY+length*math.sin(rad))\n    pygame.draw.line(surf,color,(CX,CY),(ex,ey),width)\nfont=pygame.font.SysFont(None,28)\nrunning=True\nwhile running:\n    for e in pygame.event.get():\n        if e.type==pygame.QUIT:running=False\n    now=time.localtime()\n    screen.fill((10,8,20))\n    pygame.draw.circle(screen,(30,20,50),(CX,CY),R)\n    pygame.draw.circle(screen,(255,45,120),(CX,CY),R,3)\n    for i in range(12):\n        a=math.radians(i*30-90)\n        pygame.draw.line(screen,(180,100,140),(int(CX+R*0.85*math.cos(a)),int(CY+R*0.85*math.sin(a))),(int(CX+R*0.95*math.cos(a)),int(CY+R*0.95*math.sin(a))),2)\n        t=font.render(str(i if i>0 else 12),True,(200,150,180))\n        screen.blit(t,(int(CX+R*0.73*math.cos(a))-8,int(CY+R*0.73*math.sin(a))-8))\n    hand(screen,(now.tm_hour%12)*30+now.tm_min*0.5,R*0.55,6,(255,200,220))\n    hand(screen,now.tm_min*6,R*0.78,4,(255,140,180))\n    hand(screen,now.tm_sec*6,R*0.88,2,(255,45,120))\n    pygame.draw.circle(screen,(255,45,120),(CX,CY),7)\n    pygame.display.flip()\n    clock.tick(30)\npygame.quit()',desc:"ساعة تناظرية رسومية",descEn:"Analog clock",requires:["pygame"]},
+  ]},
+];
+var jsLib=[
+  {category:"&#128308; Basics",items:[
+    {name:"console.log",code:'console.log("Hello! 👋");\nconsole.warn("Warning ⚠️");\nconsole.error("Error ❌");',desc:"console methods"},
+    {name:"Variables",code:'const name = "Ahmed.afify";\nlet count = 0;\nconst PI = 3.14159;\nconsole.log(`Name: ${name}, PI: ${PI}`);',desc:"Variable declarations"},
+  ]},
+  {category:"&#128260; Loops & Arrays",items:[
+    {name:"Array Methods",code:'const nums=[1,2,3,4,5,6,7,8,9,10];\nconst doubled=nums.map(n=>n*2);\nconst evens=nums.filter(n=>n%2===0);\nconst total=nums.reduce((a,n)=>a+n,0);\nconsole.log("Doubled:",doubled);\nconsole.log("Evens:",evens);\nconsole.log("Total:",total);',desc:"map/filter/reduce"},
+    {name:"for / for...of",code:'for(let i=0;i<5;i++)console.log(`i=${i}`);\nconst fruits=["apple","banana","grape"];\nfor(const f of fruits)console.log("🍎",f);',desc:"for loops"},
+  ]},
+  {category:"&#9881;&#65039; Functions",items:[
+    {name:"Arrow Functions",code:'const sq=x=>x**2;\nconst add=(a,b)=>a+b;\nconsole.log(sq(5),add(3,4));\nconst fact=n=>n<=1?1:n*fact(n-1);\nconsole.log(fact(6));',desc:"Arrow functions"},
+    {name:"Async/Await",code:'const wait=ms=>new Promise(r=>setTimeout(r,ms));\nasync function main(){\n  console.log("Loading...");\n  await wait(50);\n  return{status:"ok",user:"Ahmed.afify"};\n}\nmain().then(r=>console.log(JSON.stringify(r)));',desc:"async/await"},
+  ]},
+  {category:"&#128203; DOM & Events",items:[
+    {name:"querySelector",code:'const btn = document.querySelector("button");\nconst div = document.querySelector(".box");\nconsole.log("Found:", btn, div);\n// Select all\nconst items = document.querySelectorAll("li");\nconsole.log("Items count:", items.length);',desc:"DOM selection"},
+    {name:"createElement",code:'const el = document.createElement("div");\nel.textContent = "Hello Ahmed!";\nel.style.color = "red";\nconsole.log("Created:", el.outerHTML);\n// Simulate append\nconst parent = { children: [] };\nparent.children.push(el);\nconsole.log("Parent children:", parent.children.length);',desc:"Create DOM elements"},
+    {name:"Event Listener",code:'// Simulated event system\nconst events = {};\nfunction on(ev, fn) { (events[ev] = events[ev] || []).push(fn); }\nfunction emit(ev, data) { (events[ev] || []).forEach(fn => fn(data)); }\non("click", e => console.log("Clicked!", e));\non("click", e => console.log("Also clicked:", e.x, e.y));\nemit("click", { x: 42, y: 88 });',desc:"Event system"},
+    {name:"localStorage",code:'// localStorage simulation\nconst store = {};\nconst ls = {\n  setItem: (k,v) => store[k] = String(v),\n  getItem: k => store[k] ?? null,\n  removeItem: k => delete store[k],\n};\nls.setItem("user", "Ahmed");\nls.setItem("score", 100);\nconsole.log(ls.getItem("user"));\nconsole.log(ls.getItem("score"));\nls.removeItem("score");\nconsole.log(ls.getItem("score"));',desc:"localStorage API"},
+  ]},
+  {category:"&#128200; Data & API",items:[
+    {name:"fetch API",code:'// Simulated fetch\nasync function fakeFetch(url) {\n  await new Promise(r => setTimeout(r, 30));\n  return { ok: true, json: async () => ({ user: "Ahmed", id: 1 }) };\n}\nasync function getData() {\n  const res = await fakeFetch("https://api.example.com/user");\n  if (!res.ok) throw new Error("Failed");\n  const data = await res.json();\n  console.log("Data:", JSON.stringify(data));\n}\ngetData();',desc:"fetch simulation"},
+    {name:"JSON Parse/Stringify",code:'const obj = { name: "Ahmed", skills: ["Python","JS"], age: 25 };\nconst str = JSON.stringify(obj, null, 2);\nconsole.log("Stringified:\\n" + str);\nconst parsed = JSON.parse(str);\nconsole.log("Name:", parsed.name);\nconsole.log("Skills:", parsed.skills.join(", "));',desc:"JSON methods"},
+    {name:"Promise.all",code:'const delay = (ms, val) => new Promise(r => setTimeout(() => r(val), ms));\nasync function main() {\n  console.log("Fetching all...");\n  const [a, b, c] = await Promise.all([\n    delay(10, "Users ✅"),\n    delay(20, "Posts ✅"),\n    delay(15, "Comments ✅"),\n  ]);\n  console.log(a, b, c);\n  console.log("All done!");\n}\nmain();',desc:"Promise.all"},
+    {name:"REST Client",code:'// REST-style client simulation\nconst db = { users: [{ id:1, name:"Ahmed" }, { id:2, name:"Sara" }] };\nconst api = {\n  get: (col) => Promise.resolve(db[col] || []),\n  post: (col, item) => { db[col].push({ id: db[col].length+1, ...item }); return Promise.resolve(item); },\n};\nasync function run() {\n  const users = await api.get("users");\n  console.log("GET users:", JSON.stringify(users));\n  await api.post("users", { name: "Fatima" });\n  const updated = await api.get("users");\n  console.log("After POST:", JSON.stringify(updated));\n}\nrun();',desc:"REST simulation"},
+  ]},
+  {category:"&#129520; OOP & Patterns",items:[
+    {name:"ES6 Classes",code:'class Animal {\n  constructor(name, sound) {\n    this.name = name;\n    this.sound = sound;\n  }\n  speak() { console.log(`${this.name} says ${this.sound}!`); }\n}\nclass Dog extends Animal {\n  constructor(name) { super(name, "Woof"); }\n  fetch(item) { console.log(`${this.name} fetches the ${item}!`); }\n}\nconst dog = new Dog("Rex");\ndog.speak();\ndog.fetch("ball");\nconsole.log(dog instanceof Animal);',desc:"Classes & inheritance"},
+    {name:"Factory Pattern",code:'function createUser(name, role) {\n  const id = Math.random().toString(36).slice(2, 8);\n  return {\n    id, name, role,\n    greet() { return `Hi, I am ${this.name} (${this.role})`; },\n    toJSON() { return JSON.stringify({ id: this.id, name, role }); },\n  };\n}\nconst admin = createUser("Ahmed", "admin");\nconst user = createUser("Sara", "user");\nconsole.log(admin.greet());\nconsole.log(user.greet());\nconsole.log(admin.toJSON());',desc:"Factory pattern"},
+    {name:"Observer Pattern",code:'class EventEmitter {\n  constructor() { this._events = {}; }\n  on(ev, fn) { (this._events[ev] = this._events[ev] || []).push(fn); return this; }\n  off(ev, fn) { this._events[ev] = (this._events[ev]||[]).filter(f=>f!==fn); return this; }\n  emit(ev, ...args) { (this._events[ev]||[]).forEach(fn=>fn(...args)); return this; }\n}\nconst bus = new EventEmitter();\nbus.on("login", user => console.log("Logged in:", user));\nbus.on("login", user => console.log("Welcome email sent to:", user));\nbus.emit("login", "Ahmed");\nbus.emit("login", "Fatima");',desc:"Observer / EventEmitter"},
+    {name:"Singleton",code:'class Config {\n  constructor() {\n    if (Config._instance) return Config._instance;\n    this.theme = "dark";\n    this.lang = "ar";\n    Config._instance = this;\n  }\n  set(key, val) { this[key] = val; return this; }\n}\nconst c1 = new Config();\nconst c2 = new Config();\nc1.set("theme", "pink");\nconsole.log("Same instance:", c1 === c2);\nconsole.log("Theme from c2:", c2.theme);',desc:"Singleton pattern"},
+  ]},
+  {category:"&#128736;&#65039; Algorithms",items:[
+    {name:"Binary Search",code:'function binarySearch(arr, target) {\n  let lo = 0, hi = arr.length - 1;\n  while (lo <= hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (arr[mid] === target) return mid;\n    arr[mid] < target ? lo = mid+1 : hi = mid-1;\n  }\n  return -1;\n}\nconst arr = [1,3,5,7,11,13,17,19,23,29];\nconsole.log(binarySearch(arr, 13));  // 5\nconsole.log(binarySearch(arr, 10));  // -1\nconsole.log(binarySearch(arr, 1));   // 0',desc:"Binary search O(log n)"},
+    {name:"Quick Sort",code:'function quickSort(arr) {\n  if (arr.length <= 1) return arr;\n  const pivot = arr[Math.floor(arr.length/2)];\n  const left  = arr.filter(x => x < pivot);\n  const mid   = arr.filter(x => x === pivot);\n  const right = arr.filter(x => x > pivot);\n  return [...quickSort(left), ...mid, ...quickSort(right)];\n}\nconst nums = [38,27,43,3,9,82,10];\nconsole.log("Before:", nums.join(", "));\nconsole.log("After: ", quickSort(nums).join(", "));',desc:"Quick sort"},
+    {name:"Fibonacci مع Memo",code:'const memo = {};\nfunction fib(n) {\n  if (n <= 1) return n;\n  if (memo[n]) return memo[n];\n  return memo[n] = fib(n-1) + fib(n-2);\n}\nconsole.log("fib(10):", fib(10));\nconsole.log("fib(20):", fib(20));\nconsole.log("fib(40):", fib(40));\nconst seq = Array.from({length:10}, (_,i) => fib(i));\nconsole.log("Sequence:", seq.join(", "));',desc:"Fibonacci + memoization"},
+    {name:"Debounce & Throttle",code:'function debounce(fn, ms) {\n  let t;\n  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };\n}\nfunction throttle(fn, ms) {\n  let last = 0;\n  return (...args) => { const now = Date.now(); if(now-last>=ms){last=now;fn(...args);} };\n}\nconst log = debounce(x => console.log("Debounced:", x), 50);\nconst tlog = throttle(x => console.log("Throttled:", x), 50);\n[1,2,3,4,5].forEach((v,i) => setTimeout(()=>{ log(v); tlog(v); }, i*20));',desc:"Debounce & Throttle"},
+  ]},
+  {category:"&#127942; Advanced JS",items:[
+    {name:"Generators",code:'function* range(start, end, step=1) {\n  for (let i=start; i<end; i+=step) yield i;\n}\nfunction* fibonacci() {\n  let a=0, b=1;\n  while(true) { yield a; [a,b]=[b,a+b]; }\n}\nconsole.log([...range(0,10,2)].join(", "));\nconst fib = fibonacci();\nconst first8 = Array.from({length:8}, ()=>fib.next().value);\nconsole.log("Fib:", first8.join(", "));',desc:"Generator functions"},
+    {name:"Proxy & Reflect",code:'const handler = {\n  get(target, key) {\n    console.log(`GET: ${key}`);\n    return Reflect.get(target, key);\n  },\n  set(target, key, val) {\n    console.log(`SET: ${key} = ${val}`);\n    return Reflect.set(target, key, val);\n  },\n};\nconst user = new Proxy({ name:"Ahmed", age:25 }, handler);\nconsole.log(user.name);\nuser.age = 26;\nconsole.log(user.age);',desc:"Proxy & Reflect"},
+    {name:"WeakMap & Symbol",code:'const _private = new WeakMap();\nclass BankAccount {\n  constructor(owner, balance) {\n    _private.set(this, { balance });\n    this.owner = owner;\n  }\n  deposit(amount) { _private.get(this).balance += amount; }\n  get balance() { return _private.get(this).balance; }\n}\nconst acc = new BankAccount("Ahmed", 1000);\nacc.deposit(500);\nconsole.log(`${acc.owner}: ${acc.balance} EGP`);\nconsole.log("Private map size:", _private.has(acc));',desc:"WeakMap + private state"},
+    {name:"Regex Advanced",code:'const emails = [\n  "ahmed@gmail.com", "bad@", "test.user+tag@domain.co.uk",\n  "invalid", "user@test.io"\n];\nconst re = /^[\\w.+%-]+@[\\w-]+\\.[a-z]{2,}$/i;\nemails.forEach(e => console.log(`${re.test(e)?"✅":"❌"} ${e}`));\n// Named groups\nconst date = "2025-07-14";\nconst {groups:{y,m,d}} = date.match(/(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})/);\nconsole.log(`Year:${y} Month:${m} Day:${d}`);',desc:"Regex with named groups"},
+    {name:"Functional Pipeline",code:'const pipe = (...fns) => x => fns.reduce((v,f) => f(v), x);\nconst double = x => x * 2;\nconst addTen = x => x + 10;\nconst square = x => x * x;\nconst toString = x => `Result: ${x}`;\nconst process = pipe(double, addTen, square, toString);\nconsole.log(process(3));   // ((3*2)+10)^2 = 256\nconsole.log(process(5));   // ((5*2)+10)^2 = 400',desc:"Functional composition"},
+    {name:"Iterators Protocol",code:'class Range {\n  constructor(from, to) { this.from=from; this.to=to; }\n  [Symbol.iterator]() {\n    let cur = this.from, to = this.to;\n    return { next() { return cur<=to ? {value:cur++,done:false} : {done:true}; } };\n  }\n}\nconst r = new Range(1, 5);\nconsole.log([...r].join(", "));\nfor (const n of new Range(10, 13)) console.log("n =", n);',desc:"Custom iterator"},
+  ]},
+  {category:"&#128683; Error Handling",items:[
+    {name:"Custom Errors",code:'class AppError extends Error {\n  constructor(message, code) {\n    super(message);\n    this.name = "AppError";\n    this.code = code;\n  }\n}\nclass NetworkError extends AppError {\n  constructor(url) {\n    super(`Cannot reach: ${url}`, 503);\n    this.name = "NetworkError";\n    this.url = url;\n  }\n}\ntry {\n  throw new NetworkError("https://api.x.com");\n} catch(e) {\n  console.log(e.name, e.message);\n  console.log("Code:", e.code, "URL:", e.url);\n  console.log(e instanceof AppError);\n}',desc:"Custom error classes"},
+    {name:"Async Error Handling",code:'async function fetchUser(id) {\n  if (id <= 0) throw new Error("Invalid ID");\n  await new Promise(r=>setTimeout(r,10));\n  if (id > 100) throw new Error("User not found");\n  return { id, name: "Ahmed #"+id };\n}\nasync function main() {\n  const ids = [1, -1, 999];\n  for (const id of ids) {\n    try {\n      const u = await fetchUser(id);\n      console.log("✅ Got:", JSON.stringify(u));\n    } catch(e) {\n      console.log("❌ ID", id, "→", e.message);\n    }\n  }\n}\nmain();',desc:"Async try/catch"},
+  ]},
+];
+
+/* ==================== PYODIDE ==================== */
+var pyodide=null,pyodideReady=false,installedPkgs=new Set();
+async function loadPyodideEnv(){
+  var bar=document.getElementById('lb'),st=document.getElementById('lst'),lt=document.getElementById('lt'),ls=document.getElementById('ls');
+  var fp=0,ft=setInterval(function(){fp=Math.min(fp+Math.random()*2.5,85);if(bar)bar.style.width=fp+'%';if(fp<30&&st)st.textContent='Loading WebAssembly...';else if(fp<60&&st)st.textContent='Loading Python stdlib...';else if(st)st.textContent='Almost ready...';},200);
+  try{
+    pyodide=await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/'});
+    clearInterval(ft);if(bar)bar.style.width='92%';if(st)st.textContent='Loading micropip...';
+    await pyodide.loadPackage('micropip');
+    pyodide.runPython('import sys,io\nclass OC(io.StringIO):pass\nsys.stdout=OC()\nsys.stderr=OC()');
+    if(bar)bar.style.width='100%';if(st)st.textContent='&#9989; Python is ready!';
+    if(lt)lt.textContent=currentLang==='ar'?'Python &#128522; &#127881;':'Python is Ready! &#127881;';
+    if(ls)ls.textContent=currentLang==='ar'?'المكتبات تُثبَّت تلقائياً عند الحاجة':'Libraries auto-install when needed';
+    pyodideReady=true;
+    var badge=document.getElementById('pyodide-badge');
+    if(badge){badge.className='pyodide-ready-badge';badge.innerHTML=currentLang==='ar'?'&#9989; Python جاهز':'&#9989; Python Ready';}
+    await new Promise(function(r){setTimeout(r,800);});
+    document.getElementById('pyodide-loader').style.display='none';
+  }catch(err){
+    clearInterval(ft);
+    var badge=document.getElementById('pyodide-badge');
+    if(badge){badge.style.cssText='background:#3a1010;color:#ff6b6b;border:1px solid #ff6b6b33;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;font-family:Fira Code,monospace;margin-right:6px;display:inline-flex;';badge.textContent='&#10060; Load failed';}
+    document.getElementById('pyodide-loader').style.display='none';
+  }
+}
+loadPyodideEnv();
+
+function detectPkgs(code){
+  var needed=[];
+  [[/import\s+numpy|from\s+numpy/,'numpy'],[/import\s+pandas|from\s+pandas/,'pandas'],[/import\s+matplotlib|from\s+matplotlib/,'matplotlib'],[/import\s+scipy|from\s+scipy/,'scipy'],[/import\s+PIL|from\s+PIL/,'Pillow'],[/import\s+requests/,'requests']].forEach(function(m){if(m[0].test(code)&&!installedPkgs.has(m[1]))needed.push(m[1]);});
+  return needed;
+}
+async function installPkgs(pkgs,outEl){
+  var micropip=pyodide.pyimport('micropip');
+  for(var i=0;i<pkgs.length;i++){
+    var pkg=pkgs[i];if(installedPkgs.has(pkg))continue;
+    var div=document.createElement('div');div.className='output-line output-warn';div.textContent=t('ins')+' '+pkg+'...';outEl.appendChild(div);
+    try{await micropip.install(pkg);installedPkgs.add(pkg);div.className='output-line output-info';div.textContent=t('iok')+' '+pkg;}
+    catch(e){div.className='output-line output-error';div.textContent=t('ifail')+' '+pkg+': '+e.message;throw e;}
+  }
+}
+
+/* ==================== RUN CODE ==================== */
+async function runCode(){
+  var code=document.getElementById('code-editor').value.trim();
+  if(!code){showNotif(t('ce'));return;}
+  if(currentCodeMode==='javascript'){runJS(code);return;}
+  var btn=document.getElementById('btn-run');btn.disabled=true;
+  var out=document.getElementById('output-area');
+  if(!pyodideReady||!pyodide){out.innerHTML='<div class="output-line output-warn">&#9888;&#65039; Python not loaded yet...</div>';btn.disabled=false;return;}
+  out.innerHTML='<div class="output-line output-info">'+t('run')+'</div>';
+  try{
+    var needed=detectPkgs(code);
+    if(needed.length>0){out.innerHTML='';await installPkgs(needed,out);}else out.innerHTML='';
+    pyodide.runPython('sys.stdout.truncate(0);sys.stdout.seek(0);sys.stderr.truncate(0);sys.stderr.seek(0)');
+    await pyodide.runPythonAsync(code);
+    var stdout=pyodide.runPython('sys.stdout.getvalue()');
+    var stderr=pyodide.runPython('sys.stderr.getvalue()');
+    if(stdout){stdout.split('\n').forEach(function(line,idx,arr){if(line===''&&idx===arr.length-1)return;if(line.startsWith('__IMAGE__')){var img=document.createElement('img');img.src=line.replace('__IMAGE__','');img.style.cssText='max-width:100%;border-radius:8px;margin:6px 0;border:1px solid var(--border);';out.appendChild(img);}else{var d=document.createElement('div');d.className='output-line';d.textContent=line;out.appendChild(d);}});}
+    if(stderr){stderr.split('\n').forEach(function(line){if(!line.trim())return;var d=document.createElement('div');d.className='output-line output-error';d.textContent=line;out.appendChild(d);});}
+    if(!stdout&&!stderr&&out.children.length===0)out.innerHTML='<div class="output-line output-info">'+(currentLang==='ar'?'// تم التنفيذ &#8212; استخدم print() للعرض':'// Executed &#8212; use print() to show output')+'</div>';
+    showNotif(t('ex'));
+  }catch(err){
+    out.innerHTML='';
+    String(err.message||err).split('\n').forEach(function(line){if(!line.trim())return;var d=document.createElement('div');d.className='output-line output-error';d.textContent=line;out.appendChild(d);});
+    showNotif(currentLang==='ar'?'&#10060; خطأ في الكود':'&#10060; Code error');
+  }
+  btn.disabled=false;
+}
+function runJS(code){
+  var out=document.getElementById('output-area');out.innerHTML='<div class="output-line output-info">'+t('jsr')+'</div>';
+  var outputs=[],ol=console.log,ow=console.warn,oe=console.error,oi=console.info;
+  console.log=function(){var a=Array.from(arguments);outputs.push({text:a.map(fv).join(' '),type:'log'});ol.apply(console,a);};
+  console.warn=function(){var a=Array.from(arguments);outputs.push({text:'&#9888; '+a.map(fv).join(' '),type:'warn'});ow.apply(console,a);};
+  console.error=function(){var a=Array.from(arguments);outputs.push({text:'&#10060; '+a.map(fv).join(' '),type:'error'});oe.apply(console,a);};
+  console.info=function(){var a=Array.from(arguments);outputs.push({text:'&#8505; '+a.map(fv).join(' '),type:'info'});oi.apply(console,a);};
+  setTimeout(function(){
+    try{(new Function(code))();}catch(e){outputs.push({text:'&#10060; '+e.constructor.name+': '+e.message,type:'error'});}
+    console.log=ol;console.warn=ow;console.error=oe;console.info=oi;
+    out.innerHTML='';
+    if(!outputs.length)out.innerHTML='<div class="output-line output-info">'+t('jss')+'</div>';
+    else outputs.forEach(function(l){var d=document.createElement('div');d.className='output-line '+(l.type==='error'?'output-error':l.type==='warn'?'output-warn':l.type==='info'?'output-info':'output-log');d.textContent=l.text;out.appendChild(d);});
+    showNotif(t('ex'));
+  },80);
+}
+function fv(v){if(v===null)return'null';if(v===undefined)return'undefined';if(typeof v==='string')return v;if(Array.isArray(v))return'['+v.map(fv).join(', ')+']';if(v instanceof Error)return v.message;if(typeof v==='object'){try{return JSON.stringify(v,null,0);}catch(e){return String(v);}}return String(v);}
+
+/* ==================== LIBRARY RENDER ==================== */
+function renderLib(data){
+  var container=document.getElementById('library-list');container.innerHTML='';
+  data.forEach(function(cat,ci){
+    var nm=currentLang==='en'&&cat.categoryEn?cat.categoryEn:cat.category;
+    var el=document.createElement('div');el.className='category';
+    el.innerHTML='<div class="category-header" onclick="toggleCat('+ci+')"><span>'+nm+'</span><span class="category-arrow">&#9660;</span></div><div class="category-items">'+cat.items.map(function(item,ii){var n=currentLang==='en'&&item.nameEn?item.nameEn:item.name;return'<div class="code-item" onclick="showModal('+ci+','+ii+')">'+n+'</div>';}).join('')+'</div>';
+    container.appendChild(el);
+  });
+}
+function renderJSLib(){
+  var container=document.getElementById('library-list');container.innerHTML='';
+  jsLib.forEach(function(cat,ci){
+    var el=document.createElement('div');el.className='category';
+    el.innerHTML='<div class="category-header" onclick="toggleCat('+ci+')"><span>'+cat.category+'</span><span class="category-arrow">&#9660;</span></div><div class="category-items">'+cat.items.map(function(item,ii){return'<div class="code-item" onclick="showJSModal('+ci+','+ii+')">'+item.name+'</div>';}).join('')+'</div>';
+    container.appendChild(el);
+  });
+  var c=document.querySelector('.category');if(c)c.classList.add('open');
+}
+function toggleCat(idx){var cats=document.querySelectorAll('.category');if(cats[idx])cats[idx].classList.toggle('open');}
+renderLib(codeLib);
+var fc=document.querySelector('.category');if(fc)fc.classList.add('open');
+function searchCodes(q){
+  var lib=currentCodeMode==='javascript'?jsLib:codeLib;
+  if(!q.trim()){if(currentCodeMode==='javascript')renderJSLib();else{renderLib(lib);var c=document.querySelector('.category');if(c)c.classList.add('open');}return;}
+  var ql=q.toLowerCase();
+  var filtered=lib.map(function(cat){return{category:cat.category,categoryEn:cat.categoryEn,items:cat.items.filter(function(item){var n=currentLang==='en'&&item.nameEn?item.nameEn:item.name;return n.toLowerCase().includes(ql)||item.code.toLowerCase().includes(ql);})};}).filter(function(cat){return cat.items.length>0;});
+  renderLib(filtered);document.querySelectorAll('.category').forEach(function(el){el.classList.add('open');});
+}
+
+/* ==================== MODAL ==================== */
+var currentModal=null;
+function showModal(ci,ii){
+  var item=codeLib[ci].items[ii];currentModal=item;
+  var name=currentLang==='en'&&item.nameEn?item.nameEn:item.name;
+  var desc=currentLang==='en'&&item.descEn?item.descEn:item.desc;
+  document.getElementById('modal-title').textContent=name;
+  document.getElementById('modal-desc').textContent=desc+(item.requires?'\n\n&#128230; '+(currentLang==='ar'?'يتطلب: ':'Requires: ')+item.requires.join(', ')+' (auto-install)':'');
+  document.getElementById('modal-code').textContent=item.code;
+  document.getElementById('modal').classList.add('show');
+}
+function showJSModal(ci,ii){var item=jsLib[ci].items[ii];currentModal=item;document.getElementById('modal-title').textContent=item.name;document.getElementById('modal-desc').textContent=item.desc;document.getElementById('modal-code').textContent=item.code;document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function insertFromModal(){
+  if(currentModal){
+    document.getElementById('code-editor').value=currentModal.code;
+    syncLN();closeModal();showNotif(t('ci'));
+    var name=currentLang==='en'&&currentModal.nameEn?currentModal.nameEn:currentModal.name;
+    var desc=currentLang==='en'&&currentModal.descEn?currentModal.descEn:currentModal.desc;
+    updateExplainFromCode(currentModal.code,name,desc);
+  }
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===document.getElementById('modal'))closeModal();});
+
+/* ==================== EXPLAIN ==================== */
+function updateExplain(){clearTimeout(window._et);window._et=setTimeout(function(){var code=document.getElementById('code-editor').value;if(code.trim())autoExplain(code);},600);}
+function autoExplain(code){
+  var isJS=currentCodeMode==='javascript',blocks=[];
+  if(isJS){
+    if(code.includes('function ')||code.includes('=>'))blocks.push({badge:'badge-func',label:'Function',title:'Functions',text:'Uses <code>function</code> or <code>=></code>.'});
+    if(code.includes('class '))blocks.push({badge:'badge-class',label:'Class',title:'OOP',text:'Uses <code>class</code>.'});
+    if(code.includes('if ')||code.includes('switch'))blocks.push({badge:'badge-cond',label:'Condition',title:'Conditionals',text:'Contains <code>if/else</code>.'});
+    if(code.includes('for ')||code.includes('while ')||code.includes('.map('))blocks.push({badge:'badge-loop',label:'Loop',title:'Loops',text:'Uses loops or <code>.map()</code>.'});
+    if(code.includes('async ')||code.includes('await '))blocks.push({badge:'badge-lib',label:'Async',title:'Async/Await',text:'Uses <code>async/await</code>.'});
+    if(code.includes('console.'))blocks.push({badge:'badge-func',label:'Output',title:'Console',text:((code.match(/console\./g)||[]).length)+' console call(s).'});
+  }else{
+    if(code.includes('def '))blocks.push({badge:'badge-func',label:'دالة',title:'تعريف دالة',text:'يحتوي على دوال بـ <code>def</code>.'});
+    if(code.includes('class '))blocks.push({badge:'badge-class',label:'كلاس',title:'OOP',text:'يستخدم <code>class</code>.'});
+    if(code.includes('if ')||code.includes('elif '))blocks.push({badge:'badge-cond',label:'شرط',title:'الشرط',text:'يحتوي على <code>if/elif/else</code>.'});
+    if(code.includes('for ')||code.includes('while '))blocks.push({badge:'badge-loop',label:'حلقة',title:'الحلقات',text:'يحتوي على حلقات <code>for/while</code>.'});
+    if(code.includes('import ')){var imports=[...code.matchAll(/import\s+(\w+)|from\s+(\w+)/g)].map(function(m){return m[1]||m[2];});var uniq=[...new Set(imports)];var hasPkg=uniq.some(function(i){return['numpy','pandas','matplotlib','scipy'].includes(i);});blocks.push({badge:'badge-lib',label:'مكتبة',title:'المكتبات',text:'المكتبات: '+uniq.map(function(i){return'<code>'+i+'</code>';}).join(' ')+(hasPkg?'<br><span style="color:#4ade80;font-size:11px;">&#9989; تثبيت تلقائي</span>':'')});}
+    if(code.includes('try:'))blocks.push({badge:'badge-cond',label:'أخطاء',title:'معالجة الأخطاء',text:'يستخدم <code>try/except</code>.'});
+    if(code.includes('print('))blocks.push({badge:'badge-func',label:'طباعة',title:'print()',text:((code.match(/print\s*\(/g)||[]).length)+' استدعاء.'});
+  }
+  if(!blocks.length)blocks.push({badge:'badge-func',label:isJS?'Code':'كود',title:isJS?'JavaScript':'Python',text:isJS?'Press <code>&#9654; Run</code>.':'اضغط <code>&#9654; تشغيل</code>.'});
+  blocks.push({badge:'badge-func',label:isJS?'Stats':'إحصاء',title:'&#128202;',text:(isJS?'Lines':'أسطر')+': <code>'+code.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith(isJS?'//':'#');}).length+'</code>'});
+  document.getElementById('explain-content').innerHTML=blocks.map(function(b){return'<div class="explain-block"><span class="explain-badge '+b.badge+'">'+b.label+'</span><h4>'+b.title+'</h4><p>'+b.text+'</p></div>';}).join('');
+}
+function updateExplainFromCode(code,name,desc){document.getElementById('explain-content').innerHTML='<div class="explain-block"><span class="explain-badge badge-func">'+(currentLang==='ar'?'مختار':'Selected')+'</span><h4>&#128204; '+name+'</h4><p>'+desc+'</p></div>';setTimeout(function(){autoExplain(code);},200);}
+function explainCode(){var code=document.getElementById('code-editor').value;if(!code.trim()){showNotif(t('ee'));return;}autoExplain(code);showNotif(t('ca'));}
+
+/* ==================== UTILS ==================== */
+function clearEditor(){document.getElementById('code-editor').value='';syncLN();showDefExplain();}
+function clearOutput(){document.getElementById('output-area').innerHTML='<div class="output-line output-info">'+t('op')+'</div>';}
+function copyCode(){navigator.clipboard.writeText(document.getElementById('code-editor').value).then(function(){showNotif(t('cc'));});}
+function showNotif(msg){var n=document.getElementById('notif');n.innerHTML=msg;n.classList.add('show');clearTimeout(n._t);n._t=setTimeout(function(){n.classList.remove('show');},2500);}
+
+/* ==================== TABS ==================== */
+function switchMainTab(tab,el){
+  document.querySelectorAll('.header-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');
+  if(tab==='libraries')showLibView();else if(tab==='about')showAboutView();
+  else{if(currentCodeMode==='javascript')renderJSLib();else{renderLib(codeLib);var c=document.querySelector('.category');if(c)c.classList.add('open');}}
+}
+function showLibView(){
+  var libs=[{icon:'&#128290;',name:'NumPy',desc:'مصفوفات وحسابات',descEn:'Arrays & math',use:'import numpy as np',status:'bundled'},{icon:'&#128202;',name:'Pandas',desc:'تحليل البيانات',descEn:'Data analysis',use:'import pandas as pd',status:'micropip'},{icon:'&#128200;',name:'Matplotlib',desc:'رسم المخططات',descEn:'Charts',use:'import matplotlib.pyplot as plt',status:'bundled'},{icon:'&#129518;',name:'SciPy',desc:'الحسابات العلمية',descEn:'Scientific computing',use:'from scipy import stats',status:'bundled'},{icon:'&#127755;',name:'Requests',desc:'طلبات HTTP',descEn:'HTTP requests',use:'import requests',status:'micropip'},{icon:'&#128247;',name:'Pillow',desc:'معالجة الصور',descEn:'Image processing',use:'from PIL import Image',status:'micropip'},{icon:'&#9881;',name:'itertools',desc:'أدوات التكرار',descEn:'Iteration',use:'import itertools',status:'builtin'},{icon:'&#128230;',name:'collections',desc:'هياكل بيانات',descEn:'Data structures',use:'from collections import Counter',status:'builtin'},{icon:'&#128197;',name:'datetime',desc:'التواريخ',descEn:'Dates',use:'from datetime import datetime',status:'builtin'},{icon:'&#128290;',name:'math',desc:'الرياضيات',descEn:'Math',use:'import math',status:'builtin'},{icon:'&#127922;',name:'random',desc:'عشوائي',descEn:'Random',use:'import random',status:'builtin'},{icon:'&#128221;',name:'json',desc:'JSON',descEn:'JSON',use:'import json',status:'builtin'}];
+  var sl={bundled:{ar:'&#9989; مدمجة',en:'&#9989; Bundled',cls:'available'},micropip:{ar:'&#128230; تلقائي',en:'&#128230; Auto-install',cls:'installable'},builtin:{ar:'&#9889; Python',en:'&#9889; Built-in',cls:'available'}};
+  document.getElementById('explain-content').innerHTML='<div class="libraries-grid">'+libs.map(function(lib){var desc=currentLang==='en'?lib.descEn:lib.desc;var s=sl[lib.status];var st=currentLang==='en'?s.en:s.ar;return'<div class="lib-card" onclick="insertLib(\''+lib.use+'\')"><div class="lib-icon">'+lib.icon+'</div><div class="lib-name">'+lib.name+'</div><div class="lib-desc">'+desc+'</div><div class="lib-status '+s.cls+'">'+st+'</div></div>';}).join('')+'</div>';
+  showNotif(t('lc'));
+}
+function insertLib(importLine){
+  var editor=document.getElementById('code-editor'),current=editor.value;
+  if(current.includes(importLine.split('\n')[0])){showNotif(currentLang==='ar'?'&#9888; موجودة مسبقاً':'&#9888; Already imported');return;}
+  editor.value=importLine+'\n'+(current?'\n'+current:'');
+  syncLN();showNotif(t('la'));
+  document.querySelectorAll('.header-tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
+  if(currentCodeMode==='javascript')renderJSLib();else{renderLib(codeLib);var c=document.querySelector('.category');if(c)c.classList.add('open');}
+}
+function showAboutView(){
+  var c=document.getElementById('explain-content');
+  c.innerHTML=currentLang==='ar'?'<div class="explain-block" style="text-align:center"><div style="font-size:40px;margin-bottom:10px">&#128013;</div><h4>Ahmed.afify &#8212; Python Studio</h4><p>بيئة تطوير Python &#38; JavaScript في المتصفح</p></div><div class="explain-block"><h4>&#10024; المميزات</h4><p>&#8226; Python حقيقي عبر Pyodide/WebAssembly<br>&#8226; <strong style="color:#4ade80">pandas, numpy, matplotlib &#9989;</strong><br>&#8226; تثبيت تلقائي للمكتبات<br>&#8226; <strong style="color:var(--pink)">رقم كل سطر بجانبه &#128290;</strong><br>&#8226; دعم Arabic &#38; English &#127758;</p></div>':'<div class="explain-block" style="text-align:center"><div style="font-size:40px;margin-bottom:10px">&#128013;</div><h4>Ahmed.afify &#8212; Python Studio</h4><p>Full Python &#38; JavaScript IDE in your browser</p></div><div class="explain-block"><h4>&#10024; Features</h4><p>&#8226; Real Python via Pyodide/WebAssembly<br>&#8226; <strong style="color:#4ade80">pandas, numpy, matplotlib natively &#9989;</strong><br>&#8226; Auto-install libraries<br>&#8226; <strong style="color:var(--pink)">Line number beside every line &#128290;</strong><br>&#8226; Arabic &#38; English support &#127758;</p></div>';
+}
+</script>
+</body>
+</html>

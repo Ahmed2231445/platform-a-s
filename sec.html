@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>أمن المعلومات - النسخة الشاملة</title>
+
+<style>
+:root{
+  --bg:#0a0a0a;
+  --txt:#fff;
+  /* سيتم تحديث هذا اللون من الجافاسكريبت إذا وجد في الذاكرة */
+  --a1:#00ff88; 
+}
+
+body{
+  margin:0;
+  font-family:'Cairo',sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+}
+
+#welcome{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  background:var(--bg);
+  z-index:999;
+  animation:fadeOut 1s ease 3s forwards;
+}
+
+#welcome h1{
+  font-size:42px;
+  color:var(--a1);
+  text-shadow:0 0 20px var(--a1);
+}
+
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden}
+}
+
+.container{
+  padding:80px 20px;
+  max-width:1000px;
+  margin:auto;
+}
+
+h2{
+  color:var(--a1);
+  margin-top:50px;
+  border-right: 4px solid var(--a1);
+  padding-right: 15px;
+}
+
+.card{
+  background:rgba(255,255,255,.05);
+  padding:20px;
+  border-radius:15px;
+  margin-top:15px;
+  border:1px solid rgba(255,255,255,.1);
+  line-height:1.9;
+}
+
+.step{
+  border-right:4px solid var(--a1);
+  padding-right:15px;
+  margin-top:15px;
+}
+
+button{
+  padding:10px 20px;
+  border:none;
+  background:var(--a1);
+  color:#000;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:10px;
+  font-weight: bold;
+}
+
+/* تنسيقات المختبر البرمجي */
+.code-editor {
+    width: 100%;
+    height: 150px;
+    background: #000;
+    color: var(--a1);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: monospace;
+    direction: ltr;
+    margin-top: 10px;
+}
+
+.output-area {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #111;
+    border: 1px dashed var(--a1);
+}
+
+.company-sys input, .company-sys select {
+    background: #1a1a1a; border: 1px solid var(--a1); color: white;
+    padding: 10px; border-radius: 5px; margin: 5px; width: 220px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="welcome">
+  <h1>👋 مرحباً <span id="user-name-welcome"></span></h1>
+  <p>ابدأ رحلتك في عالم الأمن السيبراني 🔐</p>
+</div>
+
+<div class="container">
+
+<div style="background:var(--a1); color:#000; display:inline-block; padding:5px 15px; border-radius:10px; font-weight:bold;">
+    👤 المستخدم: <span id="user-name-top"></span>
+</div>
+
+<h2>🔒 ما هو أمن المعلومات؟</h2>
+<div class="card">
+أمن المعلومات هو عملية حماية البيانات من الوصول غير المصرح به، التعديل، أو التدمير.  
+ويعتمد على 3 عناصر أساسية:
+<br>
+✔ <b>السرية (Confidentiality)</b><br>
+✔ <b>سلامة البيانات (Integrity)</b><br>
+✔ <b>التوفر (Availability)</b>
+</div>
+
+<h2>⚙️ كيف يعمل نظام السيكيورتي داخل أي موقع؟</h2>
+<div class="card">
+<div class="step"><strong>1️⃣ تسجيل المستخدم:</strong> أخذ البيانات وتشفير كلمة المرور فوراً.</div>
+<div class="step"><strong>2️⃣ التشفير (Encryption):</strong> تحويل الكلمة لقيمة Hash لا يمكن عكسها.</div>
+<div class="step"><strong>3️⃣ التحقق:</strong> مقارنة الكلمة المدخلة بالمشفرة في قاعدة البيانات.</div>
+<div class="step"><strong>4️⃣ إنشاء Token:</strong> منح المستخدم هوية رقمية للتحقق من طلباته.</div>
+</div>
+
+<h2>🛡️ أنواع الحماية المستخدمة</h2>
+<div class="card">
+🔹 Hashing (تشفير الباسورد) | 🔹 HTTPS (تشفير الاتصال) | 🔹 Firewall (جدار حماية) <br>
+🔹 Rate Limiting (منع الهجمات المتكررة) | 🔹 Input Validation (فحص المدخلات)
+</div>
+
+<h2>⚠️ أشهر الهجمات</h2>
+<div class="card">
+🔸 SQL Injection | 🔸 XSS (حقن الأكواد) | 🔸 Phishing (الاصطياد) | 🔸 Brute Force (التخمين)
+</div>
+
+<h2>💻 كيف تحمي موقعك (الشرح التفصيلي)</h2>
+<div class="card">
+🛡️ <b>أولاً: HTTPS:</b> لتشفير البيانات بين المستخدم والخادم.<br>
+🔑 <b>ثانياً: كلمات مرور قوية:</b> طويلة، تحتوي رموزاً، وغير متوقعة.<br>
+🔄 <b>ثالثاً: التحديث المستمر:</b> سد الثغرات الأمنية في الإضافات والسكربتات.<br>
+🧱 <b>رابعاً: SQL Injection:</b> استخدم Prepared Statements لمنع اختراق قواعد البيانات.<br>
+🧠 <b>خامساً: التحقق من المدخلات:</b> تنظيف (Sanitize) أي بيانات يدخلها المستخدم.<br>
+🔥 <b>سادساً: جدار حماية (Firewall):</b> مثل Cloudflare لصد هجمات DDoS.<br>
+💾 <b>سابعاً: النسخ الاحتياطي:</b> لضمان استعادة البيانات عند حدوث كارثة.<br>
+👁️ <b>ثامناً: المراقبة:</b> تتبع النشاط الغريب ومحاولات الدخول الفاشلة.
+</div>
+
+<hr style="opacity:0.1; margin:40px 0;">
+
+<h2>🧪 مختبر التشفير البرمجي</h2>
+<div class="card">
+    <p>اكتب كود JavaScript (دالة <code>encrypt</code>) واختبر قوتها:</p>
+    <div style="margin-bottom:10px;">
+        <button onclick="setPreset('safe')">كود آمن ✅</button>
+        <button onclick="setPreset('unsafe')">كود ضعيف ❌</button>
+    </div>
+    <textarea id="code-input" class="code-editor" placeholder="function encrypt(text) { ... }"></textarea>
+    <button onclick="runLab()" style="width:100%; margin-top:15px; background:#fff;">▶️ تنفيذ واختبار الكود</button>
+    <div class="output-area">
+        <div id="lab-status"></div>
+        <div id="lab-result">النتيجة تظهر هنا...</div>
+    </div>
+</div>
+
+<h2>🏢 نظام إدارة أمن الشركة</h2>
+<div class="card company-sys">
+    <p>قم ببناء نظام الشركة وتفعيله:</p>
+    <input type="text" id="c-name" placeholder="اسم الموظف">
+    <input type="password" id="c-pass" placeholder="كلمة المرور">
+    <select id="c-fw"><option value="off">Firewall: إيقاف</option><option value="on">Firewall: تفعيل</option></select>
+    <select id="c-enc"><option value="none">تشفير: لا يوجد</option><option value="bcrypt">تشفير: Bcrypt</option></select>
+    <button onclick="deploy()" style="width:100%; margin-top:15px;">🚀 تفعيل النظام النهائي</button>
+    <div id="deploy-status" style="margin-top:15px; padding:15px; border-radius:10px; display:none; font-weight:bold;"></div>
+</div>
+
+</div>
+
+<script>
+// 1. استرجاع الألوان والاسم من الذاكرة
+const savedColor = localStorage.getItem('platform_saved_color');
+if(savedColor) {
+    document.documentElement.style.setProperty('--a1', savedColor);
+}
+
+const savedName = sessionStorage.getItem('platform_user') || 'مستخدم جديد';
+document.getElementById('user-name-welcome').textContent = savedName;
+document.getElementById('user-name-top').textContent = savedName;
+
+// 2. وظائف المختبر
+function setPreset(t) {
+    const ed = document.getElementById('code-input');
+    if(t==='safe') ed.value = "function encrypt(text) {\n  const salt = 'SECURE_';\n  return btoa(salt + text);\n}";
+    else ed.value = "function encrypt(text) {\n  return text.split('').reverse().join('');\n}";
+}
+
+function runLab() {
+    const code = document.getElementById('code-input').value;
+    const res = document.getElementById('lab-result');
+    const stat = document.getElementById('lab-status');
+    try {
+        eval(code);
+        const out = encrypt("Secret123");
+        res.innerHTML = "<b>الناتج:</b> " + out;
+        if(code.includes('salt') || code.includes('btoa')) {
+            stat.innerHTML = "<span style='color:#00ff88'>ممتاز ✅ (نظام محمي)</span>";
+        } else {
+            stat.innerHTML = "<span style='color:#ff4444'>فشلت ❌ (نظام ضعيف)</span>";
+        }
+    } catch(e) { res.textContent = "خطأ: " + e; }
+}
+
+// 3. نظام الشركة
+function deploy() {
+    const p = document.getElementById('c-pass').value;
+    const f = document.getElementById('c-fw').value;
+    const e = document.getElementById('c-enc').value;
+    const box = document.getElementById('deploy-status');
+    box.style.display = "block";
+    
+    if(p.length >= 8 && f === 'on' && e === 'bcrypt') {
+        box.style.background = "rgba(0, 255, 136, 0.2)";
+        box.style.color = "#00ff88";
+        box.innerHTML = "✅ نظام جيد! تم حماية الشركة بنجاح.";
+    } else {
+        box.style.background = "rgba(255, 68, 68, 0.2)";
+        box.style.color = "#ff4444";
+        box.innerHTML = "❌ لقد فشلت! النظام يحتوي على ثغرات.";
+    }
+}
+</script>
+
+</body>
+</html>
