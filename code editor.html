@@ -1,0 +1,2573 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ahmed.afify — HTML/CSS Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Fira+Code:wght@300;400;500;600&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00d4ff; --cyan-light:#7eeeff; --cyan-dim:#00d4ff33; --cyan-glow:#00d4ff66;
+  --orange:#ff6b00; --orange-dim:#ff6b0033;
+  --black:#03050a; --dark:#0a0d14; --dark2:#10141f; --dark3:#161c2a; --dark4:#1e2535;
+  --text:#e8f4ff; --text-dim:#7a9bb5; --border:#00d4ff25;
+  --fs:13px; --lh:1.7;
+  --cr:0; --cg:212; --cb:255;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--text);font-family:'Cairo',sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+
+/* ===== PRE-INTRO COLOR PICKER SCREEN ===== */
+#preintro-screen{position:fixed;inset:0;z-index:10000;background:#020408;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+#preintro-screen.fade-out{animation:piOut .7s cubic-bezier(.77,0,.18,1) forwards;}
+@keyframes piOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05);pointer-events:none}}
+#pi-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(var(--cr),var(--cg),var(--cb),.04) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--cr),var(--cg),var(--cb),.04) 1px,transparent 1px);background-size:60px 60px;animation:gd 22s linear infinite}
+#pi-scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px);pointer-events:none;opacity:.4}
+#pi-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--cyan-dim) 0%,rgba(0,0,0,0) 70%);pointer-events:none;transition:background .4s;}
+.pi-corner{position:absolute;width:40px;height:40px;border-color:var(--cyan);border-style:solid;opacity:0;animation:cr .5s ease .2s forwards}
+.pi-corner.tl{top:24px;left:24px;border-width:2px 0 0 2px}
+.pi-corner.tr{top:24px;right:24px;border-width:2px 2px 0 0}
+.pi-corner.bl{bottom:24px;left:24px;border-width:0 0 2px 2px}
+.pi-corner.br{bottom:24px;right:24px;border-width:0 2px 2px 0}
+@keyframes cr{to{opacity:1}}
+#pi-box{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:0;animation:piBoxIn .8s cubic-bezier(.34,1.56,.64,1) .3s both;}
+@keyframes piBoxIn{0%{opacity:0;transform:translateY(30px) scale(.92)}100%{opacity:1;transform:translateY(0) scale(1)}}
+#pi-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(22px,4vw,42px);background:linear-gradient(130deg,#fff 0%,#7eeeff 35%,var(--cyan) 65%,#fff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 18px var(--cyan-glow));letter-spacing:.04em;transition:filter .4s;}
+#pi-dot{-webkit-text-fill-color:var(--cyan);}
+#pi-tagline{font-family:'Rajdhani',sans-serif;font-weight:300;font-size:clamp(10px,1.4vw,13px);letter-spacing:.3em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:4px;}
+#pi-rule{width:280px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);margin:18px auto 0;box-shadow:0 0 10px var(--cyan-glow);transition:box-shadow .4s;}
+#pi-title{font-family:'Fira Code',monospace;font-size:13px;color:rgba(255,255,255,.5);letter-spacing:.12em;margin-top:16px;margin-bottom:22px;}
+/* Color swatches grid */
+#pi-swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
+.pi-swatch{width:38px;height:38px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative;box-shadow:0 0 8px transparent;}
+.pi-swatch:hover{transform:scale(1.2);border-color:rgba(255,255,255,.6);}
+.pi-swatch.selected{border-color:#fff;transform:scale(1.18);}
+.pi-swatch.selected::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,.9);}
+/* Custom hex row */
+#pi-custom-row{display:flex;align-items:center;gap:10px;margin-bottom:22px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px 16px;border-radius:10px;}
+#pi-custom-label{font-family:'Fira Code',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.08em;}
+#pi-native{width:32px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;padding:2px;}
+#pi-hex-input{flex:1;padding:5px 8px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#e8f4ff;font-family:'Fira Code',monospace;font-size:12px;outline:none;max-width:100px;}
+#pi-hex-input:focus{border-color:var(--cyan);}
+/* Launch button */
+#pi-launch{font-family:'Orbitron',monospace;font-weight:700;font-size:14px;letter-spacing:.12em;padding:14px 44px;border-radius:10px;border:2px solid var(--cyan);background:transparent;color:var(--cyan);cursor:pointer;transition:all .3s;text-transform:uppercase;position:relative;overflow:hidden;}
+#pi-launch::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:scaleX(0);transform-origin:right;transition:transform .3s;z-index:0;}
+#pi-launch:hover::before{transform:scaleX(1);transform-origin:left;}
+#pi-launch span{position:relative;z-index:1;transition:color .3s;}
+#pi-launch:hover span{color:#000;}
+#pi-launch:hover{box-shadow:0 0 30px var(--cyan-glow);}
+#pi-footer{font-family:'Fira Code',monospace;font-size:9px;color:rgba(255,255,255,.18);margin-top:18px;letter-spacing:.1em;}
+
+/* ===== INTRO ===== */
+#intro-screen{position:fixed;inset:0;z-index:9999;background:#020408;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+#intro-screen.fade-out{animation:iOut .9s cubic-bezier(.77,0,.18,1) forwards;}
+@keyframes iOut{0%{opacity:1;transform:scale(1)}55%{opacity:1;transform:scale(1.04)}100%{opacity:0;transform:scale(1.09);pointer-events:none}}
+#ig{position:absolute;inset:0;background-image:linear-gradient(rgba(var(--cr),var(--cg),var(--cb),.04) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--cr),var(--cg),var(--cb),.04) 1px,transparent 1px);background-size:60px 60px;animation:gd 22s linear infinite}
+@keyframes gd{0%{background-position:0 0}100%{background-position:60px 60px}}
+#iglow{position:absolute;width:660px;height:660px;border-radius:50%;background:radial-gradient(circle,rgba(var(--cr),var(--cg),var(--cb),.13) 0%,rgba(var(--cr),var(--cg),var(--cb),.05) 40%,transparent 70%);animation:gp 3.2s ease-in-out infinite;pointer-events:none}
+@keyframes gp{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.18);opacity:1}}
+#iglow2{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,.08) 0%,transparent 70%);animation:gp2 4s ease-in-out infinite;pointer-events:none;top:30%;left:20%;}
+@keyframes gp2{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+#isc{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px);pointer-events:none;opacity:.4}
+.ic{position:absolute;width:52px;height:52px;border-color:var(--cyan);border-style:solid;opacity:0;animation:cr .5s ease forwards}
+.ic.tl{top:36px;left:36px;border-width:2px 0 0 2px;animation-delay:.25s}
+.ic.tr{top:36px;right:36px;border-width:2px 2px 0 0;animation-delay:.35s}
+.ic.bl{bottom:36px;left:36px;border-width:0 0 2px 2px;animation-delay:.45s}
+.ic.br{bottom:36px;right:36px;border-width:0 2px 2px 0;animation-delay:.55s}
+.idl{position:absolute;font-family:'Fira Code',monospace;font-size:9.5px;color:rgba(var(--cr),var(--cg),var(--cb),.2);letter-spacing:.08em;white-space:nowrap;opacity:0;animation:di .7s ease forwards}
+.idl.L{left:56px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:left center;animation-delay:.7s}
+.idl.R{right:56px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center;animation-delay:.85s}
+.idl.B{bottom:64px;left:50%;transform:translateX(-50%);animation-delay:1s;font-size:9px}
+@keyframes di{to{opacity:1}}
+.ihex{position:absolute;border:1px solid rgba(var(--cr),var(--cg),var(--cb),.06);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:hs linear infinite;pointer-events:none}
+@keyframes hs{to{transform:rotate(360deg)}}
+.ipar{position:absolute;border-radius:50%;pointer-events:none;animation:pf linear infinite}
+@keyframes pf{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20vh) scale(1);opacity:0}}
+.iring{position:absolute;border-radius:50%;animation:re ease-out forwards;pointer-events:none}
+@keyframes re{0%{transform:scale(0);opacity:.6}100%{transform:scale(1);opacity:0}}
+.irain{position:absolute;top:0;font-family:'Fira Code',monospace;color:rgba(var(--cr),var(--cg),var(--cb),.1);writing-mode:vertical-rl;letter-spacing:4px;pointer-events:none;white-space:nowrap;animation:rf linear infinite}
+@keyframes rf{0%{transform:translateY(-100%);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(100vh);opacity:0}}
+#ilw{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:0}
+#ilm{width:118px;height:118px;opacity:0;animation:md .85s cubic-bezier(0.34,1.56,.64,1) .5s forwards;filter:drop-shadow(0 0 28px rgba(var(--cr),var(--cg),var(--cb),.85))}
+@keyframes md{0%{opacity:0;transform:translateY(-28px) scale(.65)}100%{opacity:1;transform:translateY(0) scale(1)}}
+#iname{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(34px,5.5vw,66px);letter-spacing:.04em;background:linear-gradient(130deg,#fff 0%,var(--cyan-light) 35%,var(--cyan) 65%,#fff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0;animation:ns 1s cubic-bezier(.16,1,.3,1) 1.1s forwards;filter:drop-shadow(0 0 18px rgba(var(--cr),var(--cg),var(--cb),.45));margin-top:6px}
+@keyframes ns{0%{opacity:0;transform:translateY(18px) skewX(-5deg);letter-spacing:.15em}100%{opacity:1;transform:translateY(0) skewX(0);letter-spacing:.04em}}
+#idot{display:inline-block;-webkit-text-fill-color:var(--cyan);filter:drop-shadow(0 0 10px var(--cyan))}
+#itag{font-family:'Rajdhani',sans-serif;font-weight:300;font-size:clamp(11px,1.6vw,15px);letter-spacing:.32em;color:rgba(255,255,255,.32);text-transform:uppercase;opacity:0;animation:tu .8s ease 1.65s forwards;margin-top:4px}
+@keyframes tu{0%{opacity:0;transform:translateY(8px);letter-spacing:.5em}100%{opacity:1;transform:translateY(0);letter-spacing:.32em}}
+#irule{width:0;height:1px;margin:16px auto 0;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:rg .9s ease 1.45s forwards;box-shadow:0 0 10px rgba(var(--cr),var(--cg),var(--cb),.5)}
+@keyframes rg{to{width:340px}}
+#isub{font-family:'Fira Code',monospace;font-size:12.5px;color:rgba(126,238,255,.65);letter-spacing:.1em;opacity:0;animation:sf .6s ease 2s forwards;margin-top:14px}
+@keyframes sf{to{opacity:1}}
+#ibdg{display:flex;gap:8px;margin-top:12px;opacity:0;animation:sf .6s ease 2.1s forwards;flex-wrap:wrap;justify-content:center}
+.ibadge{font-family:'Fira Code',monospace;font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+.ibadge.ht{background:#1a2a1a;color:#f97316;border:1px solid #f9731633}
+.ibadge.cs{background:#1a2030;color:#60a5fa;border:1px solid #60a5fa33}
+.ibadge.js{background:#2a2010;color:#f7df1e;border:1px solid #f7df1e33}
+.ibadge.ai{background:#0a2030;color:#00d4ff;border:1px solid #00d4ff33}
+#ipw{margin-top:36px;width:clamp(260px,34vw,390px);opacity:0;animation:sf .5s ease 2.25s forwards}
+#ipl{display:flex;justify-content:space-between;font-family:'Fira Code',monospace;font-size:9.5px;color:rgba(var(--cr),var(--cg),var(--cb),.45);margin-bottom:7px;letter-spacing:.07em}
+#ipt{height:2px;background:rgba(var(--cr),var(--cg),var(--cb),.08);border-radius:2px;overflow:visible;position:relative}
+#ipb{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--cyan-light));transition:width .12s linear;box-shadow:0 0 10px rgba(var(--cr),var(--cg),var(--cb),.9);position:relative}
+#ipb::after{content:'';position:absolute;right:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--cyan-light);box-shadow:0 0 14px var(--cyan),0 0 4px #fff}
+#iticker{position:absolute;bottom:78px;left:50%;transform:translateX(-50%);font-family:'Fira Code',monospace;font-size:9.5px;color:rgba(var(--cr),var(--cg),var(--cb),.35);white-space:nowrap;letter-spacing:.04em;opacity:0;animation:sf .4s ease 2.3s forwards}
+#iskip{position:absolute;bottom:28px;right:38px;font-family:'Fira Code',monospace;font-size:10.5px;color:rgba(var(--cr),var(--cg),var(--cb),.38);border:1px solid rgba(var(--cr),var(--cg),var(--cb),.14);padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .25s;opacity:0;animation:sf .5s ease 2.6s forwards}
+#iskip:hover{color:var(--cyan);border-color:var(--cyan);background:rgba(var(--cr),var(--cg),var(--cb),.08)}
+
+/* ===== APP ===== */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+header{position:relative;z-index:10;background:linear-gradient(90deg,var(--dark) 0%,#0a1a2e 50%,var(--dark) 100%);border-bottom:1px solid var(--cyan);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 0 30px var(--cyan-glow);flex-shrink:0;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;color:var(--cyan);text-shadow:0 0 20px var(--cyan);letter-spacing:-.5px;flex-shrink:0}
+.logo span{color:var(--text)}
+.logo small{font-size:10px;color:var(--text-dim);font-weight:400;letter-spacing:.05em}
+.header-tabs{display:flex;gap:4px}
+.header-tab{padding:6px 14px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;transition:all .2s}
+.header-tab:hover,.header-tab.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 12px var(--cyan-dim)}
+.lang-switcher{display:flex;align-items:center;background:var(--dark3);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
+.lang-btn{padding:5px 12px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;transition:all .2s;letter-spacing:.5px}
+.lang-btn.active{background:var(--cyan);color:#000;box-shadow:0 0 10px var(--cyan-glow)}
+.lang-btn:hover:not(.active){background:var(--cyan-dim);color:var(--cyan)}
+.lang-divider{width:1px;height:24px;background:var(--border)}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.main-layout{position:relative;z-index:5;display:grid;grid-template-columns:290px 1fr 310px;grid-template-rows:1fr 230px;gap:1px;flex:1;overflow:hidden;background:var(--border)}
+.panel{background:var(--dark);display:flex;flex-direction:column;overflow:hidden}
+.panel-header{padding:10px 14px;background:var(--dark2);border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--cyan-light);letter-spacing:.5px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+#library-panel{grid-row:1/3}
+.search-box{padding:10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.search-input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Cairo',sans-serif;font-size:12px;outline:none;transition:border-color .2s;direction:rtl}
+.search-input:focus{border-color:var(--cyan);box-shadow:0 0 10px var(--cyan-dim)}
+.search-input::placeholder{color:var(--text-dim)}
+.library-scroll{flex:1;overflow-y:auto;padding:8px}
+.library-scroll::-webkit-scrollbar{width:4px}
+.library-scroll::-webkit-scrollbar-thumb{background:var(--cyan-dim);border-radius:2px}
+.category{margin-bottom:5px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.category-header{padding:9px 12px;background:var(--dark3);cursor:pointer;font-size:11px;font-weight:700;color:var(--cyan-light);display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .2s}
+.category-header:hover{background:var(--dark4)}
+.category-arrow{transition:transform .2s;font-size:10px}
+.category.open .category-arrow{transform:rotate(180deg)}
+.category-items{display:none;background:var(--dark2)}
+.category.open .category-items{display:block}
+.code-item{padding:7px 14px;cursor:pointer;font-size:11px;color:var(--text-dim);transition:all .15s;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.code-item:last-child{border-bottom:none}
+.code-item:hover{background:var(--cyan-dim);color:var(--cyan);padding-right:18px}
+.code-item::before{content:'◈';font-size:8px;color:var(--cyan);opacity:.6}
+#editor-panel{grid-column:2;grid-row:1}
+.editor-toolbar{padding:8px 12px;background:var(--dark2);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn{padding:6px 14px;border-radius:6px;border:1px solid var(--cyan);background:transparent;color:var(--cyan);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn:hover{background:var(--cyan);color:#000;box-shadow:0 0 15px var(--cyan-glow)}
+.btn.run{background:var(--cyan);color:#000;font-weight:700}
+.btn.run:hover{box-shadow:0 0 20px var(--cyan);transform:scale(1.04)}
+.btn.run:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.clear{border-color:#334;color:#556}
+.btn.clear:hover{border-color:#556;color:var(--text);background:var(--dark3);box-shadow:none}
+.btn.orange{border-color:var(--orange);color:var(--orange)}
+.btn.orange:hover{background:var(--orange);color:#fff;box-shadow:0 0 15px var(--orange-dim)}
+.tab-bar{display:flex;gap:2px;padding:0 12px;background:var(--dark3);border-bottom:1px solid var(--border);flex-shrink:0;align-items:center}
+.editor-tab{padding:6px 14px;font-size:11px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:'Fira Code',monospace}
+.editor-tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.editor-tab:hover:not(.active){color:var(--text);border-bottom-color:var(--border)}
+.editor-tab.server-tab { border-bottom-color: #4ade80; color: #4ade80; }
+.editor-tab.server-tab:hover { color: #4ade80; }
+.server-tab.active { color: #4ade80 !important; border-bottom-color: #4ade80 !important; }
+.lang-indicator.server { background: #0a2a1a; color: #4ade80; border: 1px solid #4ade8033; }
+.lang-indicator{margin-right:auto;font-size:10px;padding:2px 8px;border-radius:10px;font-family:'Fira Code',monospace;font-weight:600}
+.lang-indicator.html{background:#1a2010;color:#f97316;border:1px solid #f9731633}
+.lang-indicator.css{background:#101828;color:#60a5fa;border:1px solid #60a5fa33}
+.lang-indicator.js{background:#2a2010;color:#f7df1e;border:1px solid #f7df1e33}
+.mode-toggle{display:flex;align-items:center;background:var(--dark3);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.mode-btn{padding:4px 10px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Fira Code',monospace;font-size:10px;font-weight:600;transition:all .2s}
+.mode-btn.active{background:var(--cyan);color:#000}
+.mode-btn:hover:not(.active){background:var(--cyan-dim);color:var(--cyan)}
+.editor-area{flex:1;display:flex;overflow:hidden}
+#line-numbers{flex-shrink:0;width:52px;padding:12px 0;background:var(--dark2);border-left:1px solid var(--border);overflow:hidden;user-select:none;pointer-events:none}
+#line-numbers span{display:block;height:calc(var(--fs)*var(--lh));line-height:calc(var(--fs)*var(--lh));text-align:center;font-family:'Fira Code',monospace;font-size:11px;color:var(--text-dim);opacity:.4;transition:color .1s,opacity .1s,background .1s}
+#line-numbers span.cur{color:var(--cyan);opacity:1;background:rgba(0,212,255,.07)}
+#code-editor{flex:1;background:transparent;border:none;color:var(--text);font-family:'Fira Code',monospace;font-size:var(--fs);line-height:var(--lh);padding:12px 14px;resize:none;outline:none;tab-size:2;white-space:pre;overflow-wrap:normal;overflow-x:auto;overflow-y:auto;caret-color:var(--cyan)direction:ltr;text-align:left;}
+#output-panel{grid-column:2;grid-row:2}
+.output-content{flex:1;overflow:auto;padding:0;font-family:'Fira Code',monospace;font-size:12px;line-height:1.8}
+.output-content::-webkit-scrollbar{width:4px}
+.output-content::-webkit-scrollbar-thumb{background:var(--cyan-dim)}
+.output-text{padding:12px 16px;color:#7eeeff}
+.output-error{color:#ff6b6b}.output-info{color:var(--cyan-light)}.output-warn{color:#ffd700}.output-log{color:#7eeeff}
+.output-line{margin-bottom:2px;white-space:pre-wrap;word-break:break-all}
+#preview-frame{width:100%;height:100%;border:none;background:white}
+.preview-wrapper{width:100%;height:100%;position:relative}
+.preview-wrapper iframe{width:100%;height:100%;border:none}
+#explain-panel{grid-column:3;grid-row:1/3}
+.explain-content{flex:1;overflow-y:auto;padding:14px}
+.explain-content::-webkit-scrollbar{width:4px}
+.explain-content::-webkit-scrollbar-thumb{background:var(--cyan-dim)}
+.explain-block{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;font-size:12px;line-height:1.8;color:var(--text-dim);direction:rtl;text-align:right}
+.explain-block h4{color:var(--cyan);margin-bottom:8px;font-size:13px}
+.explain-block code{background:var(--dark4);padding:2px 6px;border-radius:4px;font-family:'Fira Code',monospace;color:var(--cyan-light);font-size:11px}
+.explain-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:6px}
+.badge-html{background:#2a1a0a;color:#f97316;border:1px solid #f9731633}
+.badge-css{background:#0a1828;color:#60a5fa;border:1px solid #60a5fa33}
+.badge-js{background:#2a2010;color:#f7df1e;border:1px solid #f7df1e33}
+.badge-resp{background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033}
+.badge-anim{background:#1a0a2a;color:#c084fc;border:1px solid #c084fc33}
+.badge-proj{background:#0a1a2a;color:var(--cyan-light);border:1px solid var(--cyan-dim)}
+
+/* AI Speak button */
+.ai-speak-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:1px solid var(--cyan-dim);background:var(--dark3);color:var(--cyan-light);cursor:pointer;font-family:'Cairo',sans-serif;font-size:11px;transition:all .2s;margin-top:8px;width:100%}
+.ai-speak-btn:hover{border-color:var(--cyan);background:var(--cyan-dim);color:var(--cyan)}
+.ai-speak-btn.speaking{border-color:#4ade80;color:#4ade80;background:rgba(74,222,128,.1);animation:pulse-speak 1s ease-in-out infinite}
+@keyframes pulse-speak{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}}
+.ai-loading{display:inline-flex;gap:3px;align-items:center}
+.ai-loading span{width:4px;height:4px;border-radius:50%;background:var(--cyan);animation:ail .7s ease-in-out infinite}
+.ai-loading span:nth-child(2){animation-delay:.15s}
+.ai-loading span:nth-child(3){animation-delay:.3s}
+@keyframes ail{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+/* Projects panel */
+.projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.project-card{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:all .2s;text-align:center}
+.project-card:hover{border-color:var(--cyan);box-shadow:0 0 14px var(--cyan-dim);transform:translateY(-2px)}
+.project-card .proj-icon{font-size:24px;margin-bottom:4px}
+.project-card .proj-name{font-size:11px;font-weight:700;color:var(--cyan-light)}
+.project-card .proj-desc{font-size:10px;color:var(--text-dim);margin-top:2px;line-height:1.4}
+.project-card .proj-tag{font-size:9px;margin-top:4px;padding:1px 6px;border-radius:8px;display:inline-block;background:var(--dark4);color:var(--text-dim);border:1px solid var(--border)}
+
+/* Output mode tabs */
+.output-tabs{display:flex;gap:2px;padding:4px 12px;background:var(--dark2);border-bottom:1px solid var(--border);flex-shrink:0;align-items:center}
+.output-tab{padding:4px 10px;font-size:10px;font-family:'Fira Code',monospace;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.output-tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.output-tab:hover:not(.active){color:var(--text)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--dark2);border:1px solid var(--cyan);border-radius:12px;padding:24px;max-width:600px;width:92%;box-shadow:0 0 50px var(--cyan-glow);direction:rtl;max-height:80vh;overflow-y:auto}
+.modal h3{color:var(--cyan);margin-bottom:12px;font-size:16px}
+.modal p{color:var(--text-dim);font-size:12px;line-height:1.8;margin-bottom:12px}
+.modal pre{background:var(--dark4);padding:12px;border-radius:8px;font-family:'Fira Code',monospace;font-size:11px;color:var(--cyan-light);overflow-x:auto;direction:ltr;text-align:left;margin-bottom:12px;max-height:300px;overflow-y:auto}
+.modal-close{padding:8px 20px;border-radius:8px;border:1px solid var(--cyan);background:var(--cyan);color:#000;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;font-size:13px}
+
+/* Notif */
+.notif{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark3);border:1px solid var(--cyan);padding:10px 20px;border-radius:8px;color:var(--cyan);font-size:12px;z-index:200;transition:transform .3s;box-shadow:0 0 20px var(--cyan-glow)}
+.notif.show{transform:translateX(-50%) translateY(0)}
+
+/* AI panel special */
+.ai-response-block{background:linear-gradient(135deg,var(--dark3),var(--dark4));border:1px solid var(--cyan-dim);border-radius:8px;padding:12px;margin-bottom:10px;font-size:12px;line-height:1.9;color:var(--text);direction:rtl;text-align:right;position:relative}
+.ai-response-block::before{content:'🤖 AI';position:absolute;top:-10px;right:12px;background:var(--dark);padding:2px 8px;border-radius:10px;font-size:9px;color:var(--cyan);border:1px solid var(--cyan-dim)}
+
+/* Stats badge */
+.stat-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.stat-chip{padding:2px 8px;border-radius:12px;font-size:9px;font-family:'Fira Code',monospace;background:var(--dark4);color:var(--text-dim);border:1px solid var(--border)}
+.stat-chip.hl{color:var(--cyan);border-color:var(--cyan-dim)}
+
+/* ===== COLOR PICKER ===== */
+.color-picker-wrap{position:relative;flex-shrink:0;}
+.color-picker-btn{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text-dim);cursor:pointer;font-family:'Fira Code',monospace;font-size:11px;font-weight:600;transition:all .2s;height:36px;}
+.color-picker-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim);}
+.color-picker-btn .cp-swatch{width:14px;height:14px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan-glow);flex-shrink:0;transition:background .3s,box-shadow .3s;}
+.color-picker-btn .cp-arrow{font-size:9px;opacity:.6;transition:transform .2s;}
+.color-picker-btn.open .cp-arrow{transform:rotate(180deg);}
+.color-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:14px;z-index:500;box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 20px rgba(0,0,0,.4);min-width:230px;}
+.color-dropdown.show{display:block;animation:cdDown .2s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes cdDown{0%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.95)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+.cp-label{font-family:'Fira Code',monospace;font-size:9px;color:var(--text-dim);letter-spacing:.08em;margin-bottom:10px;text-align:center;}
+.cp-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:10px;}
+.cp-swatch-item{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .18s;position:relative;}
+.cp-swatch-item:hover{transform:scale(1.25);border-color:rgba(255,255,255,.5);}
+.cp-swatch-item.active{border-color:#fff;transform:scale(1.2);}
+.cp-swatch-item.active::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+.cp-divider{height:1px;background:var(--border);margin:8px 0;}
+.cp-custom-row{display:flex;align-items:center;gap:8px;}
+.cp-custom-label{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim);}
+.cp-custom-input{width:36px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--dark3);cursor:pointer;padding:2px;}
+.cp-custom-hex{flex:1;padding:5px 8px;background:var(--dark4);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Fira Code',monospace;font-size:11px;outline:none;}
+.cp-custom-hex:focus{border-color:var(--cyan);}
+
+
+.lib-tab{flex:1;padding:6px;text-align:center;font-size:11px;font-weight:700;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;transition:all .2s;}
+.lib-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.lib-tab:hover:not(.active){color:var(--text);}
+#files-panel{display:none;flex:1;overflow-y:auto;padding:8px;flex-direction:column;gap:6px;}
+#files-panel.show{display:flex;}
+.file-drop-zone{border:2px dashed var(--cyan-dim);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-dim);font-size:12px;}
+.file-drop-zone:hover,.file-drop-zone.drag{border-color:var(--cyan);background:var(--cyan-dim);color:var(--cyan);}
+.file-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text-dim);cursor:pointer;transition:all .2s;position:relative;}
+.file-item:hover{border-color:var(--cyan);color:var(--cyan);}
+.file-item .fi-icon{font-size:16px;flex-shrink:0;}
+.file-item .fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-item .fi-size{font-size:9px;opacity:.6;font-family:'Fira Code',monospace;}
+.file-item .fi-del{color:#ff4444;opacity:0;transition:.2s;font-size:14px;padding:0 4px;}
+.file-item:hover .fi-del{opacity:1;}
+.file-item .fi-copy{color:var(--cyan);opacity:0;transition:.2s;font-size:11px;padding:0 4px;}
+.file-item:hover .fi-copy{opacity:1;}
+
+
+</style>
+</head>
+<body>
+
+<!-- ====== PRE-INTRO: COLOR PICKER SCREEN ====== -->
+<div id="preintro-screen">
+  <div id="pi-grid-bg"></div>
+  <div id="pi-scanline"></div>
+  <div id="pi-glow"></div>
+  <div class="pi-corner tl"></div>
+  <div class="pi-corner tr"></div>
+  <div class="pi-corner bl"></div>
+  <div class="pi-corner br"></div>
+  <div id="pi-box">
+    <div id="pi-logo">Ahmed<span id="pi-dot">.</span>afify</div>
+    <div id="pi-tagline">HTML · CSS · JavaScript Studio</div>
+    <div id="pi-rule"></div>
+    <div id="pi-title">// اختر لون الثيم قبل البدء</div>
+    <div id="pi-swatches"></div>
+    <div id="pi-custom-row">
+      <span id="pi-custom-label">HEX:</span>
+      <input type="color" id="pi-native" value="#00d4ff" oninput="piApplyColor(this.value)">
+      <input type="text" id="pi-hex-input" value="#00d4ff" maxlength="7" placeholder="#00d4ff" oninput="piApplyFromHex(this.value)">
+    </div>
+    <button id="pi-launch" onclick="piLaunch()"><span>▶ &nbsp;ابدأ الاستوديو</span></button>
+    <div id="pi-footer">© Ahmed.afify with sobhy — HTML/CSS Studio v3.0</div>
+  </div>
+</div>
+
+<!-- ====== INTRO ====== -->
+<div id="intro-screen" style="display:none;">
+  <div id="ig"></div><div id="iglow"></div><div id="iglow2"></div><div id="isc"></div>
+  <div class="ic tl"></div><div class="ic tr"></div><div class="ic bl"></div><div class="ic br"></div>
+  <div class="idl L">SYS::INIT_v3.0.0 // HTML5_RUNTIME // CSS3_ENGINE // JAVASCRIPT_V8</div>
+  <div class="idl R">MODULE::FLEXBOX // GRID // ANIMATIONS // TRANSITIONS // TRANSFORMS</div>
+  <div class="idl B">© Ahmed.afify with Sobhy — HTML/CSS Studio // Live Preview Engine // 2025</div>
+  <div id="ilw">
+    <svg id="ilm" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7eeeff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#0088aa"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ff6b00"/><stop offset="100%" stop-color="#ff9900"/></linearGradient>
+        <filter id="gf"><feGaussianBlur stdDeviation="2.5" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- HTML tag shape -->
+      <rect x="15" y="25" width="90" height="70" rx="6" fill="none" stroke="url(#g1)" stroke-width="1.5" opacity=".5" filter="url(#gf)"/>
+      <!-- < > brackets -->
+      <path d="M28 60 L42 48 M28 60 L42 72" stroke="url(#g2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#gf)"/>
+      <path d="M92 60 L78 48 M92 60 L78 72" stroke="url(#g2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#gf)"/>
+      <!-- CSS dots -->
+      <circle cx="60" cy="60" r="5" fill="#00d4ff" filter="url(#gf)"/>
+      <circle cx="60" cy="60" r="10" fill="none" stroke="rgba(var(--cr),var(--cg),var(--cb),.3)" stroke-width="1"/>
+      <circle cx="60" cy="60" r="16" fill="none" stroke="rgba(var(--cr),var(--cg),var(--cb),.15)" stroke-width="1"/>
+      <!-- lines -->
+      <line x1="50" y1="38" x2="70" y2="38" stroke="rgba(var(--cr),var(--cg),var(--cb),.3)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="46" y1="82" x2="74" y2="82" stroke="rgba(var(--cr),var(--cg),var(--cb),.2)" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+    <div id="iname">Ahmed<span id="idot">.</span>afify</div>
+    <div id="itag">HTML · CSS · JavaScript Studio</div>
+    <div id="irule"></div>
+    <div id="isub">🌐 HTML/CSS Studio — Live Preview Engine</div>
+    <div id="ibdg">
+      <span class="ibadge ht">HTML5</span>
+      <span class="ibadge cs">CSS3</span>
+      <span class="ibadge js">JavaScript</span>
+      <span class="ibadge ai">AI Explain</span>
+    </div>
+  </div>
+  <div id="ipw">
+    <div id="ipl"><span id="iptxt">INITIALIZING...</span><span id="ippct">0%</span></div>
+    <div id="ipt"><div id="ipb"></div></div>
+  </div>
+  <div id="iticker">▸ Loading Ahmed.afify & Sobhy HTML/CSS Studio...</div>
+  <div id="iskip" onclick="skipIntro()">[ SKIP INTRO ]</div>
+</div>
+
+<canvas id="bg-canvas"></canvas>
+
+<header>
+  <div class="logo">🌐 <span>HTML/CSS</span>Studio <small>v3.0</small></div>
+  <div class="header-tabs">
+    <button class="header-tab active" onclick="switchMainTab('editor',this)" data-ar="✏️ المحرر" data-en="✏️ Editor">✏️ المحرر</button>
+    <button class="header-tab" onclick="switchMainTab('projects',this)" data-ar="📁 مشاريع" data-en="📁 Projects">📁 مشاريع</button>
+    <button class="header-tab" onclick="switchMainTab('about',this)" data-ar="ℹ️ عن البرنامج" data-en="ℹ️ About">ℹ️ عن البرنامج</button>
+  </div>
+  <div class="header-right">
+
+    <!-- ===== COLOR PICKER ===== -->
+    <div class="color-picker-wrap" id="cp-wrap">
+      <button class="color-picker-btn" id="cp-btn" onclick="toggleColorPicker()">
+        <span class="cp-swatch" id="cp-btn-swatch"></span>
+        <span class="i18n" data-ar="لون الثيم" data-en="Theme Color">لون الثيم</span>
+        <span class="cp-arrow">▼</span>
+      </button>
+      <div class="color-dropdown" id="cp-dropdown">
+        <div class="cp-label">✦ اختر لون الثيم ✦</div>
+        <div class="cp-grid" id="cp-grid"></div>
+        <div class="cp-divider"></div>
+        <div class="cp-custom-row">
+          <span class="cp-custom-label">HEX:</span>
+          <input type="color" class="cp-custom-input" id="cp-native" value="#00d4ff" oninput="applyColorFromNative(this.value)">
+          <input type="text" class="cp-custom-hex" id="cp-hex-input" value="#00d4ff" maxlength="7" placeholder="#00d4ff" oninput="applyColorFromHex(this.value)">
+        </div>
+      </div>
+    </div>
+    <!-- ===== END COLOR PICKER ===== -->
+
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="lang-ar" onclick="setLang('ar')">العربية</button>
+      <div class="lang-divider"></div>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">English</button>
+    </div>
+    <div style="color:var(--text-dim);font-size:11px;font-family:'Fira Code',monospace;">HTML5 · CSS3 · JS</div>
+  </div>
+</header>
+
+<div class="main-layout">
+  <!-- LEFT: Library -->
+  <div class="panel" id="library-panel">
+    <div class="panel-header" style="flex-direction:column;gap:6px;padding-bottom:0">
+  <div style="display:flex;gap:4px;width:100%">
+    <div class="lib-tab active" id="ltab-lib" onclick="switchLibTab('lib')">📚 مكتبة</div>
+    <div class="lib-tab" id="ltab-files" onclick="switchLibTab('files')">📁 ملفاتي</div>
+  </div>
+</div>
+    <div class="search-box">
+      <input class="search-input" id="search-input" type="text" placeholder="🔍 ابحث عن كود..." oninput="searchCodes(this.value)">
+    </div>
+    <div class="library-scroll" id="library-list"></div>
+  </div>
+
+<div id="files-panel">
+  <div class="file-drop-zone" id="drop-zone" onclick="document.getElementById('file-upload-input').click()">
+    <div style="font-size:28px;margin-bottom:8px">📂</div>
+    <div>اسحب الملفات هنا أو اضغط للرفع</div>
+    <div style="font-size:10px;margin-top:4px;opacity:.6">صور · فيديو · صوت · ZIP · وكل الأنواع</div>
+  </div>
+  <input type="file" id="file-upload-input" multiple style="display:none" onchange="handleFileUpload(this.files)">
+  <div id="files-list"></div>
+</div>
+
+  <!-- CENTER TOP: Editor -->
+  <div class="panel" id="editor-panel">
+    <div class="panel-header">
+      <span>✏️</span> <span class="i18n" data-ar="محرر الكود" data-en="Code Editor">محرر الكود</span>
+      <div style="margin-right:auto;display:flex;gap:6px;align-items:center;">
+        <button class="btn run" onclick="runCode()" id="btn-run">▶ <span class="i18n" data-ar="تشغيل" data-en="Run">تشغيل</span></button>
+        <button class="btn orange" onclick="explainCode()">🤖 <span class="i18n" data-ar="شرح AI" data-en="AI Explain">شرح AI</span></button>
+        <button class="btn clear" onclick="clearEditor()">🗑️</button>
+        <button class="btn clear" onclick="copyCode()">📋</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="editor-tab active" id="file-tab-html" onclick="switchEditorTab('html')">index.html</div>
+      <div class="editor-tab" id="file-tab-css" onclick="switchEditorTab('css')">style.css</div>
+      <div class="editor-tab" id="file-tab-js" onclick="switchEditorTab('js')">script.js</div>
+      <span class="lang-indicator html" id="lang-indicator">HTML</span>
+      <div class="mode-toggle" style="margin-right:0">
+        <button class="mode-btn active" id="mode-full" onclick="setEditorMode('full')">🔗 Full</button>
+        <button class="mode-btn" id="mode-html" onclick="setEditorMode('html')">HTML</button>
+        <button class="mode-btn" id="mode-css" onclick="setEditorMode('css')">CSS</button>
+        <button class="mode-btn" id="mode-js" onclick="setEditorMode('js')">JS</button>
+      </div>
+    </div>
+    <div class="editor-area">
+      <div id="line-numbers"><span class="cur">1</span></div>
+      <textarea id="code-editor" spellcheck="false" placeholder="<!-- اكتب كود HTML هنا... -->" oninput="syncLN();updateExplain()"></textarea>
+    </div>
+  </div>
+
+  <!-- CENTER BOTTOM: Output / Preview -->
+  <div class="panel" id="output-panel">
+    <div class="panel-header">
+      <span>⚡</span> <span class="i18n" data-ar="المخرجات والمعاينة" data-en="Output & Preview">المخرجات والمعاينة</span>
+      <div style="margin-right:auto;display:flex;gap:6px;">
+        <button class="btn clear" style="padding:3px 8px;font-size:10px;" onclick="clearOutput()"><span class="i18n" data-ar="مسح" data-en="Clear">مسح</span></button>
+        <button class="btn" style="padding:3px 8px;font-size:10px;border-color:var(--orange);color:var(--orange);" onclick="openFullPreview()">🔗 <span class="i18n" data-ar="معاينة كاملة" data-en="Full Preview">معاينة كاملة</span></button>
+
+      </div>
+    </div>
+    <div class="output-tabs">
+      <div class="output-tab active" id="otab-preview" onclick="switchOutputTab('preview')">🖥️ Preview</div>
+      <div class="output-tab" id="otab-console" onclick="switchOutputTab('console')">⚡ Console</div>
+    </div>
+<button class="btn" style="padding:3px 8px;font-size:10px;border-color:#4ade80;color:#4ade80;" onclick="downloadProject()">⬇️ <span class="i18n" data-ar="تنزيل المشروع" data-en="Download">تنزيل المشروع</span></button>
+    <div class="preview-wrapper" id="preview-area">
+      <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
+    </div>
+    <div class="output-content" id="output-area" style="display:none">
+      <div class="output-text"><div class="output-line output-info">// اضغط ▶ تشغيل لرؤية المخرجات</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Explain -->
+  <div class="panel" id="explain-panel">
+    <div class="panel-header">🤖 <span class="i18n" data-ar="شرح الكود بالذكاء الاصطناعي" data-en="AI Code Explanation">شرح الكود بالذكاء الاصطناعي</span></div>
+    <div class="explain-content" id="explain-content">
+      <div class="explain-block">
+        <h4>📚 كيفية الاستخدام</h4>
+        <ul style="list-style:none;color:var(--text-dim);font-size:12px;line-height:2.2;">
+          <li>• اختر كوداً من المكتبة أو اكتب كودك</li>
+          <li>• اضغط <strong style="color:var(--cyan)">▶ تشغيل</strong> لمعاينة فورية</li>
+          <li>• اضغط <strong style="color:var(--orange)">🤖 شرح AI</strong> لشرح ذكي</li>
+          <li>• HTML + CSS + JS في ملفات منفصلة</li>
+          <li>• مشاريع جاهزة ✓</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title"></h3>
+    <p id="modal-desc"></p>
+    <pre id="modal-code"></pre>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="modal-close" onclick="insertFromModal()">📋 <span class="i18n" data-ar="إدراج في المحرر" data-en="Insert into Editor">إدراج في المحرر</span></button>
+      <button class="modal-close" style="background:transparent;color:var(--cyan);" onclick="closeModal()"><span class="i18n" data-ar="إغلاق" data-en="Close">إغلاق</span></button>
+    </div>
+  </div>
+</div>
+<div class="notif" id="notif"></div>
+
+<script>
+/* ===== PRE-INTRO COLOR PICKER LOGIC ===== */
+var piColors=[
+  {name:'سماوي (افتراضي)',hex:'#00d4ff'},
+  {name:'أخضر نيون',hex:'#00ff88'},
+  {name:'بنفسجي',hex:'#a855f7'},
+  {name:'وردي',hex:'#ff2d78'},
+  {name:'برتقالي',hex:'#ff6b00'},
+  {name:'أصفر ذهبي',hex:'#ffd700'},
+  {name:'أخضر ليموني',hex:'#84cc16'},
+  {name:'أزرق ملكي',hex:'#3b82f6'},
+  {name:'فيروزي',hex:'#14b8a6'},
+  {name:'أحمر',hex:'#ef4444'},
+  {name:'وردي فاتح',hex:'#f472b6'},
+  {name:'أبيض',hex:'#e8f4ff'},
+];
+var piSelectedColor='#00d4ff';
+
+function piHexToRgb(hex){
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return{r:r,g:g,b:b};
+}
+
+function piApplyColor(hex){
+  piSelectedColor=hex;
+  // Update CSS variables IMMEDIATELY so preintro and intro both reflect the color
+  var c=piHexToRgb(hex);
+  var root=document.documentElement;
+  root.style.setProperty('--cyan',hex);
+  root.style.setProperty('--cyan-light','rgb('+Math.min(255,c.r+80)+','+Math.min(255,c.g+50)+','+Math.min(255,c.b+30)+')');
+  root.style.setProperty('--cyan-dim',hex+'33');
+  root.style.setProperty('--cyan-glow',hex+'66');
+  root.style.setProperty('--border',hex+'25');
+  root.style.setProperty('--cr',c.r);
+  root.style.setProperty('--cg',c.g);
+  root.style.setProperty('--cb',c.b);
+  // Update glow in preintro
+  var glowEl=document.getElementById('pi-glow');
+  if(glowEl)glowEl.style.background='radial-gradient(circle,'+hex+'22 0%,rgba(0,0,0,0) 70%)';
+  // Sync native + hex inputs
+  var ni=document.getElementById('pi-native');if(ni)ni.value=hex;
+  var hi=document.getElementById('pi-hex-input');if(hi)hi.value=hex;
+  // Update swatch selection
+  document.querySelectorAll('.pi-swatch').forEach(function(el){
+    el.classList.toggle('selected',el.dataset.hex===hex);
+  });
+  // Also sync the in-app color picker so they match after intro
+  currentThemeColor=hex;
+  var cpSw=document.getElementById('cp-btn-swatch');
+  if(cpSw){cpSw.style.background=hex;cpSw.style.boxShadow='0 0 8px '+hex+'99';}
+  var cpNi=document.getElementById('cp-native');if(cpNi)cpNi.value=hex;
+  var cpHi=document.getElementById('cp-hex-input');if(cpHi)cpHi.value=hex;
+}
+
+function piApplyFromHex(val){
+  if(/^#[0-9a-fA-F]{6}$/.test(val)){
+    document.getElementById('pi-native').value=val;
+    piApplyColor(val);
+  }
+}
+
+function piBuildSwatches(){
+  var grid=document.getElementById('pi-swatches');if(!grid)return;
+  grid.innerHTML='';
+  piColors.forEach(function(c){
+    var el=document.createElement('div');
+    el.className='pi-swatch'+(c.hex===piSelectedColor?' selected':'');
+    el.style.cssText='background:'+c.hex+';box-shadow:0 0 10px '+c.hex+'88;';
+    el.title=c.name;
+    el.dataset.hex=c.hex;
+    el.onclick=function(){piApplyColor(c.hex);};
+    grid.appendChild(el);
+  });
+}
+
+function piLaunch(){
+  // Fade out preintro, then show intro
+  var ps=document.getElementById('preintro-screen');
+  ps.classList.add('fade-out');
+  setTimeout(function(){
+    ps.style.display='none';
+    // Show intro screen and run intro animation
+    var intro=document.getElementById('intro-screen');
+    intro.style.display='flex';
+    runIntroAnimation();
+  },700);
+}
+
+// Build preintro swatches on load
+window.addEventListener('DOMContentLoaded',function(){
+  piBuildSwatches();
+  piApplyColor(piSelectedColor);
+});
+
+/* ===== INTRO ANIMATION (runs after piLaunch) ===== */
+function runIntroAnimation(){
+  var s=document.getElementById('intro-screen');if(!s)return;
+  var snips=['<div>','</div>','<h1>','<p>','.class{','color:','display:','flex','grid','@media','border:','margin:','padding:','font-size:','background:','transform:','animation:','<section>','<header>','var(--','linear-gradient('];
+  for(var r=0;r<16;r++){var c=document.createElement('div');c.className='irain';c.style.left=(Math.random()*95)+'%';c.style.fontSize=(8+Math.random()*5)+'px';c.style.animationDuration=(5+Math.random()*9)+'s';c.style.animationDelay=(Math.random()*7)+'s';c.style.opacity=(0.06+Math.random()*0.14);var txt='';for(var rr=0;rr<20;rr++)txt+=snips[Math.floor(Math.random()*snips.length)]+' ';c.textContent=txt;s.appendChild(c);}
+  for(var p=0;p<26;p++){var par=document.createElement('div');par.className='ipar';var sz=2+Math.random()*5;var cr=getComputedStyle(document.documentElement).getPropertyValue('--cr').trim();var cg=getComputedStyle(document.documentElement).getPropertyValue('--cg').trim();var cb=getComputedStyle(document.documentElement).getPropertyValue('--cb').trim();par.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;background:rgba('+cr+','+cg+','+cb+','+(0.25+Math.random()*0.55).toFixed(2)+');animation-duration:'+(4+Math.random()*9)+'s;animation-delay:'+(Math.random()*5)+'s;box-shadow:0 0 '+(sz*2.5)+'px rgba('+cr+','+cg+','+cb+',0.7);';s.appendChild(par);}
+  [[7,10],[84,7],[4,73],[87,66],[44,4],[49,87],[19,43],[77,38]].forEach(function(pos,i){var h=document.createElement('div');h.className='ihex';var sz=28+Math.random()*55;var cr2=getComputedStyle(document.documentElement).getPropertyValue('--cr').trim();var cg2=getComputedStyle(document.documentElement).getPropertyValue('--cg').trim();var cb2=getComputedStyle(document.documentElement).getPropertyValue('--cb').trim();h.style.cssText='left:'+pos[0]+'%;top:'+pos[1]+'%;width:'+sz+'px;height:'+sz+'px;animation-duration:'+(12+i*6)+'s;animation-delay:'+(i*0.5)+'s;border-color:rgba('+cr2+','+cg2+','+cb2+','+(0.04+Math.random()*0.07)+');';s.appendChild(h);});
+  s.addEventListener('click',function(e){var ring=document.createElement('div');ring.className='iring';var sz=180+Math.random()*240;var cr3=getComputedStyle(document.documentElement).getPropertyValue('--cr').trim();var cg3=getComputedStyle(document.documentElement).getPropertyValue('--cg').trim();var cb3=getComputedStyle(document.documentElement).getPropertyValue('--cb').trim();ring.style.cssText='left:'+(e.clientX-sz/2)+'px;top:'+(e.clientY-sz/2)+'px;width:'+sz+'px;height:'+sz+'px;border:1px solid rgba('+cr3+','+cg3+','+cb3+',0.3);animation:re 1.3s ease-out forwards;';s.appendChild(ring);setTimeout(function(){ring.remove();},1400);});
+  var cur=document.createElement('div');cur.style.cssText='position:fixed;width:18px;height:18px;pointer-events:none;border:1.5px solid var(--cyan);border-radius:50%;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan);mix-blend-mode:screen;';
+  var cd=document.createElement('div');cd.style.cssText='position:fixed;width:4px;height:4px;pointer-events:none;background:var(--cyan);border-radius:50%;z-index:99999;transform:translate(-50%,-50%);';
+  document.body.appendChild(cur);document.body.appendChild(cd);
+  document.addEventListener('mousemove',function(e){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';cd.style.left=e.clientX+'px';cd.style.top=e.clientY+'px';});
+  var bar=document.getElementById('ipb'),pctEl=document.getElementById('ippct'),lblEl=document.getElementById('iptxt'),tick=document.getElementById('iticker');
+  var cp=0;
+  var stgs=[{p:12,l:'BOOT::SYSTEM',t:'▸ Initializing Ahmed.afify & Sobhy HTML/CSS Studio...'},{p:28,l:'LOAD::FONTS',t:'▸ Loading Orbitron · Cairo · Fira Code fonts...'},{p:44,l:'INIT::PREVIEW',t:'▸ Building Live Preview Sandbox Engine...'},{p:60,l:'LOAD::EDITOR',t:'▸ Setting up Code Editor with Line Numbers...'},{p:75,l:'INIT::AI',t:'▸ Connecting AI Explanation Engine...'},{p:90,l:'READY::LIBS',t:'▸ Loading HTML5 · CSS3 · JavaScript support...'},{p:100,l:'LAUNCH::READY',t:'▸ Ahmed.afify & Sobhy HTML/CSS Studio — All systems go ✓'}];
+  var si=0;
+  function mvp(t2,cb){function st(){cp=Math.min(cp+1.4,t2);if(bar)bar.style.width=cp+'%';if(pctEl)pctEl.textContent=Math.round(cp)+'%';if(cp<t2)requestAnimationFrame(st);else if(cb)cb();}requestAnimationFrame(st);}
+  function ns2(){if(si>=stgs.length)return;var st2=stgs[si];if(lblEl)lblEl.textContent=st2.l;if(tick)tick.textContent=st2.t;mvp(st2.p,function(){si++;if(si<stgs.length)setTimeout(ns2,320);else setTimeout(launch,600);});}
+  setTimeout(ns2,2400);
+  var de=document.getElementById('idot'),don=true;
+  var di=setInterval(function(){if(!document.getElementById('intro-screen')||document.getElementById('intro-screen').style.display==='none'){clearInterval(di);return;}don=!don;if(de)de.style.opacity=don?'1':'0.15';},480);
+  function launch(){if(bar)bar.style.width='100%';if(pctEl)pctEl.textContent='100%';if(lblEl)lblEl.textContent='LAUNCH::COMPLETE';if(tick)tick.textContent='✓ Welcome — Ahmed.afify & Sobhy HTML/CSS Studio!';setTimeout(function(){s.classList.add('fade-out');setTimeout(function(){s.style.display='none';cur.remove();cd.remove();},950);},700);}
+  window.skipIntro=function(){s.classList.add('fade-out');setTimeout(function(){s.style.display='none';cur.remove();cd.remove();},950);};
+}
+
+/* ===== COLOR PICKER LOGIC (in-app) ===== */
+var themeColors=[
+  {name:'سماوي (افتراضي)',hex:'#00d4ff'},
+  {name:'أخضر نيون',hex:'#00ff88'},
+  {name:'بنفسجي',hex:'#a855f7'},
+  {name:'وردي',hex:'#ff2d78'},
+  {name:'برتقالي',hex:'#ff6b00'},
+  {name:'أصفر ذهبي',hex:'#ffd700'},
+  {name:'أخضر ليموني',hex:'#84cc16'},
+  {name:'أزرق ملكي',hex:'#3b82f6'},
+  {name:'فيروزي',hex:'#14b8a6'},
+  {name:'أحمر',hex:'#ef4444'},
+  {name:'وردي فاتح',hex:'#f472b6'},
+  {name:'أبيض',hex:'#e8f4ff'},
+];
+var currentThemeColor='#00d4ff';
+
+function hexToRgb(hex){
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return{r:r,g:g,b:b};
+}
+function lightenHex(hex,factor){
+  var c=hexToRgb(hex);
+  return 'rgb('+Math.min(255,Math.round(c.r+(255-c.r)*factor))+','+Math.min(255,Math.round(c.g+(255-c.g)*factor))+','+Math.min(255,Math.round(c.b+(255-c.b)*factor))+')';
+}
+function applyThemeColor(hex){
+  currentThemeColor=hex;
+  var c=hexToRgb(hex);
+  var r=document.documentElement;
+  r.style.setProperty('--cyan',hex);
+  r.style.setProperty('--cyan-light','rgb('+Math.min(255,c.r+80)+','+Math.min(255,c.g+50)+','+Math.min(255,c.b+30)+')');
+  r.style.setProperty('--cyan-dim',hex+'33');
+  r.style.setProperty('--cyan-glow',hex+'66');
+  r.style.setProperty('--border',hex+'25');
+  r.style.setProperty('--cr',c.r);
+  r.style.setProperty('--cg',c.g);
+  r.style.setProperty('--cb',c.b);
+  // Update button swatch
+  var sw=document.getElementById('cp-btn-swatch');
+  if(sw){sw.style.background=hex;sw.style.boxShadow='0 0 8px '+hex+'99';}
+  // Update native color input
+  var ni=document.getElementById('cp-native');if(ni)ni.value=hex;
+  var hi=document.getElementById('cp-hex-input');if(hi)hi.value=hex;
+  // Update active swatch in grid
+  document.querySelectorAll('.cp-swatch-item').forEach(function(el){
+    el.classList.toggle('active',el.dataset.hex===hex);
+  });
+  showNotif('🎨 '+(currentLang==='ar'?'تم تغيير لون الثيم':'Theme color changed!'));
+}
+
+function buildColorGrid(){
+  var grid=document.getElementById('cp-grid');if(!grid)return;
+  grid.innerHTML='';
+  themeColors.forEach(function(c){
+    var el=document.createElement('div');
+    el.className='cp-swatch-item'+(c.hex===currentThemeColor?' active':'');
+    el.style.background=c.hex;
+    el.style.boxShadow='0 0 6px '+c.hex+'66';
+    el.title=c.name;
+    el.dataset.hex=c.hex;
+    el.onclick=function(){applyThemeColor(c.hex);};
+    grid.appendChild(el);
+  });
+}
+
+function toggleColorPicker(){
+  var dd=document.getElementById('cp-dropdown');
+  var btn=document.getElementById('cp-btn');
+  var isOpen=dd.classList.contains('show');
+  if(isOpen){dd.classList.remove('show');btn.classList.remove('open');}
+  else{buildColorGrid();dd.classList.add('show');btn.classList.add('open');}
+}
+
+function applyColorFromNative(hex){
+  document.getElementById('cp-hex-input').value=hex;
+  applyThemeColor(hex);
+  buildColorGrid();
+}
+function applyColorFromHex(val){
+  if(/^#[0-9a-fA-F]{6}$/.test(val)){
+    document.getElementById('cp-native').value=val;
+    applyThemeColor(val);
+    buildColorGrid();
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('cp-wrap');
+  if(wrap&&!wrap.contains(e.target)){
+    var dd=document.getElementById('cp-dropdown');
+    var btn=document.getElementById('cp-btn');
+    if(dd)dd.classList.remove('show');
+    if(btn)btn.classList.remove('open');
+  }
+});
+
+// Init swatch color on load
+window.addEventListener('DOMContentLoaded',function(){
+  var sw=document.getElementById('cp-btn-swatch');
+  if(sw){sw.style.background=currentThemeColor;sw.style.boxShadow='0 0 8px '+currentThemeColor+'99';}
+});
+/* ===== END COLOR PICKER LOGIC ===== */
+
+/* ===== BG CANVAS ===== */
+var canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d'),dots=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}resize();window.addEventListener('resize',resize);
+function initDots(){dots=[];var n=Math.floor(canvas.width*canvas.height/9000);for(var i=0;i<n;i++)dots.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,alpha:Math.random()*.5+.1,pulse:Math.random()*Math.PI*2});}
+initDots();
+function animateDots(){
+  var cr=getComputedStyle(document.documentElement).getPropertyValue('--cr').trim();
+  var cg=getComputedStyle(document.documentElement).getPropertyValue('--cg').trim();
+  var cb=getComputedStyle(document.documentElement).getPropertyValue('--cb').trim();
+  ctx.clearRect(0,0,canvas.width,canvas.height);dots.forEach(function(d){d.x+=d.vx;d.y+=d.vy;d.pulse+=.02;if(d.x<0)d.x=canvas.width;if(d.x>canvas.width)d.x=0;if(d.y<0)d.y=canvas.height;if(d.y>canvas.height)d.y=0;var a=d.alpha*(.6+.4*Math.sin(d.pulse));ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fillStyle='rgba('+cr+','+cg+','+cb+','+a+')';ctx.fill();});for(var i=0;i<dots.length;i++)for(var j=i+1;j<dots.length;j++){var dx=dots[i].x-dots[j].x,dy=dots[i].y-dots[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<100){ctx.beginPath();ctx.moveTo(dots[i].x,dots[i].y);ctx.lineTo(dots[j].x,dots[j].y);ctx.strokeStyle='rgba('+cr+','+cg+','+cb+','+(1-dist/100)*.1+')';ctx.lineWidth=.5;ctx.stroke();}}requestAnimationFrame(animateDots);}
+animateDots();
+
+/* ===== LANGUAGE ===== */
+var currentLang='ar';
+function setLang(lg){
+  currentLang=lg;document.documentElement.lang=lg;document.documentElement.dir=lg==='ar'?'rtl':'ltr';
+  document.getElementById('lang-ar').classList.toggle('active',lg==='ar');
+  document.getElementById('lang-en').classList.toggle('active',lg==='en');
+  document.querySelectorAll('.i18n').forEach(function(el){var v=el.getAttribute('data-'+lg);if(v)el.innerHTML=v;});
+  document.querySelectorAll('.header-tab').forEach(function(b){var v=b.getAttribute('data-'+lg);if(v)b.innerHTML=v;});
+  var si=document.getElementById('search-input');
+  if(si)si.placeholder=lg==='ar'?'🔍 ابحث عن كود...':'🔍 Search code...';
+  renderLib(codeLib);
+  var fc=document.querySelector('.category');if(fc)fc.classList.add('open');
+  showDefExplain();
+}
+function showDefExplain(){
+  var c=document.getElementById('explain-content');
+  c.innerHTML=currentLang==='ar'?
+  '<div class="explain-block"><h4>📚 كيفية الاستخدام</h4><ul style="list-style:none;color:var(--text-dim);font-size:12px;line-height:2.2;"><li>• اختر كوداً من المكتبة أو اكتب كودك</li><li>• اضغط <strong style="color:var(--cyan)">▶ تشغيل</strong> لمعاينة فورية</li><li>• اضغط <strong style="color:var(--orange)">🤖 شرح AI</strong> لشرح ذكي</li><li>• HTML + CSS + JS في ملفات منفصلة</li><li>• مشاريع جاهزة ✓</li></ul></div>':
+  '<div class="explain-block"><h4>📚 How to Use</h4><ul style="list-style:none;color:var(--text-dim);font-size:12px;line-height:2.2;"><li>• Pick a snippet from the library</li><li>• Press <strong style="color:var(--cyan)">▶ Run</strong> for live preview</li><li>• Press <strong style="color:var(--orange)">🤖 AI Explain</strong> for smart analysis</li><li>• HTML + CSS + JS in separate files</li><li>• Ready-made projects ✓</li></ul></div>';
+}
+
+/* ===== EDITOR STATE ===== */
+var currentEditorTab='html',editorMode='full';
+var editorFiles = { html: '', css: '', js: '', server: '' };
+var editorHistory = { html: [], css: [], js: [], server: [] };
+var hasServerFile = false;
+
+function switchEditorTab(tab){
+  // Save current
+  editorFiles[currentEditorTab]=document.getElementById('code-editor').value;
+  currentEditorTab=tab;
+  document.getElementById('code-editor').value=editorFiles[tab];
+  ['html','css','js'].forEach(function(t){
+    var el=document.getElementById('file-tab-'+t);
+    if(el)el.classList.toggle('active',t===tab);
+  });
+  var ind=document.getElementById('lang-indicator');
+  var map={html:{cls:'html',txt:'HTML'},css:{cls:'css',txt:'CSS'},js:{cls:'js',txt:'JavaScript'}};
+  var info=map[tab];ind.className='lang-indicator '+info.cls;ind.textContent=info.txt;
+  syncLN();
+}
+function setEditorMode(mode){
+  editorMode=mode;
+  ['full','html','css','js'].forEach(function(m){
+    var btn=document.getElementById('mode-'+m);
+    if(btn)btn.classList.toggle('active',m===mode);
+  });
+}
+
+/* ===== LINE NUMBERS ===== */
+function syncLN(){
+  var ed=document.getElementById('code-editor');
+  var gutter=document.getElementById('line-numbers');
+  var lines=ed.value.split('\n');
+  var activeLine=ed.value.substring(0,ed.selectionStart).split('\n').length;
+  var html='';
+  for(var i=1;i<=lines.length;i++){html+='<span'+(i===activeLine?' class="cur"':'')+'>'+i+'</span>';}
+  gutter.innerHTML=html;
+  gutter.scrollTop=ed.scrollTop;
+}
+syncLN();
+var ce=document.getElementById('code-editor');
+['input','keyup','click','mouseup'].forEach(function(ev){ce.addEventListener(ev,syncLN);});
+ce.addEventListener('scroll',function(){document.getElementById('line-numbers').scrollTop=this.scrollTop;});
+ce.addEventListener('keydown',function(e){
+  if(e.key==='Tab'){e.preventDefault();var s=e.target.selectionStart,end=e.target.selectionEnd;e.target.value=e.target.value.substring(0,s)+'  '+e.target.value.substring(end);e.target.selectionStart=e.target.selectionEnd=s+2;syncLN();}
+});
+
+/* ===== OUTPUT TABS ===== */
+var currentOutputTab='preview';
+/* ===== RESIZABLE PANELS ===== */
+(function(){
+  var isResizing=false;
+  var startY=0;
+  var startOutH=0;
+  var startEdH=0;
+  var outputPanel=document.getElementById('output-panel');
+  var editorPanel=document.getElementById('editor-panel');
+
+  // إنشاء شريط السحب
+  var resizeBar=document.createElement('div');
+  resizeBar.style.cssText='height:8px;background:transparent;border-top:2px solid var(--cyan-dim);cursor:ns-resize;flex-shrink:0;transition:border-color .2s,background .2s;position:relative;z-index:10;display:flex;align-items:center;justify-content:center;';
+  resizeBar.innerHTML='<div style="width:40px;height:3px;border-radius:3px;background:var(--cyan-dim);transition:background .2s;"></div>';
+  resizeBar.title='اسحب لتغيير الحجم ← دابل كليك للإعادة';
+
+  resizeBar.addEventListener('mouseenter',function(){
+    resizeBar.style.borderColor='var(--cyan)';
+    resizeBar.querySelector('div').style.background='var(--cyan)';
+  });
+  resizeBar.addEventListener('mouseleave',function(){
+    if(!isResizing){
+      resizeBar.style.borderColor='var(--cyan-dim)';
+      resizeBar.querySelector('div').style.background='var(--cyan-dim)';
+    }
+  });
+
+  outputPanel.insertBefore(resizeBar,outputPanel.firstChild);
+
+  resizeBar.addEventListener('mousedown',function(e){
+    isResizing=true;
+    startY=e.clientY;
+    startOutH=outputPanel.offsetHeight;
+    startEdH=editorPanel.offsetHeight;
+    document.body.style.cursor='ns-resize';
+    document.body.style.userSelect='none';
+    resizeBar.style.borderColor='var(--cyan)';
+    resizeBar.querySelector('div').style.background='var(--cyan)';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove',function(e){
+    if(!isResizing)return;
+    var diff=startY-e.clientY;
+    var totalH=startOutH+startEdH;
+    var newOutH=Math.min(Math.max(startOutH+diff,80),totalH-80);
+    var newEdH=totalH-newOutH;
+    outputPanel.style.height=newOutH+'px';
+    editorPanel.style.height=newEdH+'px';
+    // إلغاء grid-template-rows
+    document.querySelector('.main-layout').style.gridTemplateRows='none';
+  });
+
+  document.addEventListener('mouseup',function(){
+    if(!isResizing)return;
+    isResizing=false;
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    resizeBar.style.borderColor='var(--cyan-dim)';
+    resizeBar.querySelector('div').style.background='var(--cyan-dim)';
+  });
+
+  // دابل كليك للرجوع للحجم الافتراضي
+  resizeBar.addEventListener('dblclick',function(){
+    outputPanel.style.height='';
+    editorPanel.style.height='';
+    document.querySelector('.main-layout').style.gridTemplateRows='';
+    showNotif('↩️ تم إعادة الحجم الافتراضي');
+  });
+})();
+function switchOutputTab(tab){
+  currentOutputTab=tab;
+  document.getElementById('otab-preview').classList.toggle('active',tab==='preview');
+  document.getElementById('otab-console').classList.toggle('active',tab==='console');
+  document.getElementById('preview-area').style.display=tab==='preview'?'':'none';
+  document.getElementById('output-area').style.display=tab==='console'?'flex':'none';
+}
+
+/* ===== RUN CODE ===== */
+function runCode(){
+  editorFiles[currentEditorTab]=document.getElementById('code-editor').value;
+  var html=editorFiles.html;
+  var css=editorFiles.css;
+  var js=editorFiles.js;
+  var fullHtml='';
+
+  if(editorMode==='full'){
+    // الثلاث لغات تشتغل معاً
+    fullHtml='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+css+'</style></head><body>'+html+'<script>'+js+'<\/script></body></html>';
+  } else if(editorMode==='html'){
+    // HTML فقط بدون CSS أو JS
+    fullHtml='<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>'+html+'</body></html>';
+  } else if(editorMode==='css'){
+    // CSS فقط مع HTML الموجود
+    fullHtml='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+css+'</style></head><body>'+html+'</body></html>';
+  } else if(editorMode==='js'){
+    // JS فقط مع HTML الموجود
+    fullHtml='<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>'+html+'<script>'+js+'<\/script></body></html>';
+  }
+
+  var frame=document.getElementById('preview-frame');
+var consoleScript='<script>(function(){var _l=console.log,_e=console.error,_w=console.warn,_i=console.info;function s(t,a){var m=Array.from(a).map(function(x){return typeof x==="object"?JSON.stringify(x):String(x);}).join(" ");window.parent.postMessage({type:"console",level:t,msg:m},"*");}console.log=function(){s("log",arguments);_l.apply(console,arguments);};console.error=function(){s("error",arguments);_e.apply(console,arguments);};console.warn=function(){s("warn",arguments);_w.apply(console,arguments);};console.info=function(){s("info",arguments);_i.apply(console,arguments);};})()\x3c/script>';
+fullHtml=fullHtml.replace('<body>','<body>'+consoleScript);
+// استبدال أسماء الملفات المرفوعة تلقائياً
+if(typeof uploadedFiles !== 'undefined'){
+  Object.keys(uploadedFiles).forEach(function(name){
+    var url = uploadedFiles[name].url;
+    // استبدال في src و href
+    var escaped = name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    var regex = new RegExp('(src|href)=["\']' + escaped + '["\']','g');
+    fullHtml = fullHtml.replace(regex, '$1="' + url + '"');
+  });
+}
+  frame.srcdoc=fullHtml;
+  if(currentOutputTab==='console')switchOutputTab('preview');
+  showNotif(currentLang==='ar'?'✅ تم التشغيل':'✅ Running!');
+  sendPreviewUpdate && sendPreviewUpdate();
+  updateExplain();
+}
+
+function openFullPreview(){
+  editorFiles[currentEditorTab] = document.getElementById('code-editor').value;
+  var html = editorFiles.html, css = editorFiles.css, js = editorFiles.js;
+
+  // استبدال الملفات المرفوعة
+  if(typeof uploadedFiles !== 'undefined'){
+    Object.keys(uploadedFiles).forEach(function(name){
+      var url = uploadedFiles[name].url;
+      var escaped = name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      var regex = new RegExp('(src|href)=["\']'+escaped+'["\']','g');
+      html = html.replace(regex,'$1="'+url+'"');
+    });
+  }
+
+  // احفظ الكود الحالي في localStorage عشان التاب الجديد يقراه فوراً
+  try {
+    localStorage.setItem('__preview_html', html);
+    localStorage.setItem('__preview_css', css);
+    localStorage.setItem('__preview_js', js);
+  } catch(e) {}
+
+  // أنشئ الـ channel لو مش موجود
+  if(!window._previewChannel){
+    window._previewChannel = new BroadcastChannel('studio_preview_sync');
+    window._previewChannel.onmessage = function(e){
+      if(e.data && e.data.type === 'request') sendPreviewUpdate();
+    };
+  }
+
+  var previewPage = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    '<style>' +
+    'body{margin:0;}' +
+    '#__sync-bar{position:fixed;top:0;left:0;right:0;background:#0a1a2e;color:#00d4ff;' +
+    'font-family:monospace;font-size:11px;padding:4px 12px;z-index:9999;' +
+    'display:flex;align-items:center;gap:8px;border-bottom:1px solid #00d4ff44;}' +
+    '.sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 1.5s infinite;}' +
+    '@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}' +
+    '#__frame{position:fixed;top:28px;left:0;right:0;bottom:0;border:none;width:100%;height:calc(100% - 28px);}' +
+    '</style></head><body>' +
+    '<div id="__sync-bar">' +
+    '  <span class="sync-dot"></span>' +
+    '  <span id="__status">🔗 Live Sync — متصل</span>' +
+    '</div>' +
+    '<iframe id="__frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>' +
+    '<script>(function(){' +
+    // قراءة الكود من localStorage فوراً
+    '  var html = localStorage.getItem("__preview_html") || "";' +
+    '  var css  = localStorage.getItem("__preview_css")  || "";' +
+    '  var js   = localStorage.getItem("__preview_js")   || "";' +
+    '  var frame = document.getElementById("__frame");' +
+    '  function render(h, c, j){' +
+    '    var full = "<!DOCTYPE html><html><head><meta charset=\\"UTF-8\\"><style>" + c + "</style></head><body>" + h + "<script>" + j + "<\\/script></body></html>";' +
+    '    frame.srcdoc = full;' +
+    '  }' +
+    '  render(html, css, js);' +
+    // الاشتراك في التحديثات اللاحقة
+    '  var ch = new BroadcastChannel("studio_preview_sync");' +
+    '  ch.postMessage({type:"request"});' +
+    '  ch.onmessage = function(e){' +
+    '    if(e.data && e.data.type === "update"){' +
+    '      render(e.data.html, e.data.css, e.data.js);' +
+    '      var st = document.getElementById("__status");' +
+    '      if(st) st.textContent = "🔗 Live Sync — آخر تحديث: " + new Date().toLocaleTimeString();' +
+    '    }' +
+    '  };' +
+    '})();<\/script>' +
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if(w){ w.document.open(); w.document.write(previewPage); w.document.close(); }
+
+  sendPreviewUpdate();
+}
+
+function sendPreviewUpdate(){
+  if(!window._previewChannel) return;
+  editorFiles[currentEditorTab]=document.getElementById('code-editor').value;
+  var html=editorFiles.html, css=editorFiles.css, js=editorFiles.js;
+  // استبدال الملفات المرفوعة
+  if(typeof uploadedFiles !== 'undefined'){
+    Object.keys(uploadedFiles).forEach(function(name){
+      var url=uploadedFiles[name].url;
+      var escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      var regex=new RegExp('(src|href)=["\']'+escaped+'["\']','g');
+      html=html.replace(regex,'$1="'+url+'"');
+    });
+  }
+  window._previewChannel.postMessage({type:'update', html:html, css:css, js:js});
+}
+function clearEditor(){document.getElementById('code-editor').value='';editorFiles[currentEditorTab]='';syncLN();showDefExplain();}
+function clearOutput(){document.getElementById('output-area').innerHTML='<div class="output-text"><div class="output-line output-info">// cleared</div></div>';}
+function copyCode(){navigator.clipboard.writeText(document.getElementById('code-editor').value).then(function(){showNotif(currentLang==='ar'?'📋 تم النسخ!':'📋 Copied!');});}
+function showNotif(msg){var n=document.getElementById('notif');n.innerHTML=msg;n.classList.add('show');clearTimeout(n._t);n._t=setTimeout(function(){n.classList.remove('show');},2500);}
+window.addEventListener('message',function(e){
+  if(!e.data||e.data.type!=='console')return;
+  var area=document.getElementById('output-area');
+  var map={log:'output-log',error:'output-error',warn:'output-warn',info:'output-info'};
+  var div=document.createElement('div');
+  div.className='output-line '+(map[e.data.level]||'output-log');
+  div.textContent='> '+e.data.msg;
+  var inner=area.querySelector('.output-text');
+  if(!inner){inner=document.createElement('div');inner.className='output-text';area.appendChild(inner);}
+  inner.appendChild(div);
+  switchOutputTab('console');
+});
+
+/* ===== AI EXPLAIN via Anthropic API ===== */
+var isSpeaking=false,currentUtterance=null,aiExplainCache={};
+function explainCode(){
+  editorFiles[currentEditorTab]=document.getElementById('code-editor').value;
+  var code=editorFiles.html+(editorFiles.css?'\n\n/* CSS */\n'+editorFiles.css:'')+(editorFiles.js?'\n\n// JS\n'+editorFiles.js:'');
+  if(!code.trim()){showNotif(currentLang==='ar'?'⚠️ الكود فارغ!':'⚠️ Code is empty!');return;}
+  var ec=document.getElementById('explain-content');
+  ec.innerHTML='<div class="explain-block"><div class="ai-loading"><span></span><span></span><span></span></div> <span style="color:var(--text-dim);font-size:12px;">'+(currentLang==='ar'?'جاري تحليل الكود بالذكاء الاصطناعي...':'Analyzing code with AI...')+'</span></div>';
+  var cacheKey=code.substring(0,200);
+  if(aiExplainCache[cacheKey]){renderAIExplain(aiExplainCache[cacheKey]);return;}
+  var prompt=currentLang==='ar'?
+    'أنت خبير في HTML وCSS وJavaScript. حلل الكود التالي واشرحه بالعربية بشكل مفصل وجميل. ابدأ بعنوان "📋 ملخص الكود" ثم "🔑 العناصر الرئيسية" ثم "🎨 التصميم والأنماط المستخدمة" ثم "💡 نصائح للتحسين". كن ودياً ومشجعاً. الكود:\n\n'+code :
+    'You are an expert in HTML, CSS, and JavaScript. Analyze and explain the following code in English in a detailed and friendly way. Start with "📋 Code Summary" then "🔑 Key Elements" then "🎨 Design Patterns Used" then "💡 Improvement Tips". Be encouraging. Code:\n\n'+code;
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1000,
+      messages:[{role:"user",content:prompt}]
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    var text=(data.content&&data.content[0]&&data.content[0].text)||'';
+    if(!text)throw new Error('No response');
+    aiExplainCache[cacheKey]=text;
+    renderAIExplain(text);
+  }).catch(function(err){
+    autoExplain(code);
+    showNotif(currentLang==='ar'?'⚠️ شرح محلي':'⚠️ Local analysis');
+  });
+}
+
+function renderAIExplain(text){
+  var ec=document.getElementById('explain-content');
+  var paras=text.split('\n').filter(function(l){return l.trim();});
+  var html='<div class="ai-response-block">'+paras.map(function(p){
+    p=p.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--cyan)">$1</strong>');
+    p=p.replace(/`([^`]+)`/g,'<code>$1</code>');
+    return '<p style="margin-bottom:6px">'+p+'</p>';
+  }).join('')+'</div>';
+  html+='<button class="ai-speak-btn" id="speak-btn" onclick="speakExplain(this,`'+escStr(text)+'`)">🔊 <span>'+(currentLang==='ar'?'استمع للشرح بصوت عالٍ':'Listen to explanation')+'</span></button>';
+  html+=buildStaticExplain(editorFiles.html+editorFiles.css+editorFiles.js);
+  ec.innerHTML=html;
+  showNotif(currentLang==='ar'?'✅ تم الشرح بالذكاء الاصطناعي':'✅ AI Explanation ready');
+}
+
+function escStr(s){return s.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');}
+
+function speakExplain(btn,text){
+  if(isSpeaking){window.speechSynthesis.cancel();isSpeaking=false;btn.innerHTML='🔊 <span>'+(currentLang==='ar'?'استمع للشرح بصوت عالٍ':'Listen to explanation')+'</span>';btn.classList.remove('speaking');return;}
+  var cleanText=text.replace(/[#*`]/g,'').replace(/\n+/g,' ');
+  var utt=new SpeechSynthesisUtterance(cleanText);
+  utt.lang=currentLang==='ar'?'ar-SA':'en-US';
+  utt.rate=0.9;utt.pitch=1;
+  utt.onstart=function(){isSpeaking=true;btn.innerHTML='⏹️ <span>'+(currentLang==='ar'?'إيقاف الصوت':'Stop')+'</span>';btn.classList.add('speaking');};
+  utt.onend=utt.onerror=function(){isSpeaking=false;btn.innerHTML='🔊 <span>'+(currentLang==='ar'?'استمع للشرح بصوت عالٍ':'Listen to explanation')+'</span>';btn.classList.remove('speaking');};
+  window.speechSynthesis.speak(utt);
+}
+
+function buildStaticExplain(code){
+  if(!code||!code.trim())return'';
+  var blocks=[];
+  var tags=[];
+  var tagMatches=code.match(/<(\w+)[\s>]/g)||[];
+  tagMatches.forEach(function(m){var t=m.replace(/[<\s>]/g,'');if(['html','head','body','br','meta','link','script','style'].indexOf(t)<0&&tags.indexOf(t)<0)tags.push(t);});
+  if(tags.length)blocks.push({badge:'badge-html',label:'HTML',title:'العناصر المستخدمة',text:'الوسوم: '+tags.slice(0,8).map(function(t){return'<code>&lt;'+t+'&gt;</code>';}).join(' ')+(tags.length>8?'...':'')});
+  var cssProps=[];
+  if(code.includes('flexbox')||code.includes('display:flex')||code.includes('display: flex'))cssProps.push('Flexbox');
+  if(code.includes('display:grid')||code.includes('display: grid'))cssProps.push('Grid');
+  if(code.includes('@media'))cssProps.push('Responsive');
+  if(code.includes('animation')||code.includes('@keyframes'))cssProps.push('Animation');
+  if(code.includes('transform'))cssProps.push('Transform');
+  if(code.includes('transition'))cssProps.push('Transition');
+  if(code.includes('gradient'))cssProps.push('Gradient');
+  if(cssProps.length)blocks.push({badge:'badge-css',label:'CSS',title:'خصائص CSS',text:cssProps.map(function(p){return'<code>'+p+'</code>';}).join(' ')});
+  if(code.includes('querySelector')||code.includes('getElementById')||code.includes('addEventListener'))blocks.push({badge:'badge-js',label:'JS',title:'JavaScript',text:'يستخدم DOM manipulation.'});
+  if(cssProps.includes('Responsive'))blocks.push({badge:'badge-resp',label:'Responsive',title:'تصميم متجاوب',text:'يستخدم <code>@media</code> queries.'});
+  var lines=code.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('<!--')&&!l.trim().startsWith('/*')&&!l.trim().startsWith('//')}).length;
+  blocks.push({badge:'badge-proj',label:'إحصاء',title:'📊',text:'أسطر: <code>'+lines+'</code> | حروف: <code>'+code.length+'</code>'});
+  return blocks.map(function(b){return'<div class="explain-block"><span class="explain-badge '+b.badge+'">'+b.label+'</span><h4>'+b.title+'</h4><p>'+b.text+'</p></div>';}).join('');
+}
+
+function updateExplain(){
+  clearTimeout(window._et);
+  window._et=setTimeout(function(){
+    var code=document.getElementById('code-editor').value;
+    if(code.trim()){
+      var ec=document.getElementById('explain-content');
+      ec.innerHTML=buildStaticExplain(code)||(ec.innerHTML||'');
+    }
+    // حفظ التعديل تلقائياً
+    editorFiles[currentEditorTab]=document.getElementById('code-editor').value;
+    saveCodeToStorage();
+  },1000);
+}
+
+function autoExplain(code){document.getElementById('explain-content').innerHTML=buildStaticExplain(code)||'<div class="explain-block"><p style="color:var(--text-dim)">لا يوجد كود للتحليل</p></div>';}
+
+/* ===== CODE LIBRARY ===== */
+var codeLib=[
+  {category:"🔴 HTML الأساسيات",categoryEn:"🔴 HTML Basics",items:[
+    {name:"هيكل HTML كامل",nameEn:"Full HTML Structure",
+     html:'<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>صفحتي</title>\n</head>\n<body>\n  <h1>مرحباً بالعالم!</h1>\n  <p>هذا هو هيكل HTML الأساسي.</p>\n</body>\n</html>',
+     desc:"هيكل HTML5 الأساسي",descEn:"Basic HTML5 structure"},
+    {name:"العناوين والفقرات",nameEn:"Headings & Paragraphs",
+     html:'<h1>عنوان رئيسي H1</h1>\n<h2>عنوان فرعي H2</h2>\n<h3>عنوان H3</h3>\n<p>فقرة نصية عادية مع <strong>نص غامق</strong> و<em>نص مائل</em>.</p>\n<p>فقرة أخرى مع <a href="#">رابط</a>.</p>',
+     desc:"العناوين والنصوص",descEn:"Headings & text"},
+    {name:"القوائم",nameEn:"Lists",
+     html:'<ul>\n  <li>عنصر غير مرتب 1</li>\n  <li>عنصر غير مرتب 2</li>\n  <li>عنصر غير مرتب 3</li>\n</ul>\n<ol>\n  <li>عنصر مرتب أول</li>\n  <li>عنصر مرتب ثاني</li>\n  <li>عنصر مرتب ثالث</li>\n</ol>',
+     desc:"قوائم مرتبة وغير مرتبة",descEn:"Ordered & unordered lists"},
+    {name:"الجداول",nameEn:"Tables",
+     html:'<table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">\n  <thead>\n    <tr>\n      <th>الاسم</th>\n      <th>العمر</th>\n      <th>المدينة</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><td>أحمد</td><td>25</td><td>القاهرة</td></tr>\n    <tr><td>سارة</td><td>30</td><td>الرياض</td></tr>\n    <tr><td>محمد</td><td>22</td><td>دبي</td></tr>\n  </tbody>\n</table>',
+     desc:"جداول HTML",descEn:"HTML Tables"},
+    {name:"النماذج - Forms",nameEn:"HTML Forms",
+     html:'<form>\n  <label>الاسم: <input type="text" placeholder="أدخل اسمك"></label><br><br>\n  <label>البريد: <input type="email" placeholder="name@email.com"></label><br><br>\n  <label>رسالة:<br><textarea rows="3" cols="30"></textarea></label><br><br>\n  <label><input type="checkbox"> أوافق على الشروط</label><br><br>\n  <button type="submit">إرسال</button>\n</form>',
+     desc:"نماذج HTML",descEn:"HTML Forms"},
+    {name:"الصور والوسائط",nameEn:"Media Elements",
+     html:'<img src="https://picsum.photos/300/200" alt="صورة عشوائية" style="border-radius:8px">\n<br><br>\n<video width="300" controls>\n  <source src="" type="video/mp4">\n  المتصفح لا يدعم الفيديو\n</video>',
+     desc:"صور وفيديو",descEn:"Images & video"},
+  ]},
+  {category:"🔵 CSS الأساسيات",categoryEn:"🔵 CSS Basics",items:[
+    {name:"المربع النموذجي",nameEn:"Box Model",
+     html:'<div class="box">مثال على Box Model</div>',
+     css:'.box {\n  width: 200px;\n  height: 100px;\n  padding: 20px;\n  margin: 30px auto;\n  border: 3px solid #00d4ff;\n  background: #0a1a2e;\n  color: white;\n  font-size: 16px;\n  text-align: center;\n  border-radius: 8px;\n}',
+     desc:"نموذج الصندوق",descEn:"Box model"},
+    {name:"Flexbox",nameEn:"Flexbox",
+     html:'<div class="flex-container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n  <div class="item">4</div>\n</div>',
+     css:'.flex-container {\n  display: flex;\n  gap: 10px;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: wrap;\n  padding: 20px;\n  background: #0a0d14;\n  min-height: 120px;\n}\n.item {\n  width: 60px;\n  height: 60px;\n  background: linear-gradient(135deg,#00d4ff,#0088aa);\n  border-radius: 8px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-weight: bold;\n  font-size: 20px;\n}',
+     desc:"تخطيط Flexbox",descEn:"Flexbox layout"},
+    {name:"CSS Grid",nameEn:"CSS Grid",
+     html:'<div class="grid">\n  <div class="g-item">1</div>\n  <div class="g-item">2</div>\n  <div class="g-item">3</div>\n  <div class="g-item span-2">4 (span 2)</div>\n  <div class="g-item">5</div>\n</div>',
+     css:'.grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 10px;\n  padding: 20px;\n  background: #0a0d14;\n}\n.g-item {\n  background: linear-gradient(135deg,#0a1a2e,#1e2535);\n  border: 1px solid #00d4ff44;\n  border-radius: 8px;\n  padding: 20px;\n  text-align: center;\n  color: #00d4ff;\n  font-weight: bold;\n}\n.span-2 { grid-column: span 2; background: linear-gradient(135deg,#00d4ff,#0088aa); color: #000; }',
+     desc:"تخطيط Grid",descEn:"CSS Grid"},
+    {name:"المتغيرات CSS",nameEn:"CSS Variables",
+     html:'<div class="theme-demo">\n  <h2>مثال CSS Variables</h2>\n  <p>يمكن تغيير الألوان بسهولة</p>\n  <button>زر جميل</button>\n</div>',
+     css:':root {\n  --primary: #00d4ff;\n  --bg: #0a0d14;\n  --text: #e8f4ff;\n  --radius: 8px;\n}\n.theme-demo {\n  background: var(--bg);\n  color: var(--text);\n  padding: 30px;\n  border-radius: var(--radius);\n  text-align: center;\n  font-family: sans-serif;\n}\n.theme-demo h2 { color: var(--primary); margin-bottom: 10px; }\nbutton {\n  background: var(--primary);\n  color: #000;\n  border: none;\n  padding: 10px 24px;\n  border-radius: var(--radius);\n  cursor: pointer;\n  font-weight: bold;\n  margin-top: 10px;\n}',
+     desc:"متغيرات CSS",descEn:"CSS Variables"},
+    {name:"الظلال والتأثيرات",nameEn:"Shadows & Effects",
+     html:'<div class="effects-demo">\n  <div class="card s1">Box Shadow</div>\n  <div class="card s2">Text Shadow</div>\n  <div class="card s3">Filter Blur</div>\n  <div class="card s4">Backdrop</div>\n</div>',
+     css:'.effects-demo { display:flex;gap:14px;flex-wrap:wrap;padding:30px;background:#0a0d14;justify-content:center; }\n.card { width:120px;height:80px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:bold;cursor:pointer; }\n.s1 { background:#1e2535; box-shadow:0 0 20px rgba(0,212,255,.5),0 10px 30px rgba(0,0,0,.5); }\n.s2 { background:#1a1030; color:#c084fc; text-shadow:0 0 15px #c084fc,0 0 30px #c084fc; }\n.s3 { background:rgba(0,212,255,.1); backdrop-filter:blur(10px); border:1px solid rgba(0,212,255,.3); }\n.s4 { background:linear-gradient(135deg,#f97316,#ff6b00); filter:drop-shadow(0 0 15px #f97316); }',
+     desc:"ظلال وتأثيرات",descEn:"Shadows & effects"},
+  ]},
+  {category:"🟡 CSS الأنيميشن",categoryEn:"🟡 CSS Animations",items:[
+    {name:"أنيميشن دوران",nameEn:"Spinning Animation",
+     html:'<div class="spinner-wrap">\n  <div class="spinner"></div>\n  <div class="spinner2"></div>\n</div>',
+     css:'.spinner-wrap { display:flex;gap:30px;justify-content:center;align-items:center;padding:40px;background:#0a0d14; }\n.spinner { width:60px;height:60px;border:4px solid rgba(0,212,255,.2);border-top-color:#00d4ff;border-radius:50%;animation:spin 1s linear infinite; }\n.spinner2 { width:60px;height:60px;border:4px solid transparent;border-top-color:#f97316;border-bottom-color:#f97316;border-radius:50%;animation:spin 1.5s ease-in-out infinite; }\n@keyframes spin { to { transform: rotate(360deg); } }',
+     desc:"دوران مستمر",descEn:"Spin animation"},
+    {name:"تأثير النبضة",nameEn:"Pulse Effect",
+     html:'<div class="pulse-demo">\n  <div class="dot"></div>\n  <p>مباشر</p>\n</div>',
+     css:'.pulse-demo { display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px;background:#0a0d14; }\n.dot { width:20px;height:20px;background:#4ade80;border-radius:50%;animation:pulse 1.5s ease-in-out infinite; }\n@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.7)} 50%{box-shadow:0 0 0 20px rgba(74,222,128,0)} }\np { color:#4ade80;font-family:sans-serif;font-weight:bold; }',
+     desc:"تأثير نبضة",descEn:"Pulse effect"},
+    {name:"أنيميشن النص",nameEn:"Text Animation",
+     html:'<div class="text-anim">\n  <h1 class="glow-text">HTML Studio</h1>\n  <p class="type-text">أكواد جميلة...</p>\n</div>',
+     css:'.text-anim { background:#0a0d14;padding:40px;text-align:center;font-family:monospace; }\n.glow-text { color:#00d4ff;font-size:36px;animation:glow 2s ease-in-out infinite; }\n@keyframes glow { 0%,100%{text-shadow:0 0 10px #00d4ff,0 0 20px #00d4ff} 50%{text-shadow:0 0 20px #00d4ff,0 0 40px #00d4ff,0 0 60px #00d4ff} }\n.type-text { color:#7eeeff;margin-top:14px;font-size:18px;overflow:hidden;white-space:nowrap;width:0;animation:type 2s steps(10) 1s forwards; }\n@keyframes type { to { width: 100%; } }',
+     desc:"أنيميشن نص",descEn:"Text animation"},
+    {name:"بطاقة تتقلب",nameEn:"Flip Card",
+     html:'<div class="flip-card">\n  <div class="flip-inner">\n    <div class="flip-front"><h3>الوجه الأمامي ✨</h3></div>\n    <div class="flip-back"><h3>الوجه الخلفي 🎯</h3><p>CSS 3D Transform!</p></div>\n  </div>\n</div>',
+     css:'.flip-card { width:200px;height:150px;perspective:1000px;margin:30px auto;cursor:pointer; }\n.flip-inner { width:100%;height:100%;transition:transform .8s;transform-style:preserve-3d; }\n.flip-card:hover .flip-inner { transform:rotateY(180deg); }\n.flip-front,.flip-back { position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center;font-family:sans-serif; }\n.flip-front { background:linear-gradient(135deg,#0a1a2e,#1e2535);border:1px solid #00d4ff44;color:#00d4ff; }\n.flip-back { background:linear-gradient(135deg,#1a0a2e,#2e1a00);border:1px solid #f9731644;color:#f97316;transform:rotateY(180deg); }',
+     desc:"بطاقة بتأثير 3D",descEn:"3D flip card"},
+    {name:"تأثيرات Hover",nameEn:"Hover Effects",
+     html:'<div class="hover-demo">\n  <div class="hb h1">Scale</div>\n  <div class="hb h2">Slide</div>\n  <div class="hb h3">Glow</div>\n  <div class="hb h4">Fill</div>\n</div>',
+     css:'.hover-demo { display:flex;gap:14px;padding:30px;background:#0a0d14;justify-content:center;flex-wrap:wrap; }\n.hb { width:90px;height:60px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px;font-family:sans-serif;transition:all .3s;border:1px solid; }\n.h1 { border-color:#00d4ff;color:#00d4ff;background:transparent; }\n.h1:hover { transform:scale(1.15);background:#00d4ff;color:#000; }\n.h2 { border-color:#4ade80;color:#4ade80;background:transparent;position:relative;overflow:hidden; }\n.h2::before { content:"";position:absolute;inset:0;background:#4ade80;transform:translateX(-100%);transition:transform .3s;z-index:0; }\n.h2:hover::before { transform:translateX(0); }\n.h2 span,.h2 { z-index:1; }\n.h2:hover { color:#000; }\n.h3 { border-color:#c084fc;color:#c084fc;background:transparent; }\n.h3:hover { box-shadow:0 0 20px #c084fc,0 0 40px #c084fc44;transform:translateY(-3px); }\n.h4 { border-color:#f97316;color:#f97316;background:transparent; }\n.h4:hover { background:#f97316;color:#fff; }',
+     desc:"تأثيرات hover",descEn:"Hover effects"},
+  ]},
+  {category:"🟣 JavaScript DOM",categoryEn:"🟣 JavaScript DOM",items:[
+    {name:"تغيير محتوى",nameEn:"DOM Manipulation",
+     html:'<div id="demo">\n  <h2 id="title">عنوان قابل للتغيير</h2>\n  <p id="text">اضغط على الأزرار لتغيير المحتوى</p>\n  <button onclick="changeText()">غيّر النص</button>\n  <button onclick="changeColor()">غيّر اللون</button>\n</div>',
+     css:'#demo { padding:30px;background:#0a0d14;font-family:sans-serif;text-align:center; }\n#title { color:#00d4ff;margin-bottom:10px; }\n#text { color:#7eeeff;margin-bottom:20px; }\nbutton { margin:5px;padding:10px 20px;border:1px solid #00d4ff;background:transparent;color:#00d4ff;border-radius:6px;cursor:pointer;font-size:14px;transition:all .2s; }\nbutton:hover { background:#00d4ff;color:#000; }',
+     js:"var msgs=['مرحباً!','HTML رائع!','CSS جميل!','JS قوي!','Ahmed.afify & Sobhy ✨'];\nvar i=0;\nfunction changeText(){\n  i=(i+1)%msgs.length;\n  document.getElementById('text').textContent=msgs[i];\n}\nvar colors=['#00d4ff','#f97316','#4ade80','#c084fc','#f7df1e'];\nvar ci=0;\nfunction changeColor(){\n  ci=(ci+1)%colors.length;\n  document.getElementById('title').style.color=colors[ci];\n}",
+     desc:"تغيير DOM",descEn:"DOM changes"},
+    {name:"إضافة وحذف عناصر",nameEn:"Add/Remove Elements",
+     html:'<div id="list-demo">\n  <input id="inp" type="text" placeholder="أضف عنصراً...">\n  <button onclick="addItem()">إضافة</button>\n  <ul id="items"></ul>\n</div>',
+     css:'#list-demo { padding:20px;background:#0a0d14;font-family:sans-serif; }\n#inp { padding:8px 12px;border:1px solid #00d4ff44;background:#1e2535;color:#e8f4ff;border-radius:6px;margin-left:8px;width:200px; }\nbutton { padding:8px 16px;background:#00d4ff;color:#000;border:none;border-radius:6px;cursor:pointer;font-weight:bold; }\n#items { margin-top:14px;list-style:none;padding:0; }\n#items li { padding:8px 12px;background:#1e2535;border:1px solid #00d4ff22;border-radius:6px;margin-bottom:6px;color:#e8f4ff;display:flex;justify-content:space-between;align-items:center; }\n.del-btn { background:#ff4444;color:white;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:12px; }',
+     js:"function addItem(){\n  var inp=document.getElementById('inp');\n  var val=inp.value.trim();\n  if(!val)return;\n  var li=document.createElement('li');\n  li.innerHTML=val+'<button class=\"del-btn\" onclick=\"this.parentElement.remove()\">حذف</button>';\n  document.getElementById('items').appendChild(li);\n  inp.value='';\n}",
+     desc:"إضافة وحذف",descEn:"Add & remove"},
+    {name:"الأحداث Events",nameEn:"Event Listeners",
+     html:'<div id="events-demo">\n  <div id="box">حرّك الفأرة هنا</div>\n  <p id="info">-</p>\n  <div id="keys">اضغط أي مفتاح</div>\n</div>',
+     css:'#events-demo { padding:20px;background:#0a0d14;font-family:sans-serif;text-align:center; }\n#box { width:200px;height:100px;background:#1e2535;border:1px solid #00d4ff44;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#7eeeff;margin:0 auto 14px;cursor:pointer;transition:all .2s; }\n#info { color:#00d4ff;margin-bottom:10px; }\n#keys { padding:10px;background:#1e2535;border-radius:6px;color:#f97316;border:1px solid #f9731622; }',
+     js:"var box=document.getElementById('box');\nbox.addEventListener('mouseenter',function(){this.style.background='#00d4ff22';this.style.borderColor='#00d4ff';document.getElementById('info').textContent='Mouse Enter! 👋';});\nbox.addEventListener('mouseleave',function(){this.style.background='#1e2535';this.style.borderColor='#00d4ff44';document.getElementById('info').textContent='Mouse Leave 👋';});\nbox.addEventListener('click',function(){this.style.transform='scale(.95)';setTimeout(()=>this.style.transform='',200);document.getElementById('info').textContent='Clicked! 🖱️';});\ndocument.addEventListener('keydown',function(e){document.getElementById('keys').textContent='Key: '+e.key+' (code: '+e.code+')';});",
+     desc:"أحداث JS",descEn:"JS Events"},
+  ]},
+  {category:"🟢 مشاريع متكاملة",categoryEn:"🟢 Full Projects",items:[
+    {name:"بطاقة شخصية",nameEn:"Profile Card",
+     html:'<div class="card-wrap">\n  <div class="profile-card">\n    <div class="avatar">AF</div>\n    <h2>Ahmed.afify & Sobhy</h2>\n    <p class="role">Frontend Developer</p>\n    <div class="skills">\n      <span>HTML5</span><span>CSS3</span><span>JS</span><span>React</span>\n    </div>\n    <div class="socials">\n      <a href="#">GitHub</a>\n      <a href="#">LinkedIn</a>\n      <a href="#">Twitter</a>\n    </div>\n  </div>\n</div>',
+     css:'*{box-sizing:border-box}\nbody{margin:0}\n.card-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#03050a,#0a1a2e);padding:20px}\n.profile-card{background:rgba(10,26,46,.9);border:1px solid rgba(0,212,255,.3);border-radius:20px;padding:40px 30px;text-align:center;max-width:300px;width:100%;box-shadow:0 0 40px rgba(0,212,255,.15);backdrop-filter:blur(10px)}\n.avatar{width:80px;height:80px;background:linear-gradient(135deg,#00d4ff,#0088aa);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#000;margin:0 auto 16px;box-shadow:0 0 20px rgba(0,212,255,.5)}\nh2{color:#00d4ff;font-size:22px;margin:0 0 6px;font-family:monospace}\n.role{color:#7eeeff;font-size:13px;margin:0 0 20px;font-family:monospace}\n.skills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px}\n.skills span{padding:3px 12px;border:1px solid rgba(0,212,255,.4);color:#00d4ff;border-radius:20px;font-size:11px;font-family:monospace}\n.socials{display:flex;gap:10px;justify-content:center}\n.socials a{padding:8px 16px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);color:#00d4ff;text-decoration:none;border-radius:8px;font-size:12px;transition:all .2s}\n.socials a:hover{background:#00d4ff;color:#000}',
+     desc:"بطاقة شخصية كاملة",descEn:"Full profile card"},
+    {name:"آلة حاسبة",nameEn:"Calculator",
+     html:'<div class="calc-wrap">\n  <div class="calc">\n    <div class="display" id="disp">0</div>\n    <div class="btns">\n      <button class="btn-c" onclick="clearCalc()">C</button>\n      <button onclick="appendCalc(\'+/-\')">+/-</button>\n      <button onclick="appendCalc(\'%\')">%</button>\n      <button class="btn-op" onclick="appendCalc(\'÷\')">÷</button>\n      <button onclick="appendCalc(\'7\')">7</button>\n      <button onclick="appendCalc(\'8\')">8</button>\n      <button onclick="appendCalc(\'9\')">9</button>\n      <button class="btn-op" onclick="appendCalc(\'×\')">×</button>\n      <button onclick="appendCalc(\'4\')">4</button>\n      <button onclick="appendCalc(\'5\')">5</button>\n      <button onclick="appendCalc(\'6\')">6</button>\n      <button class="btn-op" onclick="appendCalc(\'-\')">-</button>\n      <button onclick="appendCalc(\'1\')">1</button>\n      <button onclick="appendCalc(\'2\')">2</button>\n      <button onclick="appendCalc(\'3\')">3</button>\n      <button class="btn-op" onclick="appendCalc(\'+\')">+</button>\n      <button class="btn-zero" onclick="appendCalc(\'0\')">0</button>\n      <button onclick="appendCalc(\'.\')">.</button>\n      <button class="btn-eq" onclick="calcResult()">=</button>\n    </div>\n  </div>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0d14;font-family:sans-serif}\n.calc{background:#1e2535;border-radius:20px;padding:20px;width:280px;box-shadow:0 0 30px rgba(0,212,255,.2);border:1px solid rgba(0,212,255,.2)}\n.display{background:#0a0d14;border-radius:10px;padding:20px;text-align:right;font-size:36px;color:#00d4ff;margin-bottom:14px;min-height:70px;word-break:break-all;border:1px solid rgba(0,212,255,.15)}\n.btns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}\nbutton{padding:18px;border-radius:10px;border:none;font-size:16px;cursor:pointer;font-weight:600;transition:all .15s}\nbutton:active{transform:scale(.93)}\n.btn-c{background:#ff4444;color:#fff}\n.btn-op{background:rgba(0,212,255,.2);color:#00d4ff;border:1px solid rgba(0,212,255,.3)}\n.btn-op:hover{background:#00d4ff;color:#000}\n.btn-eq{background:#00d4ff;color:#000}\n.btn-eq:hover{box-shadow:0 0 15px rgba(0,212,255,.6)}\n.btn-zero{grid-column:span 2}\nbutton:not(.btn-c):not(.btn-op):not(.btn-eq){background:#161c2a;color:#e8f4ff;border:1px solid rgba(255,255,255,.05)}\nbutton:not(.btn-c):not(.btn-op):not(.btn-eq):hover{background:#2a3345}',
+     js:"var expr='';\nfunction appendCalc(v){\n  if(v==='+/-'){expr=expr?String(-parseFloat(expr)):'0';}\n  else{expr+=v;}\n  show();\n}\nfunction clearCalc(){expr='';document.getElementById('disp').textContent='0';}\nfunction calcResult(){\n  try{\n    var r=expr.replace(/÷/g,'/').replace(/×/g,'*');\n    var res=Function('return '+r)();\n    document.getElementById('disp').textContent=res;\n    expr=String(res);\n  }catch(e){document.getElementById('disp').textContent='Error';expr='';}\n}\nfunction show(){document.getElementById('disp').textContent=expr||'0';}",
+     desc:"آلة حاسبة كاملة",descEn:"Full calculator"},
+    {name:"قائمة المهام",nameEn:"Todo List",
+     html:'<div class="todo-app">\n  <h1>📝 قائمة المهام</h1>\n  <div class="add-row">\n    <input id="todo-inp" type="text" placeholder="أضف مهمة جديدة...">\n    <button onclick="addTodo()">+</button>\n  </div>\n  <ul id="todo-list"></ul>\n  <p id="todo-count">0 مهمة</p>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0d14;display:flex;align-items:center;justify-content:center;padding:20px;font-family:sans-serif}\n.todo-app{background:#1e2535;border:1px solid rgba(0,212,255,.25);border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:0 0 30px rgba(0,212,255,.1)}\nh1{color:#00d4ff;text-align:center;margin-bottom:20px;font-size:20px}\n.add-row{display:flex;gap:8px;margin-bottom:16px}\n#todo-inp{flex:1;padding:10px 14px;background:#0a0d14;border:1px solid rgba(0,212,255,.3);border-radius:8px;color:#e8f4ff;font-size:14px;outline:none}\n#todo-inp:focus{border-color:#00d4ff}\n.add-row button{padding:10px 18px;background:#00d4ff;color:#000;border:none;border-radius:8px;cursor:pointer;font-size:20px;font-weight:bold;transition:.2s}\n.add-row button:hover{box-shadow:0 0 12px rgba(0,212,255,.5)}\n#todo-list{list-style:none;padding:0;max-height:280px;overflow-y:auto}\n#todo-list li{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#161c2a;border:1px solid rgba(0,212,255,.1);border-radius:8px;margin-bottom:6px;transition:.2s}\n#todo-list li.done .todo-text{text-decoration:line-through;opacity:.5}\n.todo-check{width:18px;height:18px;border:2px solid rgba(0,212,255,.4);border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.2s}\n.todo-check.checked{background:#00d4ff;border-color:#00d4ff;color:#000}\n.todo-text{flex:1;color:#e8f4ff;font-size:13px}\n.del-todo{background:none;border:none;color:#ff4444;cursor:pointer;font-size:16px;padding:2px 6px;opacity:.6;transition:.2s}\n.del-todo:hover{opacity:1}\n#todo-count{text-align:center;color:#7eeeff;font-size:12px;margin-top:12px;font-family:monospace}',
+     js:"var todos=[];\nfunction addTodo(){\n  var inp=document.getElementById('todo-inp');\n  var t=inp.value.trim();\n  if(!t)return;\n  todos.push({text:t,done:false,id:Date.now()});\n  inp.value='';\n  render();\n}\nfunction toggleTodo(id){var t=todos.find(x=>x.id===id);if(t)t.done=!t.done;render();}\nfunction delTodo(id){todos=todos.filter(x=>x.id!==id);render();}\nfunction render(){\n  var ul=document.getElementById('todo-list');\n  ul.innerHTML=todos.map(function(t){\n    return '<li class=\"'+(t.done?'done':'')+'\">'+'<div class=\"todo-check '+(t.done?'checked':'')+'\" onclick=\"toggleTodo('+t.id+')\">'+( t.done?'✓':'')+'</div>'+'<span class=\"todo-text\">'+t.text+'</span>'+'<button class=\"del-todo\" onclick=\"delTodo('+t.id+')\">×</button></li>';\n  }).join('');\n  var done=todos.filter(x=>x.done).length;\n  document.getElementById('todo-count').textContent=todos.length+' مهمة | '+done+' مكتملة';\n}",
+     desc:"تطبيق Todo كامل",descEn:"Full Todo app"},
+    {name:"معرض صور",nameEn:"Image Gallery",
+     html:'<div class="gallery-app">\n  <h1>🖼️ معرض الصور</h1>\n  <div class="gallery-grid" id="gallery"></div>\n  <div class="modal-img" id="img-modal" onclick="closeImg()">\n    <img id="modal-img-el" src="">\n  </div>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{background:#0a0d14;font-family:sans-serif;padding:20px}\nh1{color:#00d4ff;text-align:center;margin-bottom:20px;font-size:20px}\n.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}\n.gallery-item{border-radius:8px;overflow:hidden;cursor:pointer;transition:all .3s;border:1px solid rgba(0,212,255,.2);aspect-ratio:1}\n.gallery-item:hover{transform:scale(1.05);box-shadow:0 0 15px rgba(0,212,255,.4);border-color:#00d4ff}\n.gallery-item img{width:100%;height:100%;object-fit:cover}\n.modal-img{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);align-items:center;justify-content:center;z-index:999;cursor:pointer}\n.modal-img.show{display:flex}\n.modal-img img{max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 0 40px rgba(0,212,255,.3)}',
+     js:"var imgs=Array.from({length:9},(_,i)=>'https://picsum.photos/seed/'+(i+10)+'/300/300');\nvar g=document.getElementById('gallery');\nimgs.forEach(function(src){\n  var div=document.createElement('div');\n  div.className='gallery-item';\n  var img=document.createElement('img');\n  img.src=src;\n  img.onclick=function(){openImg(src);};\n  div.appendChild(img);\n  g.appendChild(div);\n});\nfunction openImg(src){var m=document.getElementById('img-modal');document.getElementById('modal-img-el').src=src;m.classList.add('show');}\nfunction closeImg(){document.getElementById('img-modal').classList.remove('show');}",
+     desc:"معرض صور بـ JS",descEn:"JS image gallery"},
+    {name:"لوحة رسم",nameEn:"Drawing Canvas",
+     html:'<div class="draw-app">\n  <div class="toolbar">\n    <input type="color" id="color" value="#00d4ff">\n    <input type="range" id="size" min="1" max="30" value="5">\n    <button onclick="clearCanvas()">مسح</button>\n    <span id="size-label">5px</span>\n  </div>\n  <canvas id="drawCanvas"></canvas>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{background:#0a0d14;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:10px}\n.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:10px;background:#1e2535;padding:10px 16px;border-radius:10px;border:1px solid rgba(0,212,255,.2)}\nbutton{padding:6px 14px;background:#00d4ff;color:#000;border:none;border-radius:6px;cursor:pointer;font-weight:bold}\nspan{color:#7eeeff;font-family:monospace;font-size:13px}\n#drawCanvas{background:white;border-radius:10px;cursor:crosshair;border:2px solid rgba(0,212,255,.3);max-width:100%}',
+     js:"var canvas=document.getElementById('drawCanvas');\nvar ctx=canvas.getContext('2d');\ncanvas.width=500;canvas.height=350;\nvar drawing=false;\nvar color='#00d4ff',size=5;\ndocument.getElementById('color').oninput=function(){color=this.value;};\ndocument.getElementById('size').oninput=function(){size=this.value;document.getElementById('size-label').textContent=size+'px';};\ncanvas.addEventListener('mousedown',function(e){drawing=true;ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY);});\ncanvas.addEventListener('mousemove',function(e){if(!drawing)return;ctx.strokeStyle=color;ctx.lineWidth=size;ctx.lineCap='round';ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();});\ncanvas.addEventListener('mouseup',function(){drawing=false;});\nfunction clearCanvas(){ctx.clearRect(0,0,canvas.width,canvas.height);}",
+     desc:"لوحة رسم تفاعلية",descEn:"Interactive drawing"},
+    {name:"ساعة رقمية",nameEn:"Digital Clock",
+     html:'<div class="clock-wrap">\n  <div class="clock">\n    <div class="time" id="time">00:00:00</div>\n    <div class="date" id="date"></div>\n    <div class="dots">• • •</div>\n  </div>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0d14;display:flex;align-items:center;justify-content:center}\n.clock{text-align:center;padding:40px 60px;background:rgba(10,26,46,.9);border:1px solid rgba(0,212,255,.3);border-radius:20px;box-shadow:0 0 40px rgba(0,212,255,.15);backdrop-filter:blur(10px)}\n.time{font-family:monospace;font-size:60px;color:#00d4ff;text-shadow:0 0 20px #00d4ff,0 0 40px rgba(0,212,255,.4);letter-spacing:4px;animation:tick 1s ease-in-out infinite}\n@keyframes tick{0%,100%{opacity:1}50%{opacity:.85}}\n.date{color:#7eeeff;font-size:14px;font-family:monospace;margin-top:8px;letter-spacing:.1em}\n.dots{color:rgba(0,212,255,.3);margin-top:16px;font-size:18px;letter-spacing:8px}',
+     js:"function updateClock(){\n  var now=new Date();\n  var h=String(now.getHours()).padStart(2,'0');\n  var m=String(now.getMinutes()).padStart(2,'0');\n  var s=String(now.getSeconds()).padStart(2,'0');\n  document.getElementById('time').textContent=h+':'+m+':'+s;\n  var days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];\n  var months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];\n  document.getElementById('date').textContent=days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();\n}\nupdateClock();\nsetInterval(updateClock,1000);",
+     desc:"ساعة رقمية",descEn:"Digital clock"},
+    {name:"نموذج تسجيل",nameEn:"Login Form",
+     html:'<div class="auth-wrap">\n  <div class="auth-box">\n    <div class="auth-logo">⚡</div>\n    <h2>تسجيل الدخول</h2>\n    <p>أهلاً بك مجدداً</p>\n    <input type="text" placeholder="اسم المستخدم">\n    <input type="password" placeholder="كلمة المرور">\n    <button onclick="fakeLogin()">دخول</button>\n    <a href="#">نسيت كلمة المرور؟</a>\n  </div>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:linear-gradient(135deg,#03050a,#0a1a2e);display:flex;align-items:center;justify-content:center;font-family:sans-serif}\n.auth-box{background:rgba(10,26,46,.95);border:1px solid rgba(0,212,255,.25);border-radius:20px;padding:40px 36px;width:320px;text-align:center;box-shadow:0 0 50px rgba(0,212,255,.12)}\n.auth-logo{font-size:40px;margin-bottom:10px}\nh2{color:#00d4ff;font-size:22px;margin-bottom:6px}\np{color:#7eeeff;font-size:13px;margin-bottom:24px}\ninput{width:100%;padding:12px 16px;background:#1e2535;border:1px solid rgba(0,212,255,.2);border-radius:8px;color:#e8f4ff;font-size:14px;margin-bottom:12px;outline:none;transition:.2s;direction:rtl}\ninput:focus{border-color:#00d4ff;box-shadow:0 0 0 3px rgba(0,212,255,.1)}\nbutton{width:100%;padding:13px;background:linear-gradient(135deg,#00d4ff,#0088aa);color:#000;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:4px;transition:.2s}\nbutton:hover{box-shadow:0 0 20px rgba(0,212,255,.4);transform:translateY(-1px)}\na{display:block;color:#7eeeff;font-size:12px;text-decoration:none;margin-top:14px;opacity:.7}\na:hover{opacity:1;color:#00d4ff}',
+     js:"function fakeLogin(){\n  var btn=document.querySelector('button');\n  btn.textContent='جاري التحقق...';\n  btn.disabled=true;\n  setTimeout(function(){\n    btn.textContent='✓ تم الدخول بنجاح!';\n    btn.style.background='linear-gradient(135deg,#4ade80,#22c55e)';\n    setTimeout(function(){btn.textContent='دخول';btn.disabled=false;btn.style.background='';},2000);\n  },1500);\n}",
+     desc:"نموذج تسجيل دخول",descEn:"Login form"},
+    {name:"Responsive Navbar",nameEn:"Responsive Navbar",
+     html:'<nav class="navbar">\n  <div class="nav-brand">⚡ Brand</div>\n  <button class="hamburger" onclick="toggleNav()" id="ham">☰</button>\n  <ul class="nav-links" id="navlinks">\n    <li><a href="#">الرئيسية</a></li>\n    <li><a href="#">عن الموقع</a></li>\n    <li><a href="#">الخدمات</a></li>\n    <li><a href="#">تواصل</a></li>\n  </ul>\n</nav>\n<div style="padding:30px;background:#0a0d14;color:#7eeeff;text-align:center;font-family:sans-serif;min-height:200px">\n  <h2 style="color:#00d4ff;margin-bottom:10px">محتوى الصفحة</h2>\n  <p>اضغط على ☰ في الشاشات الصغيرة لرؤية القائمة</p>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\n.navbar{background:#1e2535;border-bottom:1px solid rgba(0,212,255,.3);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:60px;position:relative;box-shadow:0 2px 20px rgba(0,212,255,.1)}\n.nav-brand{color:#00d4ff;font-size:18px;font-weight:bold;font-family:monospace}\n.nav-links{display:flex;list-style:none;gap:4px}\n.nav-links a{color:#7eeeff;text-decoration:none;padding:8px 14px;border-radius:6px;font-size:14px;font-family:sans-serif;transition:.2s}\n.nav-links a:hover{background:rgba(0,212,255,.1);color:#00d4ff}\n.hamburger{display:none;background:transparent;border:1px solid rgba(0,212,255,.3);color:#00d4ff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:18px}\n@media(max-width:600px){\n.hamburger{display:block}\n.nav-links{display:none;position:absolute;top:60px;left:0;right:0;background:#1e2535;flex-direction:column;padding:10px;border-top:1px solid rgba(0,212,255,.2);z-index:100}\n.nav-links.open{display:flex}\n}',
+     js:"function toggleNav(){var nl=document.getElementById('navlinks');nl.classList.toggle('open');var h=document.getElementById('ham');h.textContent=nl.classList.contains('open')?'✕':'☰';}",
+     desc:"شريط تنقل متجاوب",descEn:"Responsive navbar"},
+  ]},
+  {category:"🌈 تأثيرات متقدمة",categoryEn:"🌈 Advanced Effects",items:[
+    {name:"خلفية متحركة Particles",nameEn:"Animated Particles",
+     html:'<canvas id="c"></canvas>',
+     css:'*{margin:0;padding:0}\nbody{background:#0a0d14;overflow:hidden}\n#c{display:block}',
+     js:"var c=document.getElementById('c'),ctx=c.getContext('2d');\nc.width=innerWidth;c.height=innerHeight;\nvar pts=Array.from({length:80},function(){\n  return{x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.8,vy:(Math.random()-.5)*.8,r:Math.random()*3+1,a:Math.random()};\n});\nfunction draw(){\n  ctx.clearRect(0,0,c.width,c.height);\n  pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,212,255,'+p.a+')';ctx.fill();});\n  pts.forEach(function(a,i){pts.forEach(function(b,j){if(j<=i)return;var dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle='rgba(0,212,255,'+(1-d/120)*.15+')';ctx.lineWidth=.5;ctx.stroke();}});});\n  requestAnimationFrame(draw);\n}\ndraw();",
+     desc:"خلفية جسيمات متحركة",descEn:"Animated particles bg"},
+    {name:"تأثير الكتابة Typewriter",nameEn:"Typewriter Effect",
+     html:'<div class="type-demo">\n  <h1>مرحباً، أنا <span id="typed"></span><span class="cursor">|</span></h1>\n</div>',
+     css:'*{margin:0;padding:0;box-sizing:border-box}\nbody{min-height:100vh;background:#0a0d14;display:flex;align-items:center;justify-content:center;font-family:monospace}\nh1{font-size:clamp(20px,4vw,36px);color:#e8f4ff;text-align:center}\n#typed{color:#00d4ff;text-shadow:0 0 20px rgba(0,212,255,.5)}\n.cursor{color:#00d4ff;animation:blink .7s infinite}\n@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}',
+     js:"var words=['مطوّر واجهات','Frontend Dev','CSS Expert','JavaScript Dev','Ahmed.afify & Sobhy ✨'];\nvar wi=0,ci=0,deleting=false;\nfunction type(){\n  var word=words[wi];\n  var el=document.getElementById('typed');\n  if(!deleting){el.textContent=word.substring(0,ci+1);ci++;if(ci===word.length){deleting=true;setTimeout(type,1800);return;}}\n  else{el.textContent=word.substring(0,ci-1);ci--;if(ci===0){deleting=false;wi=(wi+1)%words.length;}}\n  setTimeout(type,deleting?60:120);\n}\ntype();",
+     desc:"تأثير الكتابة التدريجي",descEn:"Typewriter effect"},
+    {name:"عداد تنازلي Countdown",nameEn:"Countdown Timer",
+     html:'<div class="countdown-app">\n  <h2>⏳ العد التنازلي</h2>\n  <div class="units">\n    <div class="unit"><span id="cd-h">00</span><label>ساعة</label></div>\n    <div class="sep">:</div>\n    <div class="unit"><span id="cd-m">00</span><label>دقيقة</label></div>\n    <div class="sep">:</div>\n    <div class="unit"><span id="cd-s">00</span><label>ثانية</label></div>\n  </div>\n  <div class="ctrl">\n    <input type="number" id="cd-input" value="60" min="1" max="3600">\n    <button onclick="startCD()">بدء</button>\n    <button onclick="stopCD()">إيقاف</button>\n  </div>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0d14;display:flex;align-items:center;justify-content:center;font-family:sans-serif}\n.countdown-app{text-align:center;padding:40px;background:#1e2535;border:1px solid rgba(0,212,255,.25);border-radius:20px;box-shadow:0 0 30px rgba(0,212,255,.1)}\nh2{color:#00d4ff;margin-bottom:24px;font-size:18px}\n.units{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:24px}\n.unit{display:flex;flex-direction:column;align-items:center;gap:6px}\n.unit span{font-size:56px;font-weight:bold;color:#00d4ff;font-family:monospace;text-shadow:0 0 20px rgba(0,212,255,.4);background:#0a0d14;padding:10px 18px;border-radius:10px;border:1px solid rgba(0,212,255,.2);min-width:80px;text-align:center}\nlabel{color:#7eeeff;font-size:11px}\n.sep{font-size:40px;color:#00d4ff;opacity:.5;margin-bottom:18px}\n.ctrl{display:flex;gap:10px;justify-content:center;align-items:center}\ninput{padding:8px 12px;background:#0a0d14;border:1px solid rgba(0,212,255,.3);border-radius:6px;color:#e8f4ff;width:80px;font-size:14px;text-align:center}\nbutton{padding:9px 20px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:.2s}\nbutton:first-of-type{background:#00d4ff;color:#000}\nbutton:last-of-type{background:#ff4444;color:#fff}',
+     js:"var timer=null,remaining=60;\nfunction pad(n){return String(Math.floor(n)).padStart(2,'0');}\nfunction showTime(s){\n  document.getElementById('cd-h').textContent=pad(s/3600);\n  document.getElementById('cd-m').textContent=pad((s%3600)/60);\n  document.getElementById('cd-s').textContent=pad(s%60);\n}\nfunction startCD(){\n  stopCD();\n  remaining=parseInt(document.getElementById('cd-input').value)||60;\n  showTime(remaining);\n  timer=setInterval(function(){\n    remaining--;\n    showTime(remaining);\n    if(remaining<=0){stopCD();alert('انتهى الوقت! ⏰');}\n  },1000);\n}\nfunction stopCD(){clearInterval(timer);}",
+     desc:"عداد تنازلي",descEn:"Countdown timer"},
+    {name:"Dark/Light Mode Toggle",nameEn:"Dark/Light Mode",
+     html:'<div class="page-demo">\n  <header>\n    <span>🌐 موقعي</span>\n    <button onclick="toggleMode()" id="toggle-btn">🌙 الوضع الليلي</button>\n  </header>\n  <main>\n    <h1>مرحباً بك!</h1>\n    <p>اضغط الزر لتبديل الوضع الليلي والنهاري</p>\n    <div class="card2">بطاقة محتوى</div>\n  </main>\n</div>',
+     css:'*{box-sizing:border-box;margin:0;padding:0;transition:background .3s,color .3s,border-color .3s}\nbody{font-family:sans-serif}\n.page-demo{--bg:#0a0d14;--bg2:#1e2535;--text:#e8f4ff;--accent:#00d4ff;background:var(--bg);color:var(--text);min-height:100vh;}\n.page-demo.light{--bg:#f0f4f8;--bg2:#fff;--text:#1a2535;--accent:#0088aa;}\nheader{background:var(--bg2);border-bottom:1px solid rgba(0,212,255,.2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}\nheader span{color:var(--accent);font-weight:bold;font-size:16px}\nbutton{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}\nmain{padding:40px;text-align:center}\nh1{color:var(--accent);margin-bottom:10px;font-size:28px}\np{opacity:.7;margin-bottom:20px}\n.card2{background:var(--bg2);border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:20px;max-width:300px;margin:0 auto}',
+     js:"function toggleMode(){\n  var pg=document.querySelector('.page-demo');\n  var btn=document.getElementById('toggle-btn');\n  var isLight=pg.classList.toggle('light');\n  btn.textContent=isLight?'🌙 الوضع الليلي':'☀️ الوضع النهاري';\n}",
+     desc:"تبديل الوضع الليلي",descEn:"Dark/light mode"},
+  ]},
+];
+
+/* ===== RENDER LIBRARY ===== */
+function renderLib(data){
+  var container=document.getElementById('library-list');container.innerHTML='';
+  data.forEach(function(cat,ci){
+    var nm=currentLang==='en'&&cat.categoryEn?cat.categoryEn:cat.category;
+    var el=document.createElement('div');el.className='category';
+    el.innerHTML='<div class="category-header" onclick="toggleCat('+ci+')"><span>'+nm+'</span><span class="category-arrow">▼</span></div><div class="category-items">'+cat.items.map(function(item,ii){var n=currentLang==='en'&&item.nameEn?item.nameEn:item.name;return'<div class="code-item" onclick="showModal('+ci+','+ii+')">'+n+'</div>';}).join('')+'</div>';
+    container.appendChild(el);
+  });
+}
+function toggleCat(idx){var cats=document.querySelectorAll('.category');if(cats[idx])cats[idx].classList.toggle('open');}
+renderLib(codeLib);
+var fc=document.querySelector('.category');if(fc)fc.classList.add('open');
+
+function searchCodes(q){
+  if(!q.trim()){renderLib(codeLib);var c=document.querySelector('.category');if(c)c.classList.add('open');return;}
+  var ql=q.toLowerCase();
+  var filtered=codeLib.map(function(cat){return{category:cat.category,categoryEn:cat.categoryEn,items:cat.items.filter(function(item){var n=currentLang==='en'&&item.nameEn?item.nameEn:item.name;return n.toLowerCase().includes(ql);})};}).filter(function(cat){return cat.items.length>0;});
+  renderLib(filtered);document.querySelectorAll('.category').forEach(function(el){el.classList.add('open');});
+}
+
+/* ===== MODAL ===== */
+var currentModal=null;
+function showModal(ci,ii){
+  var item=codeLib[ci].items[ii];currentModal=item;
+  var name=currentLang==='en'&&item.nameEn?item.nameEn:item.name;
+  var desc=currentLang==='en'&&item.descEn?item.descEn:item.desc;
+  document.getElementById('modal-title').textContent=name;
+  document.getElementById('modal-desc').textContent=desc;
+  var code='';
+  if(item.html)code+='<!-- HTML -->\n'+item.html;
+  if(item.css)code+='\n\n/* CSS */\n'+item.css;
+  if(item.js)code+='\n\n// JS\n'+item.js;
+  document.getElementById('modal-code').textContent=code;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function insertFromModal(){
+  if(!currentModal)return;
+  var item=currentModal;
+  if(item.html){editorFiles.html=item.html;if(currentEditorTab==='html')document.getElementById('code-editor').value=item.html;}
+  if(item.css){editorFiles.css=item.css||'';if(currentEditorTab==='css')document.getElementById('code-editor').value=item.css||'';}
+  if(item.js){editorFiles.js=item.js||'';if(currentEditorTab==='js')document.getElementById('code-editor').value=item.js||'';}
+  document.getElementById('code-editor').value=editorFiles[currentEditorTab]||'';
+  syncLN();closeModal();
+  // Auto-run
+  runCode();
+  showNotif(currentLang==='ar'?'✅ تم الإدراج والتشغيل':'✅ Inserted & running!');
+  var name=currentLang==='en'&&item.nameEn?item.nameEn:item.name;
+  var desc=currentLang==='en'&&item.descEn?item.descEn:item.desc;
+  document.getElementById('explain-content').innerHTML='<div class="explain-block"><span class="explain-badge badge-proj">مختار</span><h4>📌 '+name+'</h4><p>'+desc+'</p></div>'+buildStaticExplain((item.html||'')+(item.css||'')+(item.js||''));
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ===== MAIN TABS ===== */
+function switchMainTab(tab,el){
+  document.querySelectorAll('.header-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');
+  if(tab==='projects')showProjectsView();
+  else if(tab==='about')showAboutView();
+  else{renderLib(codeLib);var c=document.querySelector('.category');if(c)c.classList.add('open');}
+}
+
+function showProjectsView(){
+  var projects=[
+    {icon:'🔢',name:'آلة حاسبة',nameEn:'Calculator',desc:'عمليات حسابية كاملة',descEn:'Full calculator',tag:'HTML+CSS+JS',idx:2,cat:4},
+    {icon:'📝',name:'قائمة مهام',nameEn:'Todo List',desc:'تطبيق مهام تفاعلي',descEn:'Interactive Todo',tag:'HTML+CSS+JS',idx:3,cat:4},
+    {icon:'🖼️',name:'معرض صور',nameEn:'Photo Gallery',desc:'عرض الصور مع modals',descEn:'Gallery with modals',tag:'HTML+CSS+JS',idx:4,cat:4},
+    {icon:'🎨',name:'لوحة رسم',nameEn:'Drawing Board',desc:'ارسم على الكانفاس',descEn:'Canvas drawing',tag:'Canvas+JS',idx:5,cat:4},
+    {icon:'🕐',name:'ساعة رقمية',nameEn:'Digital Clock',desc:'ساعة حقيقية بالتاريخ',descEn:'Live clock',tag:'HTML+CSS+JS',idx:6,cat:4},
+    {icon:'👤',name:'بطاقة شخصية',nameEn:'Profile Card',desc:'بطاقة شخصية أنيقة',descEn:'Elegant card',tag:'HTML+CSS',idx:0,cat:4},
+    {icon:'🔐',name:'نموذج تسجيل',nameEn:'Login Form',desc:'واجهة دخول جميلة',descEn:'Beautiful login',tag:'HTML+CSS+JS',idx:7,cat:4},
+    {icon:'📱',name:'Navbar متجاوب',nameEn:'Responsive Nav',desc:'قائمة تتكيف مع الشاشة',descEn:'Adaptive navbar',tag:'Responsive',idx:8,cat:4},
+    {icon:'✨',name:'Particles خلفية',nameEn:'Particles BG',desc:'خلفية جسيمات متحركة',descEn:'Moving particles',tag:'Canvas+JS',idx:0,cat:5},
+    {icon:'⌨️',name:'Typewriter',nameEn:'Typewriter',desc:'تأثير الكتابة التدريجي',descEn:'Typing effect',tag:'CSS+JS',idx:1,cat:5},
+    {icon:'⏳',name:'عداد تنازلي',nameEn:'Countdown',desc:'مؤقت قابل للتخصيص',descEn:'Custom timer',tag:'HTML+CSS+JS',idx:2,cat:5},
+    {icon:'🌙',name:'Dark Mode',nameEn:'Dark Mode',desc:'تبديل الوضع الليلي',descEn:'Theme toggle',tag:'CSS+JS',idx:3,cat:5},
+  ];
+  var container=document.getElementById('library-list');
+  container.innerHTML='<div class="projects-grid">'+projects.map(function(p,pi){
+    var nm=currentLang==='en'?p.nameEn:p.name;
+    var ds=currentLang==='en'?p.descEn:p.desc;
+    return'<div class="project-card" onclick="loadProject('+p.cat+','+p.idx+')"><div class="proj-icon">'+p.icon+'</div><div class="proj-name">'+nm+'</div><div class="proj-desc">'+ds+'</div><div class="proj-tag">'+p.tag+'</div></div>';
+  }).join('')+'</div>';
+}
+function loadProject(catIdx,itemIdx){
+  var item=codeLib[catIdx].items[itemIdx];
+  if(!item)return;
+  currentModal=item;
+  insertFromModal();
+  document.querySelectorAll('.header-tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
+  renderLib(codeLib);
+  showNotif(currentLang==='ar'?'✅ تم تحميل المشروع':'✅ Project loaded!');
+}
+function showAboutView(){
+  var container=document.getElementById('library-list');
+  container.innerHTML='<div style="padding:14px;direction:rtl">'+
+    '<div class="explain-block" style="text-align:center"><div style="font-size:40px;margin-bottom:10px">🌐</div><h4>Ahmed.afify & Sobhy — HTML/CSS Studio</h4><p>بيئة تطوير HTML/CSS/JS في المتصفح مع معاينة فورية وشرح ذكاء اصطناعي</p></div>'+
+    '<div class="explain-block"><h4>✨ المميزات</h4><p style="line-height:2">• معاينة فورية Live Preview<br>• HTML + CSS + JS منفصلة<br>• شرح بالذكاء الاصطناعي 🤖<br>• قراءة الشرح بصوت عالٍ 🔊<br>• مشاريع جاهزة كاملة 📁<br>• مكتبة أكواد ضخمة 📚<br>• دعم Arabic & English 🌍</p></div>'+
+    '<div class="explain-block"><h4>🛠️ التقنيات</h4><p>HTML5 · CSS3 · JavaScript · CSS Grid · Flexbox · Animations · Canvas API · Web Speech API</p></div>'+
+    '</div>';
+}
+
+/* ===== DEFAULT CODE ===== */
+editorFiles.html='<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n  <title>HTML/CSS Studio</title>\n</head>\n<body>\n  <h1>مرحباً بك في HTML/CSS Studio 🌐</h1>\n  <p>اختر كوداً من المكتبة أو ابدأ الكتابة!</p>\n</body>\n</html>';
+editorFiles.css='body {\n  font-family: sans-serif;\n  background: #0a0d14;\n  color: #e8f4ff;\n  text-align: center;\n  padding: 40px;\n}\nh1 { color: #00d4ff; }';
+editorFiles.js='// JavaScript code here\nconsole.log("Hello from HTML/CSS Studio!");';
+document.getElementById('code-editor').value=editorFiles.html;
+syncLN();
+// Auto-run on load
+setTimeout(function(){
+  loadCodeFromStorage();
+  runCode();
+}, 500);
+
+
+
+
+
+/* ===== FILES PANEL ===== */
+// ===== تحميل الملفات من localStorage عند البداية =====
+var uploadedFiles = {};
+(function() {
+  try {
+    var saved = localStorage.getItem('studio_uploaded_files');
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      // استعادة الملفات (بدون Data URLs كبيرة — فقط metadata)
+      uploadedFiles = parsed;
+      console.log('✅ تم استعادة', Object.keys(uploadedFiles).length, 'ملف من الذاكرة');
+    }
+  } catch(e) {
+    uploadedFiles = {};
+  }
+})();
+
+function saveFilesToStorage() {
+  try {
+    // حفظ كل الملفات في localStorage
+    localStorage.setItem('studio_uploaded_files', JSON.stringify(uploadedFiles));
+  } catch(e) {
+    // لو امتلأت الذاكرة (localStorage limit ~5MB)
+    showNotif('⚠️ الذاكرة ممتلئة! احذف بعض الملفات الكبيرة');
+  }
+}
+function switchLibTab(tab) {
+  document.getElementById('ltab-lib').classList.toggle('active', tab === 'lib');
+  document.getElementById('ltab-files').classList.toggle('active', tab === 'files');
+  document.querySelector('.search-box').style.display = tab === 'lib' ? '' : 'none';
+  document.querySelector('.library-scroll').style.display = tab === 'lib' ? '' : 'none';
+  var fp = document.getElementById('files-panel');
+  fp.classList.toggle('show', tab === 'files');
+  if (tab === 'files') renderFiles();
+}
+
+function getFileIcon(name) {
+  var ext = name.split('.').pop().toLowerCase();
+  var map = {
+    png:'🖼️', jpg:'🖼️', jpeg:'🖼️', gif:'🖼️', webp:'🖼️', svg:'🖼️', bmp:'🖼️',
+    mp4:'🎬', webm:'🎬', avi:'🎬', mov:'🎬', mkv:'🎬',
+    mp3:'🎵', wav:'🎵', ogg:'🎵', aac:'🎵', flac:'🎵',
+    zip:'📦', rar:'📦', '7z':'📦', tar:'📦', gz:'📦',
+    pdf:'📄', doc:'📄', docx:'📄', txt:'📄', xlsx:'📄', pptx:'📄',
+    html:'🌐', css:'🎨', js:'⚡', json:'📋', xml:'📋',
+  };
+  return map[ext] || '📎';
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+function getFileUrl(name) {
+  return uploadedFiles[name] ? uploadedFiles[name].url : null;
+}
+
+function handleFileUpload(files) {
+  Array.from(files).forEach(function(file) {
+    var ext = file.name.split('.').pop().toLowerCase();
+    var isServerFile = file.name === 'server.js' || file.name === 'app.js' || file.name === 'index.js';
+
+    // ملف server.js → تبويب جديد
+    if (ext === 'js' && isServerFile) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        editorFiles.server = e.target.result;
+        hasServerFile = true;
+        showServerTab();
+        switchEditorTab('server');
+        showNotif('✅ تم تحميل ' + file.name + ' — تبويب السيرفر جاهز');
+      };
+      reader.readAsText(file);
+
+    // ملف HTML
+    } else if (ext === 'html' || ext === 'htm') {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var content = e.target.result;
+        var cssAll = '', jsAll = '';
+
+        // استخراج كل <style>
+        var cssMatches = content.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || [];
+        cssMatches.forEach(function(m) {
+          var inner = m.replace(/<style[^>]*>/i,'').replace(/<\/style>/i,'');
+          cssAll += inner.trim() + '\n';
+        });
+
+        // استخراج كل <script> بدون src
+        var jsMatches = content.match(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/gi) || [];
+        jsMatches.forEach(function(m) {
+          var inner = m.replace(/<script[^>]*>/i,'').replace(/<\/script>/i,'');
+          jsAll += inner.trim() + '\n';
+        });
+
+        // تنظيف HTML
+        var cleanHTML = content
+          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+          .replace(/<script(?![^>]*src)[^>]*>[\s\S]*?<\/script>/gi, '')
+          .trim();
+
+        editorFiles.html = cleanHTML;
+if (cssAll.trim()) editorFiles.css = cssAll.trim();
+if (jsAll.trim())  editorFiles.js  = jsAll.trim();
+
+saveCodeToStorage();
+document.getElementById('code-editor').value = editorFiles[currentEditorTab];
+syncLN();
+runCode();
+showNotif('✅ تم تحميل HTML وفصل CSS وJS تلقائياً');
+      };
+      reader.readAsText(file);
+
+    // ملف CSS
+    } else if (ext === 'css') {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        editorFiles.css = e.target.result;
+        if (currentEditorTab === 'css') {
+          document.getElementById('code-editor').value = editorFiles.css;
+          syncLN();
+        }
+        saveCodeToStorage();
+runCode();
+showNotif('✅ تم تحميل CSS وربطه بالمشروع');
+      };
+      reader.readAsText(file);
+
+    // ملف JS عادي
+    } else if (ext === 'js') {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        editorFiles.js = e.target.result;
+        if (currentEditorTab === 'js') {
+          document.getElementById('code-editor').value = editorFiles.js;
+          syncLN();
+        }
+        saveCodeToStorage();
+runCode();
+showNotif('✅ تم تحميل JS وربطه بالمشروع');
+      };
+      reader.readAsText(file);
+
+    // باقي الملفات
+    } else {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedFiles[file.name] = { url: e.target.result, size: file.size, type: file.type };
+saveFilesToStorage();
+renderFiles();
+showNotif('✅ تم رفع: ' + file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+
+function saveCodeToStorage() {
+  try {
+    localStorage.setItem('studio_code_html', editorFiles.html || '');
+    localStorage.setItem('studio_code_css',  editorFiles.css  || '');
+    localStorage.setItem('studio_code_js',   editorFiles.js   || '');
+    // حفظ الكود داخل uploadedFiles بنفس اسم الملف المفتوح
+    if (window._openedCodeFile) {
+      var name = window._openedCodeFile;
+      var ext = name.split('.').pop().toLowerCase();
+      var tab = ext === 'css' ? 'css' : ext === 'js' ? 'js' : 'html';
+      var text = editorFiles[tab] || '';
+      // تحويل النص لـ data URL عشان يتحفظ في uploadedFiles
+      var b64 = btoa(unescape(encodeURIComponent(text)));
+      var mime = ext === 'css' ? 'text/css' :
+                 ext === 'js'  ? 'text/javascript' : 'text/html';
+      uploadedFiles[name] = {
+        url: 'data:' + mime + ';base64,' + b64,
+        size: text.length,
+        type: mime
+      };
+      saveFilesToStorage();
+    }
+  } catch(e) {
+    showNotif('⚠️ تعذر حفظ الكود في الذاكرة');
+  }
+}
+
+function loadCodeFromStorage() {
+  try {
+    var html = localStorage.getItem('studio_code_html');
+    var css  = localStorage.getItem('studio_code_css');
+    var js   = localStorage.getItem('studio_code_js');
+    if (html !== null) editorFiles.html = html;
+    if (css  !== null) editorFiles.css  = css;
+    if (js   !== null) editorFiles.js   = js;
+    document.getElementById('code-editor').value = editorFiles[currentEditorTab] || '';
+    syncLN();
+    console.log('✅ تم استعادة الكود من الذاكرة');
+  } catch(e) {}
+}
+
+
+
+
+
+
+
+
+
+// ===== إظهار تبويب السيرفر =====
+function showServerTab() {
+  if (document.getElementById('file-tab-server')) return; // موجود بالفعل
+  var tabBar = document.querySelector('.tab-bar');
+  var tab = document.createElement('div');
+  tab.className = 'editor-tab server-tab';
+  tab.id = 'file-tab-server';
+  tab.textContent = '🟢 server.js';
+  tab.onclick = function() { switchEditorTab('server'); };
+  // أضفه قبل الـ lang-indicator
+  var indicator = document.getElementById('lang-indicator');
+  tabBar.insertBefore(tab, indicator);
+}
+
+// ===== تعديل switchEditorTab لدعم server =====
+var _origSwitchTab = switchEditorTab;
+switchEditorTab = function(tab) {
+  // حفظ الحالي
+  editorFiles[currentEditorTab] = document.getElementById('code-editor').value;
+  currentEditorTab = tab;
+  document.getElementById('code-editor').value = editorFiles[tab] || '';
+
+  // تحديث التبويبات العادية
+  ['html','css','js'].forEach(function(t) {
+    var el = document.getElementById('file-tab-' + t);
+    if (el) el.classList.toggle('active', t === tab);
+  });
+
+  // تبويب السيرفر
+  var serverTabEl = document.getElementById('file-tab-server');
+  if (serverTabEl) serverTabEl.classList.toggle('active', tab === 'server');
+
+  // اللغة indicator
+  var ind = document.getElementById('lang-indicator');
+  var map = {
+    html: { cls: 'html', txt: 'HTML' },
+    css:  { cls: 'css',  txt: 'CSS' },
+    js:   { cls: 'js',   txt: 'JavaScript' },
+    server: { cls: 'server', txt: 'Server (Node.js)' }
+  };
+  var info = map[tab] || map['html'];
+  ind.className = 'lang-indicator ' + info.cls;
+  ind.textContent = info.txt;
+
+  // لو السيرفر → أخفي زر تشغيل وأظهر زر السيرفر
+  if (tab === 'server') {
+    showServerControls();
+  } else {
+    hideServerControls();
+  }
+
+  syncLN();
+};
+
+// ===== أزرار السيرفر =====
+function showServerControls() {
+  if (document.getElementById('server-controls')) return;
+  
+  // أضف الأزرار في panel-header مباشرة جنب الأزرار الموجودة
+  var headerBtns = document.querySelector('#editor-panel .panel-header div');
+  if (!headerBtns) return;
+
+  var div = document.createElement('div');
+  div.id = 'server-controls';
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  div.innerHTML =
+    '<button class="btn" style="border-color:#4ade80;color:#4ade80;font-size:12px;padding:6px 10px;" onclick="showServerInstructions()">🚀 تشغيل بالسيرفر</button>' +
+    '<button class="btn" style="border-color:#4ade80;color:#4ade80;font-size:12px;padding:6px 10px;" onclick="downloadServerFile()">⬇️ تنزيل</button>';
+
+  // أخفي زر run وزر AI explain مؤقتاً
+  var runBtn = document.getElementById('btn-run');
+  if (runBtn) runBtn.style.display = 'none';
+
+  headerBtns.appendChild(div);
+}
+
+function hideServerControls() {
+  var ctrl = document.getElementById('server-controls');
+  if (ctrl) ctrl.remove();
+  var runBtn = document.getElementById('btn-run');
+  if (runBtn) runBtn.style.display = '';
+}
+// ===== تنزيل server.js =====
+function downloadServerFile() {
+  var code = editorFiles.server;
+  if (!code.trim()) { showNotif('⚠️ ملف السيرفر فارغ!'); return; }
+  var blob = new Blob([code], { type: 'text/javascript;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'server.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showNotif('⬇️ تم تنزيل server.js');
+}
+
+// ===== تعليمات تشغيل السيرفر =====
+function showServerInstructions() {
+  var code = editorFiles.server || '';
+  var framework = 'express';
+  if (code.includes('fastify'))   framework = 'fastify';
+  if (code.includes('koa'))       framework = 'koa';
+  if (code.includes('http.createServer') && !code.includes('express')) framework = 'http';
+
+  var port = '3000';
+  var portMatch = code.match(/port\s*[=:]\s*(\d{4,5})/i) || code.match(/listen\s*\(\s*(\d{4,5})/);
+  if (portMatch) port = portMatch[1];
+
+  var frameworkName = {
+    express: 'Express.js', fastify: 'Fastify', koa: 'Koa.js', http: 'Node.js HTTP'
+  }[framework];
+
+  var installCmd = {
+    express:  'npm install express',
+    fastify:  'npm install fastify',
+    koa:      'npm install koa',
+    http:     '# لا يحتاج تثبيت (built-in Node.js)',
+  }[framework];
+
+  // ===== عرض في AI Explain Panel =====
+  renderServerInstructions(frameworkName, installCmd, port);
+
+  // ===== عرض في Modal =====
+  var instructions = [
+    '# 🚀 خطوات تشغيل السيرفر',
+    '',
+    '## 1️⃣ تثبيت Node.js',
+    'نزّل Node.js من: https://nodejs.org/en/download',
+    '(اختر LTS)',
+    '',
+    '## 2️⃣ تحقق من التثبيت',
+    'node --version',
+    'npm --version',
+    '',
+    '## 3️⃣ أنشئ مجلد المشروع',
+    'mkdir my-server && cd my-server && npm init -y',
+    '',
+    '## 4️⃣ ثبّت ' + frameworkName,
+    installCmd,
+    '',
+    '## 5️⃣ ضع server.js في المجلد ثم شغّله',
+    'node server.js',
+    '',
+    '## 6️⃣ افتح المتصفح على:',
+    'http://localhost:' + port,
+    '',
+    '💡 إيقاف السيرفر: Ctrl + C',
+    '💡 تشغيل تلقائي: npm install -g nodemon ثم nodemon server.js',
+  ].join('\n');
+
+  document.getElementById('modal-title').textContent = '🚀 خطوات تشغيل السيرفر';
+  document.getElementById('modal-desc').textContent = 'اتبع الخطوات لتشغيل ' + frameworkName + ' على جهازك:';
+  document.getElementById('modal-code').textContent = instructions;
+  var insertBtn = document.querySelector('.modal .modal-close');
+  insertBtn.innerHTML = '⬇️ تنزيل server.js';
+  insertBtn.onclick = function() { downloadServerFile(); closeModal(); };
+  document.getElementById('modal').classList.add('show');
+}
+function renderServerInstructions(frameworkName, installCmd, port) {
+  var ec = document.getElementById('explain-content');
+
+  ec.innerHTML =
+
+    // ── هيدر ──
+    '<div class="explain-block" style="background:linear-gradient(135deg,#0a2a1a,#0a1a0a);border-color:#4ade8044;text-align:center;">' +
+      '<div style="font-size:32px;margin-bottom:6px">🟢</div>' +
+      '<h4 style="color:#4ade80;font-size:15px;">تشغيل السيرفر — ' + frameworkName + '</h4>' +
+      '<p style="color:#86efac;font-size:11px;">اتبع الخطوات بالترتيب</p>' +
+    '</div>' +
+
+    // ── خطوة 1 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 1</span>' +
+      '<h4 style="color:#4ade80;">⬇️ تثبيت Node.js</h4>' +
+      '<p>نزّل Node.js من الموقع الرسمي واختر <code>LTS</code></p>' +
+      '<div style="margin-top:8px;">' +
+        '<a href="https://nodejs.org/en/download" target="_blank" ' +
+           'style="display:inline-block;padding:7px 16px;background:#4ade8022;border:1px solid #4ade8044;' +
+                  'color:#4ade80;border-radius:8px;font-size:12px;text-decoration:none;font-family:monospace;">'+
+          '🔗 nodejs.org/en/download' +
+        '</a>' +
+      '</div>' +
+    '</div>' +
+
+    // ── خطوة 2 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 2</span>' +
+      '<h4 style="color:#4ade80;">✅ تحقق من التثبيت</h4>' +
+      '<p style="margin-bottom:8px;">افتح الكومند وشغّل:</p>' +
+      mkCmd('node --version\nnpm --version') +
+    '</div>' +
+
+    // ── خطوة 3 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 3</span>' +
+      '<h4 style="color:#4ade80;">📁 أنشئ مجلد المشروع</h4>' +
+      mkCmd('mkdir my-server\ncd my-server\nnpm init -y') +
+    '</div>' +
+
+    // ── خطوة 4 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 4</span>' +
+      '<h4 style="color:#4ade80;">📦 ثبّت ' + frameworkName + '</h4>' +
+      mkCmd(installCmd) +
+    '</div>' +
+
+    // ── خطوة 5 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 5</span>' +
+      '<h4 style="color:#4ade80;">📄 ضع ملف server.js في المجلد</h4>' +
+      '<button onclick="downloadServerFile()" ' +
+        'style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#4ade8022;' +
+               'border:1px solid #4ade8055;color:#4ade80;border-radius:8px;cursor:pointer;' +
+               'font-size:12px;font-family:monospace;margin-top:8px;width:100%;justify-content:center;">'+
+        '⬇️ تنزيل server.js' +
+      '</button>' +
+    '</div>' +
+
+    // ── خطوة 6 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 6</span>' +
+      '<h4 style="color:#4ade80;">🚀 شغّل السيرفر</h4>' +
+      mkCmd('node server.js') +
+    '</div>' +
+
+    // ── خطوة 7 ──
+    '<div class="explain-block" style="border-color:#4ade8022;">' +
+      '<span class="explain-badge" style="background:#0a2a1a;color:#4ade80;border:1px solid #4ade8033;">خطوة 7</span>' +
+      '<h4 style="color:#4ade80;">🌐 افتح المتصفح</h4>' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">' +
+        mkCmd('http://localhost:' + port) +
+      '</div>' +
+    '</div>' +
+
+    // ── نصائح ──
+    '<div class="explain-block" style="background:#0a1a2a;border-color:#00d4ff22;">' +
+      '<h4 style="color:var(--cyan);">💡 نصائح مفيدة</h4>' +
+      '<p style="margin-bottom:8px;">إيقاف السيرفر:</p>' +
+      mkCmd('Ctrl + C') +
+      '<p style="margin:8px 0;">تشغيل تلقائي عند التعديل (nodemon):</p>' +
+      mkCmd('npm install -g nodemon\nnodemon server.js') +
+    '</div>';
+}
+
+// ── helper: بلوك كود قابل للنسخ ──
+function mkCmd(txt) {
+  var id = 'cmd_' + Math.random().toString(36).slice(2,7);
+  return '<div style="position:relative;margin-top:6px;">' +
+    '<pre id="' + id + '" style="background:#03050a;border:1px solid #4ade8022;border-radius:8px;' +
+         'padding:10px 14px;font-family:\'Fira Code\',monospace;font-size:11px;color:#86efac;' +
+         'overflow-x:auto;margin:0;line-height:1.8;">' + txt + '</pre>' +
+    '<button onclick="copyCmd(\'' + id + '\')" ' +
+      'style="position:absolute;top:6px;left:8px;background:#4ade8022;border:1px solid #4ade8044;' +
+             'color:#4ade80;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;' +
+             'font-family:\'Fira Code\',monospace;">📋 نسخ</button>' +
+  '</div>';
+}
+
+function copyCmd(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(function() {
+    showNotif('📋 تم نسخ الأمر!');
+  });
+}
+function renderFiles() {
+  var list = document.getElementById('files-list');
+  var names = Object.keys(uploadedFiles);
+  if (!names.length) { list.innerHTML = ''; return; }
+  list.innerHTML = names.map(function(name) {
+    var f = uploadedFiles[name];
+    return '<div class="file-item">' +
+      '<span class="fi-icon">' + getFileIcon(name) + '</span>' +
+      '<span class="fi-name" title="' + name + '" onclick="openCodeFile(\'' + name.replace(/'/g,"\\'") + '\')" style="cursor:pointer;">' + name + '</span>' +
+      '<span class="fi-size">' + formatSize(f.size) + '</span>' +
+      '<span class="fi-copy" onclick="copyFileUrl(\'' + name.replace(/'/g,"\\'") + '\')" title="نسخ الرابط">📋</span>' +
+      '<span class="fi-del" onclick="deleteFile(\'' + name.replace(/'/g,"\\'") + '\')" title="حذف">✕</span>' +
+    '</div>';
+  }).join('');
+}
+
+function copyFileUrl(name) {
+  var f = uploadedFiles[name];
+  if (!f) return;
+  var ext = name.split('.').pop().toLowerCase();
+  var imgExts = ['png','jpg','jpeg','gif','webp','svg','bmp'];
+  var vidExts = ['mp4','webm','ogg','mov'];
+  var audExts = ['mp3','wav','ogg','aac','flac'];
+  var tag = '';
+  if (imgExts.includes(ext)) tag = '<img src="' + f.url + '" alt="' + name + '">';
+  else if (vidExts.includes(ext)) tag = '<video src="' + f.url + '" controls></video>';
+  else if (audExts.includes(ext)) tag = '<audio src="' + f.url + '" controls></audio>';
+  else tag = f.url;
+  navigator.clipboard.writeText(tag).then(function() {
+    showNotif('📋 تم نسخ كود: ' + name);
+  });
+}
+
+function deleteFile(name) {
+  delete uploadedFiles[name];
+  saveFilesToStorage();
+  renderFiles();
+  showNotif('🗑️ تم حذف: ' + name);
+}
+
+function openCodeFile(name) {
+  var f = uploadedFiles[name];
+  if (!f) return;
+  var ext = name.split('.').pop().toLowerCase();
+
+  if (['html','htm','css','js','json','txt','xml','md'].includes(ext)) {
+    try {
+      var dataUrl = f.url;
+      var base64 = dataUrl.split(',')[1];
+      var text = decodeURIComponent(escape(atob(base64)));
+
+      var tab = ext === 'css' ? 'css' : ext === 'js' ? 'js' : 'html';
+      
+      // حفظ اسم الملف المفتوح عشان نعرف نحدثه لما يتعدل
+      window._openedCodeFile = name;
+
+      editorFiles[tab] = text;
+      switchEditorTab(tab);
+      document.getElementById('code-editor').value = text;
+      syncLN();
+      saveCodeToStorage();
+      showNotif('📂 تم فتح: ' + name);
+      switchLibTab('lib');
+    } catch(e) {
+      showNotif('⚠️ تعذر فتح الملف');
+    }
+  } else {
+    copyFileUrl(name);
+  }
+}
+
+
+// Drag & Drop
+var dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', function() { dz.classList.remove('drag'); });
+dz.addEventListener('drop', function(e) {
+  e.preventDefault();
+  dz.classList.remove('drag');
+  handleFileUpload(e.dataTransfer.files);
+});
+
+
+
+function downloadProject(){
+  editorFiles[currentEditorTab]=document.getElementById('code-editor').value;
+  var html=editorFiles.html;
+  var css=editorFiles.css;
+  var js=editorFiles.js;
+
+  // استبدال الملفات المرفوعة تلقائياً
+  if(typeof uploadedFiles !== 'undefined'){
+    Object.keys(uploadedFiles).forEach(function(name){
+      var url=uploadedFiles[name].url;
+      var escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      var regex=new RegExp('(src|href)=["\']'+escaped+'["\']','g');
+      html=html.replace(regex,'$1="'+url+'"');
+    });
+  }
+
+  // بناء الملف الكامل
+  var fullHtml='<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>مشروعي</title>\n<style>\n'+css+'\n</style>\n</head>\n<body>\n'+html+'\n<script>\n'+js+'\n<\/script>\n</body>\n</html>';
+
+  // اسأل المستخدم عن اسم الملف
+  var name=prompt(currentLang==='ar'?'اختر اسماً للمشروع:':'Enter project name:','my-project');
+  if(!name)return;
+
+  // تنزيل الملف
+  var blob=new Blob([fullHtml],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name+'.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showNotif('⬇️ تم تنزيل: '+name+'.html');
+}
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Floating Link Button -->
+<style>
+#float-link-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px var(--cyan-glow);
+  z-index: 9998;
+  transition: transform .2s, box-shadow .2s;
+  text-decoration: none;
+}
+#float-link-btn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 30px var(--cyan-glow), 0 0 10px var(--cyan);
+}
+#float-link-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: #000;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#float-link-tooltip {
+  position: fixed;
+  bottom: 84px;
+  left: 20px;
+  background: var(--dark3);
+  border: 1px solid var(--cyan-dim);
+  color: var(--cyan-light);
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  z-index: 9997;
+}
+#float-link-btn:hover + #float-link-tooltip {
+  opacity: 1;
+}
+</style>
+
+<a id="float-link-btn" href="https://ahmed-afify-as-test.up.railway.app/" target="_blank" title="الذهاب للموقع">
+  <svg viewBox="0 0 24 24">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+  </svg>
+</a>
+<div id="float-link-tooltip">🔗 Ahmed.afify App</div>
+
+
+
+
+<script>
+(function() {
+
+var _css = document.createElement('style');
+_css.textContent = `
+#editor-wrapper{position:relative;flex:1;overflow:hidden;display:flex;}
+#code-editor{position:relative;z-index:2;flex:1;}
+
+#ac-box{
+  position:fixed;background:#10141f;
+  border:1px solid var(--cyan-dim);border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 20px rgba(0,212,255,.08);
+  z-index:99999;min-width:220px;max-width:360px;
+  max-height:240px;overflow-y:auto;display:none;
+  font-family:'Fira Code',monospace;font-size:12px;
+}
+#ac-box::-webkit-scrollbar{width:3px}
+#ac-box::-webkit-scrollbar-thumb{background:var(--cyan-dim)}
+.ac-i{
+  display:flex;align-items:center;gap:9px;padding:7px 12px;
+  cursor:pointer;border-bottom:1px solid rgba(0,212,255,.05);color:#e8f4ff;
+  transition:background .1s;
+}
+.ac-i:last-of-type{border-bottom:none}
+.ac-i:hover,.ac-i.sel{background:rgba(0,212,255,.13);color:var(--cyan)}
+.ac-ico{
+  width:19px;height:19px;border-radius:4px;display:flex;align-items:center;
+  justify-content:center;font-size:9px;font-weight:bold;flex-shrink:0;font-style:normal;
+}
+.ico-tag {background:#2a1a0a;color:#f97316}
+.ico-prop{background:#101828;color:#60a5fa}
+.ico-kw  {background:#1a0a2a;color:#c084fc}
+.ico-fn  {background:#0a1a2a;color:#7eeeff}
+.ico-snip{background:#2a2010;color:#f7df1e}
+.ac-lbl{flex:1;font-size:12px}
+.ac-lbl mark{background:transparent;color:var(--cyan);font-weight:bold}
+.ac-tp{font-size:9px;color:var(--text-dim);opacity:.5;flex-shrink:0}
+.ac-hint{
+  padding:5px 12px;font-size:9px;color:var(--text-dim);
+  border-top:1px solid var(--border);display:flex;justify-content:space-between;
+  background:rgba(0,0,0,.3);
+}
+`;
+document.head.appendChild(_css);
+
+var ACD={
+  html:[
+    {l:'!DOCTYPE html',i:'<!DOCTYPE html>',c:'tag',t:'doctype'},
+    {l:'html',i:'<html lang="ar" dir="rtl">\n  \n</html>',c:'tag',t:'tag'},
+    {l:'head',i:'<head>\n  <meta charset="UTF-8">\n  <title></title>\n</head>',c:'tag',t:'tag'},
+    {l:'body',i:'<body>\n  \n</body>',c:'tag',t:'tag'},
+    {l:'div',i:'<div class="">\n  \n</div>',c:'tag',t:'tag'},
+    {l:'section',i:'<section>\n  \n</section>',c:'tag',t:'tag'},
+    {l:'header',i:'<header>\n  \n</header>',c:'tag',t:'tag'},
+    {l:'footer',i:'<footer>\n  \n</footer>',c:'tag',t:'tag'},
+    {l:'nav',i:'<nav>\n  \n</nav>',c:'tag',t:'tag'},
+    {l:'main',i:'<main>\n  \n</main>',c:'tag',t:'tag'},
+    {l:'article',i:'<article>\n  \n</article>',c:'tag',t:'tag'},
+    {l:'aside',i:'<aside>\n  \n</aside>',c:'tag',t:'tag'},
+    {l:'h1',i:'<h1></h1>',c:'tag',t:'tag'},
+    {l:'h2',i:'<h2></h2>',c:'tag',t:'tag'},
+    {l:'h3',i:'<h3></h3>',c:'tag',t:'tag'},
+    {l:'h4',i:'<h4></h4>',c:'tag',t:'tag'},
+    {l:'p',i:'<p></p>',c:'tag',t:'tag'},
+    {l:'span',i:'<span></span>',c:'tag',t:'tag'},
+    {l:'a href',i:'<a href=""></a>',c:'tag',t:'tag'},
+    {l:'img',i:'<img src="" alt="">',c:'tag',t:'tag'},
+    {l:'button',i:'<button onclick=""></button>',c:'tag',t:'tag'},
+    {l:'input text',i:'<input type="text" placeholder="">',c:'tag',t:'tag'},
+    {l:'input number',i:'<input type="number" placeholder="">',c:'tag',t:'tag'},
+    {l:'input email',i:'<input type="email" placeholder="">',c:'tag',t:'tag'},
+    {l:'input checkbox',i:'<input type="checkbox">',c:'tag',t:'tag'},
+    {l:'form',i:'<form>\n  \n</form>',c:'tag',t:'tag'},
+    {l:'label',i:'<label></label>',c:'tag',t:'tag'},
+    {l:'textarea',i:'<textarea rows="4" cols="30"></textarea>',c:'tag',t:'tag'},
+    {l:'select',i:'<select>\n  <option value=""></option>\n</select>',c:'tag',t:'tag'},
+    {l:'ul',i:'<ul>\n  <li></li>\n</ul>',c:'tag',t:'tag'},
+    {l:'ol',i:'<ol>\n  <li></li>\n</ol>',c:'tag',t:'tag'},
+    {l:'li',i:'<li></li>',c:'tag',t:'tag'},
+    {l:'table',i:'<table>\n  <thead><tr><th></th></tr></thead>\n  <tbody><tr><td></td></tr></tbody>\n</table>',c:'tag',t:'tag'},
+    {l:'canvas',i:'<canvas id="" width="500" height="300"></canvas>',c:'tag',t:'tag'},
+    {l:'video',i:'<video src="" controls></video>',c:'tag',t:'tag'},
+    {l:'audio',i:'<audio src="" controls></audio>',c:'tag',t:'tag'},
+    {l:'style',i:'<style>\n  \n</style>',c:'tag',t:'tag'},
+    {l:'script',i:'<script>\n  \n<\/script>',c:'tag',t:'tag'},
+    {l:'link css',i:'<link rel="stylesheet" href="style.css">',c:'tag',t:'tag'},
+    {l:'meta charset',i:'<meta charset="UTF-8">',c:'prop',t:'attr'},
+    {l:'meta viewport',i:'<meta name="viewport" content="width=device-width, initial-scale=1.0">',c:'prop',t:'attr'},
+    {l:'class=""',i:'class=""',c:'prop',t:'attr'},
+    {l:'id=""',i:'id=""',c:'prop',t:'attr'},
+    {l:'style=""',i:'style=""',c:'prop',t:'attr'},
+    {l:'onclick=""',i:'onclick=""',c:'prop',t:'attr'},
+    {l:'★ Boilerplate',i:'<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>صفحتي</title>\n  <style>\n    * { box-sizing: border-box; margin: 0; padding: 0; }\n    body { font-family: sans-serif; }\n  </style>\n</head>\n<body>\n  \n  <script>\n    \n  <\/script>\n</body>\n</html>',c:'snip',t:'snippet'},
+  ],
+  css:[
+    {l:'display: flex',i:'display: flex;',c:'prop',t:'property'},
+    {l:'display: grid',i:'display: grid;',c:'prop',t:'property'},
+    {l:'display: block',i:'display: block;',c:'prop',t:'property'},
+    {l:'display: none',i:'display: none;',c:'prop',t:'property'},
+    {l:'display: inline-block',i:'display: inline-block;',c:'prop',t:'property'},
+    {l:'position: relative',i:'position: relative;',c:'prop',t:'property'},
+    {l:'position: absolute',i:'position: absolute;',c:'prop',t:'property'},
+    {l:'position: fixed',i:'position: fixed;',c:'prop',t:'property'},
+    {l:'position: sticky',i:'position: sticky;',c:'prop',t:'property'},
+    {l:'flex-direction',i:'flex-direction: row;',c:'prop',t:'property'},
+    {l:'justify-content',i:'justify-content: center;',c:'prop',t:'property'},
+    {l:'align-items',i:'align-items: center;',c:'prop',t:'property'},
+    {l:'flex-wrap',i:'flex-wrap: wrap;',c:'prop',t:'property'},
+    {l:'gap',i:'gap: 10px;',c:'prop',t:'property'},
+    {l:'grid-template-columns',i:'grid-template-columns: repeat(3, 1fr);',c:'prop',t:'property'},
+    {l:'grid-template-rows',i:'grid-template-rows: auto;',c:'prop',t:'property'},
+    {l:'grid-column',i:'grid-column: span 2;',c:'prop',t:'property'},
+    {l:'background',i:'background: ;',c:'prop',t:'property'},
+    {l:'background-color',i:'background-color: ;',c:'prop',t:'property'},
+    {l:'background: linear-gradient',i:'background: linear-gradient(135deg, #00d4ff, #0088aa);',c:'prop',t:'property'},
+    {l:'background: radial-gradient',i:'background: radial-gradient(circle, #00d4ff, transparent);',c:'prop',t:'property'},
+    {l:'color',i:'color: ;',c:'prop',t:'property'},
+    {l:'font-size',i:'font-size: 16px;',c:'prop',t:'property'},
+    {l:'font-weight',i:'font-weight: bold;',c:'prop',t:'property'},
+    {l:'font-family',i:"font-family: 'Cairo', sans-serif;",c:'prop',t:'property'},
+    {l:'text-align',i:'text-align: center;',c:'prop',t:'property'},
+    {l:'text-decoration',i:'text-decoration: none;',c:'prop',t:'property'},
+    {l:'text-transform',i:'text-transform: uppercase;',c:'prop',t:'property'},
+    {l:'letter-spacing',i:'letter-spacing: 0.05em;',c:'prop',t:'property'},
+    {l:'line-height',i:'line-height: 1.6;',c:'prop',t:'property'},
+    {l:'width',i:'width: 100%;',c:'prop',t:'property'},
+    {l:'height',i:'height: 100%;',c:'prop',t:'property'},
+    {l:'min-width',i:'min-width: 0;',c:'prop',t:'property'},
+    {l:'max-width',i:'max-width: 1200px;',c:'prop',t:'property'},
+    {l:'min-height',i:'min-height: 100vh;',c:'prop',t:'property'},
+    {l:'max-height',i:'max-height: 300px;',c:'prop',t:'property'},
+    {l:'margin',i:'margin: 0;',c:'prop',t:'property'},
+    {l:'margin: auto',i:'margin: 0 auto;',c:'prop',t:'property'},
+    {l:'padding',i:'padding: 20px;',c:'prop',t:'property'},
+    {l:'border',i:'border: 1px solid #00d4ff;',c:'prop',t:'property'},
+    {l:'border-radius',i:'border-radius: 8px;',c:'prop',t:'property'},
+    {l:'border-color',i:'border-color: ;',c:'prop',t:'property'},
+    {l:'box-shadow',i:'box-shadow: 0 4px 20px rgba(0,0,0,0.2);',c:'prop',t:'property'},
+    {l:'text-shadow',i:'text-shadow: 0 0 10px rgba(0,212,255,0.5);',c:'prop',t:'property'},
+    {l:'opacity',i:'opacity: 1;',c:'prop',t:'property'},
+    {l:'overflow',i:'overflow: hidden;',c:'prop',t:'property'},
+    {l:'overflow: auto',i:'overflow: auto;',c:'prop',t:'property'},
+    {l:'transition',i:'transition: all 0.3s ease;',c:'prop',t:'property'},
+    {l:'transform',i:'transform: ;',c:'prop',t:'property'},
+    {l:'transform: translate',i:'transform: translate(-50%, -50%);',c:'prop',t:'property'},
+    {l:'transform: scale',i:'transform: scale(1.1);',c:'prop',t:'property'},
+    {l:'transform: rotate',i:'transform: rotate(45deg);',c:'prop',t:'property'},
+    {l:'animation',i:'animation: name 0.5s ease infinite;',c:'prop',t:'property'},
+    {l:'cursor: pointer',i:'cursor: pointer;',c:'prop',t:'property'},
+    {l:'user-select: none',i:'user-select: none;',c:'prop',t:'property'},
+    {l:'z-index',i:'z-index: 10;',c:'prop',t:'property'},
+    {l:'inset: 0',i:'inset: 0;',c:'prop',t:'property'},
+    {l:'object-fit',i:'object-fit: cover;',c:'prop',t:'property'},
+    {l:'backdrop-filter',i:'backdrop-filter: blur(10px);',c:'prop',t:'property'},
+    {l:'pointer-events: none',i:'pointer-events: none;',c:'prop',t:'property'},
+    {l:'@media mobile',i:'@media (max-width: 768px) {\n  \n}',c:'snip',t:'at-rule'},
+    {l:'@media tablet',i:'@media (max-width: 1024px) {\n  \n}',c:'snip',t:'at-rule'},
+    {l:'@keyframes',i:'@keyframes name {\n  0% {  }\n  100% {  }\n}',c:'snip',t:'at-rule'},
+    {l:':root variables',i:':root {\n  --primary: #00d4ff;\n  --bg: #0a0d14;\n  --text: #e8f4ff;\n}',c:'snip',t:'snippet'},
+    {l:'★ Flex Center',i:'display: flex;\nalign-items: center;\njustify-content: center;',c:'snip',t:'snippet'},
+    {l:'★ Absolute Center',i:'position: absolute;\ntop: 50%;\nleft: 50%;\ntransform: translate(-50%, -50%);',c:'snip',t:'snippet'},
+    {l:'★ Full Screen',i:'min-height: 100vh;\ndisplay: flex;\nalign-items: center;\njustify-content: center;',c:'snip',t:'snippet'},
+    {l:'★ Card Style',i:'background: rgba(255,255,255,0.05);\nborder: 1px solid rgba(0,212,255,0.2);\nborder-radius: 12px;\npadding: 24px;\nbackdrop-filter: blur(10px);',c:'snip',t:'snippet'},
+  ],
+  js:[
+    {l:'console.log',i:'console.log();',c:'fn',t:'method'},
+    {l:'console.error',i:'console.error();',c:'fn',t:'method'},
+    {l:'console.warn',i:'console.warn();',c:'fn',t:'method'},
+    {l:'document.getElementById',i:"document.getElementById('')",c:'fn',t:'method'},
+    {l:'document.querySelector',i:"document.querySelector('')",c:'fn',t:'method'},
+    {l:'document.querySelectorAll',i:"document.querySelectorAll('')",c:'fn',t:'method'},
+    {l:'document.createElement',i:"document.createElement('')",c:'fn',t:'method'},
+    {l:'addEventListener click',i:"addEventListener('click', function(e) {\n  \n});",c:'fn',t:'method'},
+    {l:'addEventListener keydown',i:"addEventListener('keydown', function(e) {\n  \n});",c:'fn',t:'method'},
+    {l:'addEventListener input',i:"addEventListener('input', function(e) {\n  \n});",c:'fn',t:'method'},
+    {l:'innerHTML',i:'innerHTML = ``;',c:'prop',t:'property'},
+    {l:'textContent',i:'textContent = "";',c:'prop',t:'property'},
+    {l:'classList.add',i:"classList.add('');",c:'fn',t:'method'},
+    {l:'classList.remove',i:"classList.remove('');",c:'fn',t:'method'},
+    {l:'classList.toggle',i:"classList.toggle('');",c:'fn',t:'method'},
+    {l:'classList.contains',i:"classList.contains('')",c:'fn',t:'method'},
+    {l:'style.',i:'style. = ;',c:'prop',t:'property'},
+    {l:'setAttribute',i:"setAttribute('', '');",c:'fn',t:'method'},
+    {l:'getAttribute',i:"getAttribute('')",c:'fn',t:'method'},
+    {l:'appendChild',i:'appendChild();',c:'fn',t:'method'},
+    {l:'remove()',i:'remove();',c:'fn',t:'method'},
+    {l:'parentElement',i:'parentElement',c:'prop',t:'property'},
+    {l:'var',i:'var name = ;',c:'kw',t:'keyword'},
+    {l:'let',i:'let name = ;',c:'kw',t:'keyword'},
+    {l:'const',i:'const name = ;',c:'kw',t:'keyword'},
+    {l:'function',i:'function name() {\n  \n}',c:'kw',t:'keyword'},
+    {l:'arrow function',i:'const name = () => {\n  \n};',c:'kw',t:'keyword'},
+    {l:'if',i:'if () {\n  \n}',c:'kw',t:'keyword'},
+    {l:'if else',i:'if () {\n  \n} else {\n  \n}',c:'kw',t:'keyword'},
+    {l:'for loop',i:'for (var i = 0; i < arr.length; i++) {\n  \n}',c:'kw',t:'keyword'},
+    {l:'forEach',i:'.forEach(function(item) {\n  \n});',c:'fn',t:'method'},
+    {l:'map',i:'.map(function(item) {\n  return ;\n})',c:'fn',t:'method'},
+    {l:'filter',i:'.filter(function(item) {\n  return ;\n})',c:'fn',t:'method'},
+    {l:'setTimeout',i:'setTimeout(function() {\n  \n}, 1000);',c:'fn',t:'method'},
+    {l:'setInterval',i:'setInterval(function() {\n  \n}, 1000);',c:'fn',t:'method'},
+    {l:'clearTimeout',i:'clearTimeout(timer);',c:'fn',t:'method'},
+    {l:'clearInterval',i:'clearInterval(timer);',c:'fn',t:'method'},
+    {l:'JSON.stringify',i:'JSON.stringify()',c:'fn',t:'method'},
+    {l:'JSON.parse',i:'JSON.parse()',c:'fn',t:'method'},
+    {l:'fetch',i:"fetch('')\n  .then(function(r) { return r.json(); })\n  .then(function(data) {\n    \n  })\n  .catch(function(err) { console.error(err); });",c:'fn',t:'method'},
+    {l:'try catch',i:'try {\n  \n} catch (err) {\n  console.error(err);\n}',c:'kw',t:'keyword'},
+    {l:'localStorage.setItem',i:"localStorage.setItem('key', value);",c:'fn',t:'method'},
+    {l:'localStorage.getItem',i:"localStorage.getItem('key')",c:'fn',t:'method'},
+    {l:'Math.floor',i:'Math.floor()',c:'fn',t:'method'},
+    {l:'Math.random',i:'Math.random()',c:'fn',t:'method'},
+    {l:'Math.max',i:'Math.max()',c:'fn',t:'method'},
+    {l:'Math.min',i:'Math.min()',c:'fn',t:'method'},
+    {l:'requestAnimationFrame',i:'requestAnimationFrame(draw);',c:'fn',t:'method'},
+    {l:'★ DOMContentLoaded',i:"document.addEventListener('DOMContentLoaded', function() {\n  \n});",c:'snip',t:'snippet'},
+    {l:'★ Canvas Setup',i:"var canvas = document.getElementById('canvas');\nvar ctx = canvas.getContext('2d');\ncanvas.width = window.innerWidth;\ncanvas.height = window.innerHeight;",c:'snip',t:'snippet'},
+    {l:'★ Animate Loop',i:'function animate() {\n  requestAnimationFrame(animate);\n  ctx.clearRect(0, 0, canvas.width, canvas.height);\n  \n}\nanimate();',c:'snip',t:'snippet'},
+  ]
+};
+
+var editor = document.getElementById('code-editor');
+if (!editor) return;
+var editorArea = document.querySelector('.editor-area');
+var lineNumbers = document.getElementById('line-numbers');
+if (!editorArea || !lineNumbers) return;
+
+var wrap = document.createElement('div');
+wrap.id = 'editor-wrapper';
+editorArea.insertBefore(wrap, editor);
+wrap.appendChild(lineNumbers);
+wrap.appendChild(editor);
+
+var acBox = document.createElement('div');
+acBox.id = 'ac-box';
+document.body.appendChild(acBox);
+
+var acSel = -1, acList = [], acOn = false;
+
+function wordBefore() {
+  var pos = editor.selectionStart;
+  var text = editor.value.substring(0, pos);
+  var m = text.match(/[\w!@#.<:-]*$/);
+  return m ? m[0] : '';
+}
+
+function getItems(w) {
+  if (!w || w.length < 1) return [];
+  var t = window.currentEditorTab || 'html';
+  var data = ACD[t] || ACD.html;
+  var wl = w.toLowerCase();
+  return data.filter(function(d){ return d.l.toLowerCase().includes(wl); }).slice(0, 12);
+}
+
+function hmatch(label, word) {
+  var idx = label.toLowerCase().indexOf(word.toLowerCase());
+  if (idx < 0) return label;
+  return label.slice(0,idx)+'<mark>'+label.slice(idx,idx+word.length)+'</mark>'+label.slice(idx+word.length);
+}
+
+function iconLabel(c) {
+  return {tag:'H',prop:'P',kw:'K',fn:'F',snip:'★'}[c]||'•';
+}
+
+function showAC(items, word) {
+  if (!items.length) { hideAC(); return; }
+  acList = items; acSel = 0;
+
+  var r = editor.getBoundingClientRect();
+  var lines = editor.value.substring(0, editor.selectionStart).split('\n');
+  var lh = parseFloat(getComputedStyle(editor).lineHeight) || 22;
+  var x = r.left + 52;
+  var y = r.top + (lines.length * lh) - editor.scrollTop;
+  if (y + 250 > window.innerHeight) y -= 260;
+  acBox.style.left = Math.min(x, window.innerWidth - 370) + 'px';
+  acBox.style.top  = Math.max(y, 10) + 'px';
+
+  acBox.innerHTML = items.map(function(d,i){
+    return '<div class="ac-i'+(i===0?' sel':'')+'" data-i="'+i+'">' +
+      '<i class="ac-ico ico-'+d.c+'">'+iconLabel(d.c)+'</i>' +
+      '<span class="ac-lbl">'+hmatch(d.l, word)+'</span>' +
+      '<span class="ac-tp">'+d.t+'</span>' +
+    '</div>';
+  }).join('') +
+  '<div class="ac-hint"><span>↑↓ تنقل</span><span>Tab/Enter اختر</span><span>Esc إغلاق</span></div>';
+
+  acBox.querySelectorAll('.ac-i').forEach(function(el){
+    el.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      insertAC(parseInt(el.dataset.i), word);
+    });
+  });
+  acBox.style.display = 'block';
+  acOn = true;
+}
+
+function hideAC() {
+  acBox.style.display = 'none';
+  acOn = false; acSel = -1;
+}
+
+function moveSel(d) {
+  var els = acBox.querySelectorAll('.ac-i');
+  if (!els.length) return;
+  els[acSel] && els[acSel].classList.remove('sel');
+  acSel = (acSel + d + els.length) % els.length;
+  els[acSel].classList.add('sel');
+  els[acSel].scrollIntoView({block:'nearest'});
+}
+
+function insertAC(idx, word) {
+  var d = acList[idx]; if (!d) return;
+  var pos = editor.selectionStart;
+  var before = editor.value.substring(0, pos - word.length);
+  var after  = editor.value.substring(pos);
+  editor.value = before + d.i + after;
+  editor.selectionStart = editor.selectionEnd = before.length + d.i.length;
+  hideAC(); syncLN(); editor.focus();
+}
+
+editor.addEventListener('input', function() {
+  var w = wordBefore();
+  var items = getItems(w);
+  items.length && w.length >= 1 ? showAC(items, w) : hideAC();
+});
+
+editor.addEventListener('scroll', function() {
+  if (acOn) hideAC();
+});
+
+editor.addEventListener('keydown', function(e) {
+  if (acOn) {
+    if (e.key==='ArrowDown')  { e.preventDefault(); moveSel(+1); return; }
+    if (e.key==='ArrowUp')    { e.preventDefault(); moveSel(-1); return; }
+    if (e.key==='Escape')     { e.preventDefault(); hideAC(); return; }
+    if ((e.key==='Tab'||e.key==='Enter') && acSel>=0) {
+      e.preventDefault(); insertAC(acSel, wordBefore()); return;
+    }
+  }
+
+  if (e.key==='Tab' && !acOn) {
+    e.preventDefault();
+    var s=editor.selectionStart, en=editor.selectionEnd;
+    editor.value=editor.value.substring(0,s)+'  '+editor.value.substring(en);
+    editor.selectionStart=editor.selectionEnd=s+2;
+    syncLN(); return;
+  }
+
+  if (e.key === 'Enter') {
+  e.preventDefault();
+  var pos2 = editor.selectionStart;
+  var tb = editor.value.substring(0, pos2);
+  var after3 = editor.value.substring(pos2);
+
+  var curLine = tb.split('\n').pop();
+  var indent = curLine.match(/^(\s*)/)[1];
+  var trimmed = curLine.trimEnd();
+  var lastChar = trimmed.slice(-1);
+
+  // فاتح؟
+  var openers = { '{': '}', '(': ')', '[': ']' };
+  var isOpener = !!openers[lastChar];
+
+  // كاسر HTML زي <div> أو <p> أو أي تاج مش self-closing؟
+  var htmlOpenTag = null;
+  if ((window.currentEditorTab || 'html') === 'html') {
+    var tagMatch = trimmed.match(/<([a-zA-Z][\w-]*)(?:\s[^>]*)?>$/);
+    var voids = 'area base br col embed hr img input link meta param source track wbr'.split(' ');
+    if (tagMatch && !voids.includes(tagMatch[1].toLowerCase())) {
+      htmlOpenTag = tagMatch[1];
+    }
+  }
+
+  var extra = '  '; // مسافتان دائماً للطفل
+
+  var nxtChar = after3.trimStart()[0];
+
+  if (isOpener && nxtChar === openers[lastChar]) {
+    // { مع } على نفس السطر → افصل وحط cursor في المنتصف
+    editor.value = tb + '\n' + indent + extra + '\n' + indent + after3;
+    editor.selectionStart = editor.selectionEnd = pos2 + 1 + indent.length + extra.length;
+
+  } else if (htmlOpenTag && after3.trimStart().startsWith('</' + htmlOpenTag)) {
+    // <div>|</div> → افصل وحط cursor في المنتصف
+    editor.value = tb + '\n' + indent + extra + '\n' + indent + after3;
+    editor.selectionStart = editor.selectionEnd = pos2 + 1 + indent.length + extra.length;
+
+  } else if (isOpener || htmlOpenTag) {
+    // opener بدون closing على نفس السطر → نزل وزد مسافة
+    editor.value = tb + '\n' + indent + extra + after3;
+    editor.selectionStart = editor.selectionEnd = pos2 + 1 + indent.length + extra.length;
+
+  } else {
+    // سطر عادي → احتفظ بنفس مسافة السطر الحالي فقط
+    editor.value = tb + '\n' + indent + after3;
+    editor.selectionStart = editor.selectionEnd = pos2 + 1 + indent.length;
+  }
+
+  syncLN();
+  return;
+}
+
+  var pairs = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'", '`': '`' };
+if (pairs[e.key]) {
+  var sel = editor.selectionStart, selE = editor.selectionEnd;
+  var selected = editor.value.substring(sel, selE);
+
+  // لو علامة تنصيص والحرف اللي بعد الكيرسور نفس العلامة → تخطى بس
+  var nextChar = editor.value[sel];
+  var isQuote = (e.key === '"' || e.key === "'" || e.key === '`');
+  if (isQuote && nextChar === e.key && !selected) {
+    e.preventDefault();
+    editor.selectionStart = editor.selectionEnd = sel + 1;
+    return;
+  }
+
+  // لو علامة تنصيص مكررة (نفس الحرف قبل وبعد) → متعملش حاجة
+  var prevChar = editor.value[sel - 1];
+  if (isQuote && prevChar === e.key && !selected) {
+    return; // اتركها تكتب عادي
+  }
+
+  e.preventDefault();
+  if (selected) {
+    // لو في نص محدد → لفه بالعلامتين
+    editor.value = editor.value.substring(0, sel) + e.key + selected + pairs[e.key] + editor.value.substring(selE);
+    editor.selectionStart = sel + 1;
+    editor.selectionEnd = selE + 1;
+  } else {
+    // مفيش نص محدد → افتح وأغلق وحط الكيرسور في النص
+    editor.value = editor.value.substring(0, sel) + e.key + pairs[e.key] + editor.value.substring(sel);
+    editor.selectionStart = editor.selectionEnd = sel + 1;
+  }
+
+  syncLN();
+  return;
+}
+
+  if (e.key==='>') {
+    setTimeout(function(){
+      if((window.currentEditorTab||'html')!=='html') return;
+      var pos3=editor.selectionStart;
+      var tb2=editor.value.substring(0,pos3);
+      var tm=tb2.match(/<([a-zA-Z][\w-]*)(?:\s[^>]*)?>$/);
+      var voids='area base br col embed hr img input link meta param source track wbr'.split(' ');
+      if(tm && !voids.includes(tm[1].toLowerCase())){
+        var ct='</'+tm[1]+'>';
+        editor.value=tb2+ct+editor.value.substring(pos3);
+        editor.selectionStart=editor.selectionEnd=pos3;
+        syncLN();
+      }
+    },0);
+  }
+});
+
+document.addEventListener('click', function(e){
+  if (e.target!==editor) hideAC();
+});
+
+console.log('✅ Editor: Autocomplete + AutoIndent (بدون ألوان)');
+
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
